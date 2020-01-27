@@ -3,9 +3,10 @@ import TopNav from "common_components/SignIn/SignIn";
 
 import Navbar from "./appbar/Navbar";
 import Navlink from "./navlinks/Navlinks";
-import Invoices from "./invoices/Invoices";
+import Invoice from "./invoice/Invoice";
 import NewInvoice from "./NewInvoice/NewInvoice";
-export { Navbar, Navlink, Invoices, NewInvoice };
+import Overview from "./overview/Overview"
+export { Navbar, Navlink, Invoice, NewInvoice, Overview };
 
 const LandingPage = () => {
   return (
