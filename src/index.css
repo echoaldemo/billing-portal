@@ -27,8 +27,6 @@ body {
 }
 .tab-item {
 	display: flex;
-	align-items: center !important;
-	justify-content: space-between;
 	text-decoration: none;
 	color: #7c8a97 ;
 

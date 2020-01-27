@@ -46,9 +46,9 @@ export default function Navlinks() {
 					return (
 						<NavLink to={item.link} className="tab-item" activeClassName="active-link">
 							<Tab label={
-								<div>
+								<div style={{ display: "flex", alignItems: "center", justifyContent: 'space-between' }}>
 									{item.icon}
-									<span style={{ textTransform: "none" }}>{item.name}</span>
+									<span style={{ textTransform: "none", }}>{item.name}</span>
 								</div>
 							} key={i} className="tab-text" />
 						</NavLink>
