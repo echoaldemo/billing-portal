@@ -7,7 +7,6 @@ const Invoices = () => {
 
 	return (
 		<div>
-			{console.log('invoice')}
 			{tabPanels.map((item, i) => {
 				return (
 					<TabPanel key={i} value={state.active_tab} index={i}>
