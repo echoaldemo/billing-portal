@@ -18,7 +18,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Add } from "@material-ui/icons";
 import { Button } from "@material-ui/core";
-import NewInvoice from "../../../NewInvoice/NewInvoice";
+import NewInvoice from "../NewInvoice/NewInvoice";
 
 function createData(
   invoice,
@@ -194,13 +194,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === "light"
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      },
   title: {
     flex: "1 1 100%"
   }
@@ -235,10 +235,10 @@ const EnhancedTableToolbar = (props) => {
             {numSelected} selected
           </Typography>
         ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle">
-            List of all Invoices
+            <Typography className={classes.title} variant="h6" id="tableTitle">
+              List of all Invoices
           </Typography>
-        )}
+          )}
 
         {numSelected > 0 ? (
           <Tooltip title="Delete">
@@ -247,12 +247,12 @@ const EnhancedTableToolbar = (props) => {
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Add new incoice">
-            <Button className="add-btn" onClick={handleOpen}>
-              <Add /> New Invoice
+            <Tooltip title="Add new incoice">
+              <Button className="add-btn" onClick={handleOpen}>
+                <Add /> New Invoice
             </Button>
-          </Tooltip>
-        )}
+            </Tooltip>
+          )}
       </Toolbar>
       <NewInvoice
         open={open}
@@ -353,8 +353,8 @@ export default function EnhancedTable() {
     return due_date === "Paid" ? (
       <span className="success-color">Paid {randomDays} days ago</span>
     ) : (
-      <span className="danger-color">Overdue {randomDays} day</span>
-    );
+        <span className="danger-color">Overdue {randomDays} day</span>
+      );
   };
   return (
     <div className={classes.root}>
