@@ -1,24 +1,26 @@
-import React from "react";
-import PropTypes from "prop-types";
-import clsx from "clsx";
-import { lighten, makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Checkbox from "@material-ui/core/Checkbox";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { Add } from "@material-ui/icons";
-import { Button } from "@material-ui/core";
-import NewInvoice from "../NewInvoice/NewInvoice";
+import React from 'react'
+import PropTypes from 'prop-types'
+import clsx from 'clsx'
+import { lighten, makeStyles } from '@material-ui/core/styles'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TablePagination from '@material-ui/core/TablePagination'
+import TableRow from '@material-ui/core/TableRow'
+import TableSortLabel from '@material-ui/core/TableSortLabel'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import Checkbox from '@material-ui/core/Checkbox'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
+import DeleteIcon from '@material-ui/icons/Delete'
+import { Add } from '@material-ui/icons'
+import { Button } from '@material-ui/core'
+import NewInvoice from '../NewInvoice/NewInvoice'
+
+import { get } from 'utils/api'
 
 function createData(
   invoice,
@@ -37,24 +39,24 @@ function createData(
     billing_period,
     due_date,
     status
-  };
+  }
 }
 
 function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
+  return Math.floor(Math.random() * Math.floor(max))
 }
 const generateData = () => {
-  let newArr = [];
+  let newArr = []
 
   for (let i = 1; i <= 100; i++) {
-    const randomNum = getRandomInt(2);
-    let invoice = `Invoice ${i}`;
-    let company = `Company ${i}`;
-    let campaign = `campaign ${i}`;
-    let billing_type = randomNum === 0 ? "Performance" : "Hourly";
-    let billing_period = randomNum === 0 ? "Weekly" : "Monthly";
-    let due_date = "July 4, 2019";
-    let status = randomNum === 0 ? "Paid" : "Unpaid";
+    const randomNum = getRandomInt(2)
+    let invoice = `Invoice ${i}`
+    let company = `Company ${i}`
+    let campaign = `campaign ${i}`
+    let billing_type = randomNum === 0 ? 'Performance' : 'Hourly'
+    let billing_period = randomNum === 0 ? 'Weekly' : 'Monthly'
+    let due_date = 'July 4, 2019'
+    let status = randomNum === 0 ? 'Paid' : 'Unpaid'
 
     const data = createData(
       invoice,
@@ -64,66 +66,66 @@ const generateData = () => {
       billing_period,
       due_date,
       status
-    );
+    )
 
-    newArr.push(data);
+    newArr.push(data)
   }
-  return newArr;
-};
+  return newArr
+}
 
-const rows = generateData();
+const rows = generateData()
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
-    return -1;
+    return -1
   }
   if (b[orderBy] > a[orderBy]) {
-    return 1;
+    return 1
   }
-  return 0;
+  return 0
 }
 
 function stableSort(array, cmp) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  const stabilizedThis = array.map((el, index) => [el, index])
   stabilizedThis.sort((a, b) => {
-    const order = cmp(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
+    const order = cmp(a[0], b[0])
+    if (order !== 0) return order
+    return a[1] - b[1]
+  })
+  return stabilizedThis.map(el => el[0])
 }
 
 function getSorting(order, orderBy) {
-  return order === "desc"
+  return order === 'desc'
     ? (a, b) => desc(a, b, orderBy)
-    : (a, b) => -desc(a, b, orderBy);
+    : (a, b) => -desc(a, b, orderBy)
 }
 
 const headCells = [
   {
-    id: "invoice",
+    id: 'invoice',
     disablePadding: true,
-    label: "Invoice"
+    label: 'INVOICE'
   },
-  { id: "company", numeric: true, disablePadding: false, label: "Company" },
-  { id: "campaign", numeric: true, disablePadding: false, label: "Campaign" },
+  { id: 'company', numeric: true, disablePadding: false, label: 'CUSTOMER' },
+  { id: 'campaign', numeric: true, disablePadding: false, label: 'DATE' },
   {
-    id: "billing-type",
+    id: 'billing-type',
     numeric: true,
     disablePadding: false,
-    label: "Billing Type"
+    label: 'DUE DATE'
   },
   {
-    id: "billing-period",
+    id: 'billing-period',
     numeric: true,
     disablePadding: false,
-    label: "Billing Period"
+    label: 'BALANCE'
   },
 
-  { id: "due-date", numeric: true, disablePadding: false, label: "Due-date" },
-  { id: "status", numeric: true, disablePadding: false, label: "Status" },
-  { id: "actions", numeric: true, disablePadding: false, label: "Action" }
-];
+  { id: 'due-date', numeric: true, disablePadding: false, label: 'TOTAL' },
+  { id: 'status', numeric: true, disablePadding: false, label: 'STATUS' },
+  { id: 'actions', numeric: true, disablePadding: false, label: 'ACTION' }
+]
 
 function EnhancedTableHead(props) {
   const {
@@ -134,10 +136,10 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort
-  } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
+  } = props
+  const createSortHandler = property => event => {
+    onRequestSort(event, property)
+  }
 
   return (
     <TableHead>
@@ -147,25 +149,25 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all desserts" }}
+            inputProps={{ 'aria-label': 'select all desserts' }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {headCells.map(headCell => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "default"}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
+              direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
               <b>{headCell.label}</b>
               {orderBy === headCell.id ? (
                 <span className={classes.visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
             </TableSortLabel>
@@ -173,7 +175,7 @@ function EnhancedTableHead(props) {
         ))}
       </TableRow>
     </TableHead>
-  );
+  )
 }
 
 EnhancedTableHead.propTypes = {
@@ -181,43 +183,43 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired
-};
+}
 
-const useToolbarStyles = makeStyles((theme) => ({
+const useToolbarStyles = makeStyles(theme => ({
   root: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1)
   },
   highlight:
-    theme.palette.type === "light"
+    theme.palette.type === 'light'
       ? {
-        color: theme.palette.secondary.main,
-        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-      }
+          color: theme.palette.secondary.main,
+          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+        }
       : {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.secondary.dark
-      },
+          color: theme.palette.text.primary,
+          backgroundColor: theme.palette.secondary.dark
+        },
   title: {
-    flex: "1 1 100%"
+    flex: '1 1 100%'
   }
-}));
+}))
 
-const EnhancedTableToolbar = (props) => {
-  const classes = useToolbarStyles();
-  const { numSelected } = props;
-  const [open, setOpen] = React.useState(false);
+const EnhancedTableToolbar = props => {
+  const classes = useToolbarStyles()
+  const { numSelected } = props
+  const [open, setOpen] = React.useState(false)
 
   const handleOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <>
@@ -235,10 +237,10 @@ const EnhancedTableToolbar = (props) => {
             {numSelected} selected
           </Typography>
         ) : (
-            <Typography className={classes.title} variant="h6" id="tableTitle">
-              List of all Invoices
+          <Typography className={classes.title} variant="h6" id="tableTitle">
+            List of all Invoices
           </Typography>
-          )}
+        )}
 
         {numSelected > 0 ? (
           <Tooltip title="Delete">
@@ -247,12 +249,12 @@ const EnhancedTableToolbar = (props) => {
             </IconButton>
           </Tooltip>
         ) : (
-            <Tooltip title="Add new incoice">
-              <Button className="add-btn" onClick={handleOpen}>
-                <Add /> New Invoice
+          <Tooltip title="Add new incoice">
+            <Button className="add-btn" onClick={handleOpen}>
+              <Add /> New Invoice
             </Button>
-            </Tooltip>
-          )}
+          </Tooltip>
+        )}
       </Toolbar>
       <NewInvoice
         open={open}
@@ -260,19 +262,19 @@ const EnhancedTableToolbar = (props) => {
         handleOpen={handleOpen}
       />
     </>
-  );
-};
+  )
+}
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired
-};
+}
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    width: "100%"
+    width: '100%'
   },
   paper: {
-    width: "100%",
+    width: '100%',
     marginBottom: theme.spacing(2)
   },
   table: {
@@ -280,82 +282,93 @@ const useStyles = makeStyles((theme) => ({
   },
   visuallyHidden: {
     border: 0,
-    clip: "rect(0 0 0 0)",
+    clip: 'rect(0 0 0 0)',
     height: 1,
     margin: -1,
-    overflow: "hidden",
+    overflow: 'hidden',
     padding: 0,
-    position: "absolute",
+    position: 'absolute',
     top: 20,
     width: 1
   }
-}));
+}))
 
 export default function EnhancedTable() {
-  const classes = useStyles();
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false); // eslint-disable-line
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const classes = useStyles()
+  const [order, setOrder] = React.useState('asc')
+  const [orderBy, setOrderBy] = React.useState('calories')
+  const [selected, setSelected] = React.useState([])
+  const [page, setPage] = React.useState(0)
+  const [dense, setDense] = React.useState(false) // eslint-disable-line
+  const [rowsPerPage, setRowsPerPage] = React.useState(10)
+
+  const [row2, setRow2] = React.useState([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    get('/api/invoice').then(res => {
+      setRow2(res.data.QueryResponse.Invoice)
+      console.log(res.data.QueryResponse.Invoice)
+      setLoading(false)
+    })
+  }, [])
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
+    const isAsc = orderBy === property && order === 'asc'
+    setOrder(isAsc ? 'desc' : 'asc')
+    setOrderBy(property)
+  }
 
-  const handleSelectAllClick = (event) => {
+  const handleSelectAllClick = event => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
+      const newSelecteds = rows.map(n => n.name)
+      setSelected(newSelecteds)
+      return
     }
-    setSelected([]);
-  };
+    setSelected([])
+  }
 
   const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
+    const selectedIndex = selected.indexOf(name)
+    let newSelected = []
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, name)
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
+      newSelected = newSelected.concat(selected.slice(1))
     } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelected = newSelected.concat(selected.slice(0, -1))
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
         selected.slice(selectedIndex + 1)
-      );
+      )
     }
 
-    setSelected(newSelected);
-  };
+    setSelected(newSelected)
+  }
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+    setPage(newPage)
+  }
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = name => selected.indexOf(name) !== -1
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-  const displayStatus = (due_date) => {
-    const randomDays = getRandomInt(20);
-    return due_date === "Paid" ? (
+    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage)
+  const displayStatus = due_date => {
+    const randomDays = getRandomInt(20)
+    return due_date === 'Paid' ? (
       <span className="success-color">Paid {randomDays} days ago</span>
     ) : (
-        <span className="danger-color">Overdue {randomDays} day</span>
-      );
-  };
+      <span className="danger-color">Overdue {randomDays} day</span>
+    )
+  }
   return (
     <div className={classes.root}>
       <EnhancedTableToolbar numSelected={selected.length} />
@@ -363,7 +376,7 @@ export default function EnhancedTable() {
         <Table
           className={classes.table}
           aria-labelledby="tableTitle"
-          size={dense ? "small" : "medium"}
+          size={dense ? 'small' : 'medium'}
           aria-label="enhanced table"
         >
           <EnhancedTableHead
@@ -373,62 +386,68 @@ export default function EnhancedTable() {
             orderBy={orderBy}
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
-            rowCount={rows.length}
+            rowCount={row2.length}
           />
-          <TableBody>
-            {stableSort(rows, getSorting(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const isItemSelected = isSelected(row.name);
-                const labelId = `enhanced-table-checkbox-${index}`;
+          {loading ? (
+            <div>loading...</div>
+          ) : (
+            <TableBody>
+              {stableSort(row2, getSorting(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const isItemSelected = isSelected(row.name)
+                  const labelId = `enhanced-table-checkbox-${index}`
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.name)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={index}
-                    selected={isItemSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isItemSelected}
-                        inputProps={{ "aria-labelledby": labelId }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
+                  return (
+                    <TableRow
+                      hover
+                      onClick={event => handleClick(event, row.name)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={index}
+                      selected={isItemSelected}
                     >
-                      {row.invoice}
-                    </TableCell>
-                    <TableCell align="right">{row.company}</TableCell>
-                    <TableCell align="right">{row.campaign}</TableCell>
-                    <TableCell align="right">{row.billing_type}</TableCell>
-                    <TableCell align="right">{row.billing_period}</TableCell>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="none"
+                      >
+                        {row.DocNumber}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.CustomerRef.name}
+                      </TableCell>
+                      <TableCell align="right">{row.TxnDate}</TableCell>
+                      <TableCell align="right">{row.DueDate}</TableCell>
+                      <TableCell align="right">{row.Balance}</TableCell>
 
-                    <TableCell align="right">{row.due_date}</TableCell>
-                    <TableCell align="right">
-                      {displayStatus(row.status)}
-                    </TableCell>
-                    <TableCell align="right">
-                      <u>
-                        <b>Edit </b>
-                      </u>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            {emptyRows > 0 && (
-              <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )}
-          </TableBody>
+                      <TableCell align="right">{row.TotalAmt}</TableCell>
+                      <TableCell align="right">
+                        {displayStatus(`row.status`)}
+                      </TableCell>
+                      <TableCell align="right">
+                        <u>
+                          <b>Edit </b>
+                        </u>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       <TablePagination
@@ -441,5 +460,5 @@ export default function EnhancedTable() {
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
     </div>
-  );
+  )
 }
