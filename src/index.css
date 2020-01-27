@@ -1,0 +1,101 @@
+@import "https://fonts.googleapis.com/css?family=Roboto&display=swap";
+body {
+	color: #444851;
+	font-family: "Roboto", sans-serif;
+	margin: 0;
+}
+
+.tabs-container {
+	border-bottom: solid 1px #f1f1f1 !important;
+}
+
+.MuiTabs-indicator {
+	background-color: #f89523 !important;
+	height: 3px !important;
+}
+
+.tab-text {
+	font-size: 14px !important;
+	font-weight: bold !important;
+	font-stretch: normal !important;
+	font-style: normal !important;
+	line-height: normal !important;
+	letter-spacing: normal !important;
+	color: #7c8a97 !important;
+	padding-bottom: 20px !important;
+	padding-top: 20px !important;
+	text-transform: none !important;
+}
+.tab-item {
+	display: flex;
+	align-items: center !important;
+	justify-content: space-between;
+}
+.tab-icon {
+	font-size: 17px !important;
+	margin-right: 8px;
+}
+.Mui-selected {
+	color: #444851 !important;
+}
+.tab-panel-container {
+	width: 70%;
+	margin: 0 auto;
+	margin-top: 24px;
+}
+
+.text-normal {
+}
+.fz-20 {
+	font-size: 20px;
+}
+.header-text-primary {
+	font-size: 18px;
+	color: #444851;
+	font-weight: 300;
+}
+.header-text-secondary {
+	font-size: 14px;
+	color: #a0aeba;
+	font-weight: 300;
+	line-height: 2.1;
+}
+.header-container {
+	padding: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.header-text-container {
+	display: flex;
+	flex-direction: column;
+}
+.content-container {
+}
+.mt-normal {
+	margin-top: 12px;
+}
+.status {
+}
+.add-btn {
+	display: flex !important;
+	width: 150px !important;
+	justify-content: space-evenly !important;
+	text-transform: none !important;
+	border: solid 1px #eeeeee !important;
+}
+.success-color {
+	color: #2ca01d;
+}
+.danger-color {
+	color: #fc865b;
+}
+.center {
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+}
+
+.h-500 {
+	height: 500px;
+}
