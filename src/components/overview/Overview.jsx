@@ -1,7 +1,8 @@
 import React from 'react';
-import { Grid, Paper } from '@material-ui/core';
+import { Grid, Paper, Divider } from '@material-ui/core';
 import Chart from 'react-google-charts';
 import { PanelHeader } from 'common_components';
+import CardInfo from "./card-info"
 const pieOptions = {
   title: '',
   pieHole: 0.6,
@@ -47,6 +48,88 @@ const Overview = () => {
           subTitle="Lorem ipsum dolor sit amet consectetur adipisicing elit. "
         />
 
+        <Grid container className="display-even p-normal pb-normal" >
+
+          <CardInfo
+            primaryLabel="Total Invoices"
+            secondaryLabel="42,524"
+          />
+
+
+          <CardInfo
+            primaryLabel="Total Automatic Invoices"
+            secondaryLabel="50,203"
+          />
+
+
+          <CardInfo
+            primaryLabel="Total Manual Invoices"
+            secondaryLabel="10,203"
+          />
+
+        </Grid>
+
+
+        <Grid container style={{ marginTop: 50, }}>
+          <Grid item lg={8} className="center h-500">
+            <Chart
+              width={'100%'}
+              height={'500'}
+              chartType="Line"
+              loader={<div>Loading Chart</div>}
+              data={[
+                [{ type: 'date', label: 'Month' }, 'Automatic invoice', 'Manual Invoice'],
+                [new Date(2014, 0), -0.5, 5.7],
+                [new Date(2014, 1), 0.4, 8.7],
+                [new Date(2014, 2), 0.5, 12],
+                [new Date(2014, 3), 2.9, 15.3],
+                [new Date(2014, 4), 6.3, 18.6],
+                [new Date(2014, 5), 9, 20.9],
+                [new Date(2014, 6), 10.6, 19.8],
+                [new Date(2014, 7), 10.3, 16.6],
+                [new Date(2014, 8), 7.4, 13.3],
+                [new Date(2014, 9), 4.4, 9.9],
+                [new Date(2014, 10), 1.1, 6.6],
+                [new Date(2014, 11), -0.2, 4.5]
+              ]}
+              options={{
+                chart: {
+                  title: 'Incoming Manual and Automatic Invoices'
+                },
+                width: 850,
+                height: 500,
+                series: {
+                  // Gives each series an axis name that matches the Y-axis below.
+                  0: { axis: 'Month' },
+                  1: { axis: 'Total' }
+                },
+                axes: {
+                  // Adds labels to each axis; they don't have to match the axis names.
+                  y: {
+                    // Month: { label: 'Month' },
+                    Total: { label: 'Total' }
+                  }
+                }
+              }}
+              rootProps={{ 'data-testid': '4' }}
+              style={{ marginLeft: 10 }}
+            />
+          </Grid>
+
+          <Grid item lg={4} className="center h-500">
+            <Chart
+              chartType="PieChart"
+              data={[['Automatic', 'Manual'], ['Automatic', 12], ['Manual', 5.5]]}
+              options={pieOptions}
+              graph_id="PieChart"
+              width={'100%'}
+              height={'400px'}
+              legend_toggle
+
+            />
+          </Grid>
+        </Grid>
+
         <Grid container>
           <Grid item lg={12}>
             <Paper className="center h-500" style={{ paddingBottom: 100, marginTop: 36 }}>
@@ -74,63 +157,6 @@ const Overview = () => {
                 rootProps={{ 'data-testid': '2' }}
               />
             </Paper>
-          </Grid>
-        </Grid>
-
-        <Grid container style={{ marginTop: 100 }}>
-          <Grid item lg={8} className="center h-500">
-            <Chart
-              width={'100%'}
-              height={'500'}
-              chartType="Line"
-              loader={<div>Loading Chart</div>}
-              data={[
-                [{ type: 'date', label: 'Day' }, 'Average temperature', 'Average hours of daylight'],
-                [new Date(2014, 0), -0.5, 5.7],
-                [new Date(2014, 1), 0.4, 8.7],
-                [new Date(2014, 2), 0.5, 12],
-                [new Date(2014, 3), 2.9, 15.3],
-                [new Date(2014, 4), 6.3, 18.6],
-                [new Date(2014, 5), 9, 20.9],
-                [new Date(2014, 6), 10.6, 19.8],
-                [new Date(2014, 7), 10.3, 16.6],
-                [new Date(2014, 8), 7.4, 13.3],
-                [new Date(2014, 9), 4.4, 9.9],
-                [new Date(2014, 10), 1.1, 6.6],
-                [new Date(2014, 11), -0.2, 4.5]
-              ]}
-              options={{
-                chart: {
-                  title: 'Average Temperatures and Daylight in Iceland Throughout the Year'
-                },
-                width: 900,
-                height: 500,
-                series: {
-                  // Gives each series an axis name that matches the Y-axis below.
-                  0: { axis: 'Temps' },
-                  1: { axis: 'Daylight' }
-                },
-                axes: {
-                  // Adds labels to each axis; they don't have to match the axis names.
-                  y: {
-                    Temps: { label: 'Temps (Celsius)' },
-                    Daylight: { label: 'Daylight' }
-                  }
-                }
-              }}
-              rootProps={{ 'data-testid': '4' }}
-            />
-          </Grid>
-          <Grid item lg={4} className="center h-500">
-            <Chart
-              chartType="PieChart"
-              data={[['Age', 'Weight'], ['a', 12], ['b', 5.5]]}
-              options={pieOptions}
-              graph_id="PieChart"
-              width={'100%'}
-              height={'400px'}
-              legend_toggle
-            />
           </Grid>
         </Grid>
       </Grid>
