@@ -1,5 +1,5 @@
 {
-  "name": "invoice-mock-design",
+  "name": "Billing Portal",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
