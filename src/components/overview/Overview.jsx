@@ -1,30 +1,31 @@
-import React from 'react';
-import { Grid, Paper, Divider } from '@material-ui/core';
-import Chart from 'react-google-charts';
-import { PanelHeader } from 'common_components';
-import CardInfo from "./card-info"
+import React from "react";
+import { Grid, Paper, Container } from "@material-ui/core";
+import Chart from "react-google-charts";
+import { PanelHeader } from "common_components";
+import CardInfo from "./card-info";
+import ActivityLogs from "./activity-logs";
 const pieOptions = {
-  title: '',
+  title: "",
   pieHole: 0.6,
   slices: [
     {
-      color: '#2BB673'
+      color: "#2BB673"
     },
     {
-      color: '#d91e48'
+      color: "#d91e48"
     },
     {
-      color: '#007fad'
+      color: "#007fad"
     },
     {
-      color: '#e9a227'
+      color: "#e9a227"
     }
   ],
   legend: {
-    position: 'bottom',
-    alignment: 'center',
+    position: "bottom",
+    alignment: "center",
     textStyle: {
-      color: '233238',
+      color: "233238",
       fontSize: 14
     }
   },
@@ -34,10 +35,10 @@ const pieOptions = {
   chartArea: {
     left: 0,
     top: 0,
-    width: '100%',
-    height: '80%'
+    width: "100%",
+    height: "80%"
   },
-  fontName: 'Roboto'
+  fontName: "Roboto"
 };
 const Overview = () => {
   return (
@@ -48,37 +49,33 @@ const Overview = () => {
           subTitle="Lorem ipsum dolor sit amet consectetur adipisicing elit. "
         />
 
-        <Grid container className="display-even p-normal pb-normal" >
-
-          <CardInfo
-            primaryLabel="Total Invoices"
-            secondaryLabel="42,524"
-          />
-
+        <Grid container className="display-even p-normal pb-normal">
+          <CardInfo primaryLabel="Total Invoices" secondaryLabel="42,524" />
 
           <CardInfo
             primaryLabel="Total Automatic Invoices"
             secondaryLabel="50,203"
           />
 
-
           <CardInfo
             primaryLabel="Total Manual Invoices"
             secondaryLabel="10,203"
           />
-
         </Grid>
 
-
-        <Grid container style={{ marginTop: 50, }}>
+        <Grid container style={{ marginTop: 50 }}>
           <Grid item lg={8} className="center h-500">
             <Chart
-              width={'100%'}
-              height={'500'}
+              width={"100%"}
+              height={"500"}
               chartType="Line"
               loader={<div>Loading Chart</div>}
               data={[
-                [{ type: 'date', label: 'Month' }, 'Automatic invoice', 'Manual Invoice'],
+                [
+                  { type: "date", label: "Month" },
+                  "Automatic invoice",
+                  "Manual Invoice"
+                ],
                 [new Date(2014, 0), -0.5, 5.7],
                 [new Date(2014, 1), 0.4, 8.7],
                 [new Date(2014, 2), 0.5, 12],
@@ -94,24 +91,24 @@ const Overview = () => {
               ]}
               options={{
                 chart: {
-                  title: 'Incoming Manual and Automatic Invoices'
+                  title: "Incoming Manual and Automatic Invoices"
                 },
                 width: 850,
                 height: 500,
                 series: {
                   // Gives each series an axis name that matches the Y-axis below.
-                  0: { axis: 'Month' },
-                  1: { axis: 'Total' }
+                  0: { axis: "Month" },
+                  1: { axis: "Total" }
                 },
                 axes: {
                   // Adds labels to each axis; they don't have to match the axis names.
                   y: {
                     // Month: { label: 'Month' },
-                    Total: { label: 'Total' }
+                    Total: { label: "Total" }
                   }
                 }
               }}
-              rootProps={{ 'data-testid': '4' }}
+              rootProps={{ "data-testid": "4" }}
               style={{ marginLeft: 10 }}
             />
           </Grid>
@@ -119,44 +116,60 @@ const Overview = () => {
           <Grid item lg={4} className="center h-500">
             <Chart
               chartType="PieChart"
-              data={[['Automatic', 'Manual'], ['Automatic', 12], ['Manual', 5.5]]}
+              data={[
+                ["Automatic", "Manual"],
+                ["Automatic", 12],
+                ["Manual", 5.5]
+              ]}
               options={pieOptions}
               graph_id="PieChart"
-              width={'100%'}
-              height={'400px'}
+              width={"100%"}
+              height={"400px"}
               legend_toggle
-
             />
           </Grid>
         </Grid>
 
         <Grid container>
-          <Grid item lg={12}>
-            <Paper className="center h-500" style={{ paddingBottom: 100, marginTop: 36 }}>
+          <Grid item lg={8}>
+            <Paper
+              className="center h-500"
+              style={{ paddingBottom: 100, marginTop: 36 }}
+            >
               <Chart
-                style={{ marginLeft: 100, marginTop: 30, backgroundColor: 'transparent' }}
-                width={'80%'}
-                height={'100%'}
+                style={{
+                  marginLeft: 80,
+                  marginTop: 30,
+                  backgroundColor: "transparent"
+                }}
+                width={"80%"}
+                height={"100%"}
                 chartType="Bar"
                 loader={<div>Loading Chart</div>}
                 data={[
-                  ['Year', 'Sales', 'Expenses', 'Profit'],
-                  ['2014', 1000, 400, 200],
-                  ['2015', 1170, 460, 250],
-                  ['2016', 660, 1120, 300],
-                  ['2017', 1030, 540, 350]
+                  ["Year", "Sales", "Expenses", "Profit"],
+                  ["2014", 1000, 400, 200],
+                  ["2015", 1170, 460, 250],
+                  ["2016", 660, 1120, 300],
+                  ["2017", 1030, 540, 350]
                 ]}
                 options={{
                   // Material design options
                   chart: {
-                    title: 'Company Performance',
-                    subtitle: 'Sales, Expenses, and Profit: 2014-2017'
+                    title: "Company Performance",
+                    subtitle: "Sales, Expenses, and Profit: 2014-2017"
                   }
                 }}
                 // For tests
-                rootProps={{ 'data-testid': '2' }}
+                rootProps={{ "data-testid": "2" }}
               />
             </Paper>
+          </Grid>
+
+          <Grid item lg={4}>
+            <Container style={{ margin: "36px 0px 0px 20px" }}>
+              <ActivityLogs />
+            </Container>
           </Grid>
         </Grid>
       </Grid>
