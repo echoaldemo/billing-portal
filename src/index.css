@@ -101,7 +101,18 @@ body {
 	justify-content: center !important;
 	align-items: center !important;
 }
+.display-even{
+	display: flex !important;
+	justify-content: space-between !important;
+	align-items: center !important;
+}
 
 .h-500 {
 	height: 500px;
+}
+.p-normal{
+	padding: 15px !important;
+}
+.pb-normal{
+	padding: 15px !important;
 }
