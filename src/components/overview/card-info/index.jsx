@@ -25,7 +25,7 @@ export default function CardInfo({ primaryLabel, secondaryLabel }) {
           <Typography gutterBottom variant="h5" style={{ color: "#444851" }} component="h2">
             {primaryLabel}
           </Typography>
-          <Typography variant="body2" color="textSecondary" variant="h4" >
+          <Typography variant="body2" color="textSecondary" variant="h5" >
             {secondaryLabel}
           </Typography>
         </CardContent>
