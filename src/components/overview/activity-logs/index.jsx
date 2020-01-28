@@ -1,127 +1,85 @@
 import React from "react";
-import {
-  Paper,
-  Typography,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText
-} from "@material-ui/core";
-import ExpandMore from "@material-ui/icons/ExpandMore";
+import { Paper, Typography, Divider } from "@material-ui/core";
+import Add from "@material-ui/icons/PostAdd";
+import Delete from "@material-ui/icons/DeleteForever";
+import Edit from "@material-ui/icons/Edit";
+import Email from "@material-ui/icons/Email";
+import { Timeline, TimelineEvent } from "react-event-timeline";
 import { makeStyles } from "@material-ui/core/styles";
-import LinearProgress from "@material-ui/core/LinearProgress";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   root: {
-    width: "100%",
-    backgroundColor: theme.palette.background.paper
-  },
-  inline: {
-    display: "inline"
-  },
-  numbersCardIcon: {
-    fontSize: 100,
-    position: "absolute",
-    right: 10,
-    top: 10,
-    color: "#2B8DD8"
+    padding: "3px 0px 3px 0px"
   }
 }));
 
 const mock = [
   {
-    first_name: "Jericho",
-    last_name: "Aldemo",
-    summary: "Sent an invoice to Rapid Response.",
-    time: "1 hour ago"
+    summary: "Jude Agagad sent an invoice to Rapid Response.",
+    icon: <Email />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jomar",
-    last_name: "Bandol",
-    summary: "Sent an invoice to Shift44.",
-    time: "5 hours ago"
+    summary: "You issued an invoice to Shift44.",
+    icon: <Add />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jude",
-    last_name: "Agagad",
-    summary: "Issued an invoice for Rapid Response.",
-    time: "2 days ago"
+    summary: "Jomar Bandol modified an invoice for Rapid Response.",
+    icon: <Add />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Sidney",
-    last_name: "Bercasio",
-    summary: "Modified information of Shift44",
-    time: "3 days ago"
+    summary: "John Paul Garcia modified information of Shift44",
+    icon: <Edit />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jules",
-    last_name: "Ballaran",
-    summary: "Deleted an invoice for Rapid Response.",
-    time: "1 week ago"
+    summary: "Jules Ballaran deleted an invoice for Rapid Response.",
+    icon: <Delete />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jericho",
-    last_name: "Aldemo",
-    summary: "Sent an invoice to Rapid Response.",
-    time: "1 hour ago"
+    summary: "You sent an invoice to Rapid Response.",
+    icon: <Email />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jomar",
-    last_name: "Bandol",
-    summary: "Sent an invoice to Shift44.",
-    time: "5 hours ago"
+    summary: "Sidney Bercasio deleted an invoice for Shift44.",
+    icon: <Delete />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jude",
-    last_name: "Agagad",
-    summary: "Issued an invoice for Rapid Response.",
-    time: "2 days ago"
+    summary: "John Paul Garcia modified information of Shift44",
+    icon: <Edit />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Sidney",
-    last_name: "Bercasio",
-    summary: "Modified information of Shift44",
-    time: "3 days ago"
+    summary: "Samuel Lopez issued an invoice for Rapid Response.",
+    icon: <Add />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jules",
-    last_name: "Ballaran",
-    summary: "Deleted an invoice for Rapid Response.",
-    time: "1 week ago"
+    summary: "Samuel Lopez issued an invoice for Rapid Response.",
+    icon: <Add />,
+    time: "2016-09-12 10:06 PM"
   },
   {
-    first_name: "Jericho",
-    last_name: "Aldemo",
-    summary: "Sent an invoice to Rapid Response.",
-    time: "1 hour ago"
-  },
-  {
-    first_name: "Jomar",
-    last_name: "Bandol",
-    summary: "Sent an invoice to Shift44.",
-    time: "5 hours ago"
-  },
-  {
-    first_name: "Jude",
-    last_name: "Agagad",
-    summary: "Issued an invoice for Rapid Response.",
-    time: "2 days ago"
-  },
-  {
-    first_name: "Sidney",
-    last_name: "Bercasio",
-    summary: "Modified information of Shift44",
-    time: "3 days ago"
-  },
-  {
-    first_name: "Jules",
-    last_name: "Ballaran",
-    summary: "Deleted an invoice for Rapid Response.",
-    time: "1 week ago"
+    summary: "Sidney Bercasio deleted an invoice for Shift44.",
+    icon: <Delete />,
+    time: "2016-09-12 10:06 PM"
   }
 ];
+
+const bubbleColor = summary => {
+  if (summary.indexOf("deleted") !== -1) {
+    return { border: "2px solid rgb(255, 43, 43)" };
+  } else if (summary.indexOf("modified") !== -1) {
+    return { border: "2px solid rgb(206, 193, 44)" };
+  } else {
+    return { border: "2px solid rgb(33, 154, 42)" };
+  }
+};
 
 const ActivityLogs = () => {
   const classes = useStyles();
@@ -131,52 +89,20 @@ const ActivityLogs = () => {
         ACTIVITY LOG
       </Typography>
       <Divider />
-      <div style={{ width: "100%", height: "54.5vh", overflowY: "scroll" }}>
-        <List className={classes.root}>
-          {true ? (
-            mock.map((item, i) => (
-              <>
-                <ListItem
-                  style={{ display: "flex", alignItems: "center" }}
-                  alignItems="flex-start"
-                  button
-                  onClick={() => console.log("try")}
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      alt=""
-                      src={
-                        item.avatar ||
-                        "https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwj52JKWmKPnAhXQ62EKHSbBClEQjRx6BAgBEAQ&url=https%3A%2F%2Fdlpng.com%2Fpng%2F1783824&psig=AOvVaw0mbhtZsRmVmYl10cWIGUrW&ust=1580194163367957"
-                      }
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Typography variant="caption">{item.summary}</Typography>
-                    }
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          className={classes.inline}
-                          color="textSecondary"
-                        >
-                          {item.first_name + " " + item.last_name} | {item.time}
-                        </Typography>
-                      </React.Fragment>
-                    }
-                  />
-                  <ExpandMore />
-                </ListItem>
-                {i !== mock.length - 1 && <Divider component="li" />}
-              </>
-            ))
-          ) : (
-            <LinearProgress />
-          )}
-        </List>
+      <div style={{ width: "100%", height: "42vh", overflowY: "scroll" }}>
+        <Timeline>
+          {mock.map(item => (
+            <>
+              <TimelineEvent
+                title={item.summary}
+                createdAt={item.time}
+                icon={item.icon}
+                bubbleStyle={bubbleColor(item.summary)}
+              />
+              <div className={classes.root}></div>
+            </>
+          ))}
+        </Timeline>
       </div>
     </Paper>
   );
