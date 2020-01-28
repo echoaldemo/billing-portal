@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelHeader } from 'common_components';
-import InvoiceTable from './InvoiceTable';
+import InvoiceTable from './components/InvoiceTable';
 import { Grid, Divider } from '@material-ui/core';
 const Invoice = () => {
 	return (

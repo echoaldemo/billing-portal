@@ -6,9 +6,10 @@ import componentData from "./ComponentData"
 
 
 const PrivateRoutes = () => {
-  return componentData.map(item => {
+  return componentData.map((item, i) => {
     return (
       <PrivateRoute
+        key={i}
         {...item}
       />
     )
