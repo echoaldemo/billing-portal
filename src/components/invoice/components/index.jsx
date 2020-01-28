@@ -1,4 +1,7 @@
 import InvoiceTableToolbar from "./InvoiceTableToolbar"
 import InvoiceTableHeader from "./InvoiceTableHeader"
 import InvoiceTableBody from "./InvoiceTableBody"
-export { InvoiceTableToolbar, InvoiceTableHeader, InvoiceTableBody }
+import EditInvoice from "./edit-invoice/EditInvoice"
+import InvoiceTable from "./InvoiceTable"
+
+export { InvoiceTableToolbar, InvoiceTableHeader, InvoiceTableBody, EditInvoice, InvoiceTable }
