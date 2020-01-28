@@ -1,11 +1,9 @@
+/* eslint-disable */
+
 import React from 'react'
-import PropTypes from 'prop-types'
-import clsx from 'clsx'
-import { lighten, makeStyles } from '@material-ui/core/styles'
+import { lighten } from '@material-ui/core/styles'
 import { Table, Button, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography, Checkbox, IconButton, Tooltip } from '@material-ui/core'
 
-import { Add, Delete as DeleteIcon } from '@material-ui/icons'
-import NewInvoice from '../../NewInvoice/NewInvoice'
 
 import { get } from 'utils/api'
 import { TableLoader } from 'common_components'
