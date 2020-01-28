@@ -114,19 +114,7 @@ const Overview = () => {
           </Grid>
 
           <Grid item lg={4} className="center h-500">
-            <Chart
-              chartType="PieChart"
-              data={[
-                ["Automatic", "Manual"],
-                ["Automatic", 12],
-                ["Manual", 5.5]
-              ]}
-              options={pieOptions}
-              graph_id="PieChart"
-              width={"100%"}
-              height={"400px"}
-              legend_toggle
-            />
+            <ActivityLogs />
           </Grid>
         </Grid>
 
@@ -167,8 +155,20 @@ const Overview = () => {
           </Grid>
 
           <Grid item lg={4}>
-            <Container style={{ margin: "36px 0px 0px 20px" }}>
-              <ActivityLogs />
+            <Container style={{ margin: "140px 0px 0px 10px" }}>
+              <Chart
+                chartType="PieChart"
+                data={[
+                  ["Automatic", "Manual"],
+                  ["Automatic", 12],
+                  ["Manual", 5.5]
+                ]}
+                options={pieOptions}
+                graph_id="PieChart"
+                width={"100%"}
+                height={"400px"}
+                legend_toggle
+              />
             </Container>
           </Grid>
         </Grid>
