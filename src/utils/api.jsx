@@ -8,7 +8,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json'
 //   axios.defaults.headers.common['Authorization'] = `${token}`
 // }
 
-const baseUrl = 'http://localhost:8000'
+const baseUrl = 'http://phdev.perfectpitchtech.com:8001'
 
 const get = (endpoint, data) => axios.get(`${baseUrl}${endpoint}`, { data })
 const post = (endpoint, data) => axios.post(`${baseUrl}${endpoint}`, { data })
