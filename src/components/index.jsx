@@ -7,7 +7,8 @@ import Invoice from './invoice/Invoice'
 import NewInvoice from './NewInvoice/NewInvoice'
 import Overview from './overview/Overview'
 import SystemSettings from './system-settings/SystemSettings'
-export { Navbar, Navlink, Invoice, NewInvoice, Overview, SystemSettings }
+import Footer from "./footer/Footer"
+export { Navbar, Navlink, Invoice, NewInvoice, Overview, SystemSettings, Footer }
 
 const LandingPage = () => {
   return (
