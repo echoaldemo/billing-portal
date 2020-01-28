@@ -1,5 +1,4 @@
 import React from 'react';
-import { Tabs, Tab } from '@material-ui/core';
 import { RecordVoiceOver, Settings, AccountCircle, Timeline, ContactSupport } from '@material-ui/icons';
 import { NavLink } from "react-router-dom"
 
@@ -40,21 +39,19 @@ export default function Navlinks() {
 	];
 
 	return (
-		<div>
-			<Tabs fullwidth="true" className="tabs-container">
-				{tabArr.map((item, i) => {
-					return (
-						<NavLink to={item.link} className="tab-item" activeClassName="active-link">
-							<Tab label={
-								<div style={{ display: "flex", alignItems: "center", justifyContent: 'space-between' }}>
-									{item.icon}
-									<span style={{ textTransform: "none", }}>{item.name}</span>
-								</div>
-							} key={i} className="tab-text" />
-						</NavLink>
-					);
-				})}
-			</Tabs>
+		<div className="tabs-container">
+			{tabArr.map((item, i) => {
+				return (
+					<NavLink key={i} to={item.link} className="tab-item" activeClassName="active-link">
+						<div className="tab-text" >
+							<div style={{ display: "flex", alignItems: "center", justifyContent: 'space-between' }}>
+								{item.icon}
+								<span style={{ textTransform: "none", }}>{item.name}</span>
+							</div>
+						</div>
+					</NavLink>
+				);
+			})}
 		</div>
 	);
 }

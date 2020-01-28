@@ -11,7 +11,6 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   color: #7c8a97;
-  background: #fafafa;
   width:"100%";
 `
 const MsgCont = styled.div`

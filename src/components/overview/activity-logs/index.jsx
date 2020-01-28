@@ -91,16 +91,17 @@ const ActivityLogs = () => {
       <Divider />
       <div style={{ width: "100%", height: "42vh", overflowY: "scroll" }}>
         <Timeline>
-          {mock.map(item => (
-            <>
+          {mock.map((item, i) => (
+            <React.Fragment key={i}>
               <TimelineEvent
+
                 title={item.summary}
                 createdAt={item.time}
                 icon={item.icon}
                 bubbleStyle={bubbleColor(item.summary)}
               />
               <div className={classes.root}></div>
-            </>
+            </React.Fragment>
           ))}
         </Timeline>
       </div>
