@@ -91,12 +91,12 @@ const InvoiceTableToolbar = props => {
       )}
       <Manual
         open={state.manual}
-        handleClose={handleClose}
+        handleClose={() => handleClose("manual")}
         handleOpen={handleOpen}
       />
       <Automatic
         open={state.automatic}
-        handleClose={handleClose}
+        handleClose={() => handleClose("automatic")}
         handleOpen={handleOpen}
       />
     </Toolbar>
