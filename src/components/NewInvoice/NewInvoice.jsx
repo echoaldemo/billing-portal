@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from "react";
 import {
   Dialog,
@@ -374,8 +375,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           {collapse ? (
             <KeyboardArrowUp onClick={() => setCollapse(false)} />
           ) : (
-            <KeyboardArrowDown onClick={() => setCollapse(true)} />
-          )}
+              <KeyboardArrowDown onClick={() => setCollapse(true)} />
+            )}
         </div>
         <Collapse in={collapse}>
           <Grid
