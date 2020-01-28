@@ -104,6 +104,11 @@ body {
 	justify-content: space-between !important;
 	align-items: center !important;
 }
+.display-center{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 
 .h-500 {
 	height: 500px;
@@ -113,4 +118,15 @@ body {
 }
 .pb-normal{
 	padding: 15px !important;
+}
+.pt-normal{
+	padding:15px !important
+}
+
+
+
+
+.footer-text{
+	font-size: 12px;
+	font-weight: normal;
 }

@@ -21,6 +21,7 @@ import { Button } from '@material-ui/core'
 import NewInvoice from '../NewInvoice/NewInvoice'
 
 import { get } from 'utils/api'
+import { TableLoader } from 'common_components'
 
 function createData(
   invoice,
@@ -196,13 +197,13 @@ const useToolbarStyles = makeStyles(theme => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      },
   title: {
     flex: '1 1 100%'
   }
@@ -237,10 +238,10 @@ const EnhancedTableToolbar = props => {
             {numSelected} selected
           </Typography>
         ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle">
-            List of all Invoices
+            <Typography className={classes.title} variant="h6" id="tableTitle">
+              List of all Invoices
           </Typography>
-        )}
+          )}
 
         {numSelected > 0 ? (
           <Tooltip title="Delete">
@@ -249,12 +250,12 @@ const EnhancedTableToolbar = props => {
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Add new incoice">
-            <Button className="add-btn" onClick={handleOpen}>
-              <Add /> New Invoice
+            <Tooltip title="Add new incoice">
+              <Button className="add-btn" onClick={handleOpen}>
+                <Add /> New Invoice
             </Button>
-          </Tooltip>
-        )}
+            </Tooltip>
+          )}
       </Toolbar>
       <NewInvoice
         open={open}
@@ -366,90 +367,96 @@ export default function EnhancedTable() {
     return due_date === 'Paid' ? (
       <span className="success-color">Paid {randomDays} days ago</span>
     ) : (
-      <span className="danger-color">Overdue {randomDays} day</span>
-    )
+        <span className="danger-color">Overdue {randomDays} day</span>
+      )
   }
   return (
     <div className={classes.root}>
       <EnhancedTableToolbar numSelected={selected.length} />
-      <TableContainer>
-        <Table
-          className={classes.table}
-          aria-labelledby="tableTitle"
-          size={dense ? 'small' : 'medium'}
-          aria-label="enhanced table"
-        >
-          <EnhancedTableHead
-            classes={classes}
-            numSelected={selected.length}
-            order={order}
-            orderBy={orderBy}
-            onSelectAllClick={handleSelectAllClick}
-            onRequestSort={handleRequestSort}
-            rowCount={row2.length}
-          />
-          {loading ? (
-            <div>loading...</div>
-          ) : (
-            <TableBody>
-              {stableSort(row2, getSorting(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name)
-                  const labelId = `enhanced-table-checkbox-${index}`
+      {
+        loading ?
+          (
+            <TableLoader />
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.name)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={index}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.DocNumber}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.CustomerRef.name}
-                      </TableCell>
-                      <TableCell align="right">{row.TxnDate}</TableCell>
-                      <TableCell align="right">{row.DueDate}</TableCell>
-                      <TableCell align="right">{row.Balance}</TableCell>
+          )
+          : (
+            <TableContainer>
+              <Table
+                className={classes.table}
+                aria-labelledby="tableTitle"
+                size={dense ? 'small' : 'medium'}
+                aria-label="enhanced table"
+              >
+                <EnhancedTableHead
+                  classes={classes}
+                  numSelected={selected.length}
+                  order={order}
+                  orderBy={orderBy}
+                  onSelectAllClick={handleSelectAllClick}
+                  onRequestSort={handleRequestSort}
+                  rowCount={row2.length}
+                />
 
-                      <TableCell align="right">{row.TotalAmt}</TableCell>
-                      <TableCell align="right">
-                        {displayStatus(`row.status`)}
-                      </TableCell>
-                      <TableCell align="right">
-                        <u>
-                          <b>Edit </b>
-                        </u>
-                      </TableCell>
+                <TableBody>
+                  {stableSort(row2, getSorting(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                      const isItemSelected = isSelected(row.name)
+                      const labelId = `enhanced-table-checkbox-${index}`
+
+                      return (
+                        <TableRow
+                          hover
+                          onClick={event => handleClick(event, row.name)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={index}
+                          selected={isItemSelected}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isItemSelected}
+                              inputProps={{ 'aria-labelledby': labelId }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                          >
+                            {row.DocNumber}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row.CustomerRef.name}
+                          </TableCell>
+                          <TableCell align="right">{row.TxnDate}</TableCell>
+                          <TableCell align="right">{row.DueDate}</TableCell>
+                          <TableCell align="right">{row.Balance}</TableCell>
+
+                          <TableCell align="right">{row.TotalAmt}</TableCell>
+                          <TableCell align="right">
+                            {displayStatus(`row.status`)}
+                          </TableCell>
+                          <TableCell align="right">
+                            <u>
+                              <b>Edit </b>
+                            </u>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                      <TableCell colSpan={6} />
                     </TableRow>
-                  )
-                })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          )}
-        </Table>
-      </TableContainer>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )
+      }
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"

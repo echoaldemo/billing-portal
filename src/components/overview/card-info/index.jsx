@@ -22,10 +22,10 @@ export default function CardInfo({ primaryLabel, secondaryLabel }) {
       <CardActionArea>
 
         <CardContent>
-          <Typography gutterBottom variant="h5" style={{ color: "#444851" }} component="h2">
+          <Typography gutterBottom component="h5" style={{ color: "#444851" }}>
             {primaryLabel}
           </Typography>
-          <Typography variant="body2" color="textSecondary" variant="h5" >
+          <Typography color="textSecondary" variant="h5" >
             {secondaryLabel}
           </Typography>
         </CardContent>

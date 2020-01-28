@@ -1,3 +1,4 @@
 import PanelHeader from "./panel-header";
 import Breadcrumbs from "./breadcrumbs";
-export { PanelHeader, Breadcrumbs };
+import TableLoader from "./table-loader"
+export { PanelHeader, Breadcrumbs, TableLoader };

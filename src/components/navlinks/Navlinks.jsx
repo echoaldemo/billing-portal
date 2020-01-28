@@ -34,7 +34,7 @@ export default function Navlinks() {
 		{
 			link: '/support',
 			icon: <ContactSupport className="tab-icon" />,
-			name: "About Us"
+			name: "Contact Support"
 		},
 
 	];
