@@ -18,7 +18,7 @@ import {
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   appBar: {
     position: "relative",
     backgroundColor: "#5F7D98"
@@ -71,7 +71,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   });
   const [collapse, setCollapse] = useState(false);
 
-  const handleSelectChange = (event) => {
+  const handleSelectChange = event => {
     setSelectInputs({
       ...selectInputs,
       [event.target.name]: event.target.value
@@ -128,7 +128,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="company"
               value={selectInputs.company}
               variant="outlined"
-              onChange={(e) => handleSelectChange(e)}
+              onChange={e => handleSelectChange(e)}
               fullWidth
             >
               <MenuItem value=" ">Select company</MenuItem>
@@ -144,7 +144,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="campaign"
               value={selectInputs.campaign}
               variant="outlined"
-              onChange={(e) => handleSelectChange(e)}
+              onChange={e => handleSelectChange(e)}
               fullWidth
             >
               <MenuItem value=" ">Select campaign</MenuItem>
@@ -160,7 +160,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="billingPeriod"
               variant="outlined"
               value={selectInputs.billingPeriod}
-              onChange={(e) => handleSelectChange(e)}
+              onChange={e => handleSelectChange(e)}
               fullWidth
             >
               <MenuItem value=" ">Select billing period</MenuItem>
@@ -243,7 +243,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: billableHours.qty
               }}
-              onChange={(e) => handleBillableHoursChange(e, "qty")}
+              onChange={e => handleBillableHoursChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -253,7 +253,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: billableHours.rate
               }}
-              onChange={(e) => handleBillableHoursChange(e, "rate")}
+              onChange={e => handleBillableHoursChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -263,7 +263,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: billableHours.amt
               }}
-              onChange={(e) => handleBillableHoursChange(e, "amt")}
+              onChange={e => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
           </Grid>
