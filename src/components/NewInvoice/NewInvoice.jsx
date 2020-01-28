@@ -12,9 +12,10 @@ import {
   InputLabel,
   Grid,
   Divider,
-  TextField
+  TextField,
+  Collapse
 } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +69,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     rate: "",
     amt: ""
   });
+  const [collapse, setCollapse] = useState(false);
 
   const handleSelectChange = (event) => {
     setSelectInputs({
@@ -76,7 +78,12 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     });
   };
   const handleBillableHoursChange = (e, label) => {
+    let amt;
     setBillableHours({ ...billableHours, [label]: e.target.value });
+    if (label !== "amt") {
+      amt = (billableHours.qty || 0) * (billableHours.rate || 0);
+    }
+    console.log(amt);
   };
   const handlePerformanceChange = (e, label) => {
     setPerformance({ ...performance, [label]: e.target.value });
@@ -104,7 +111,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <Close />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            New Invoice
+            New Manual Invoice
           </Typography>
           <Button autoFocus color="inherit" onClick={handleClose}>
             save
@@ -227,7 +234,6 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Item name"
               value={billableHours.name}
-              onChange={(e) => handleBillableHoursChange(e, "name")}
               fullWidth
             />
           </Grid>
@@ -361,66 +367,79 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
         </div>
         <Divider />
 
-        <div style={{ padding: "30px 0" }}>
-          <Typography variant="h5">Additional fees</Typography>
-        </div>
-        <Grid
-          container
-          spacing={1}
-          xs={12}
-          style={{ marginBottom: 30, boxSizing: "border-box" }}
-        >
-          <Grid item xs={6} className={classes.head}>
-            Name
-          </Grid>
-          <Grid item xs={2} className={classes.head}>
-            Quantity
-          </Grid>
-          <Grid item xs={2} className={classes.head}>
-            Rate
-          </Grid>
-          <Grid item xs={2} className={classes.head}>
-            Amount
-          </Grid>
-        </Grid>
-
-        <Grid
-          container
-          spacing={1}
-          xs={12}
-          style={{ marginBottom: 30, boxSizing: "border-box" }}
-        >
-          <Grid item xs={6}>
-            <TextField placeholder="Item name" fullWidth />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField placeholder="quantity" fullWidth />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField placeholder="rate" fullWidth />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField placeholder="Amount" fullWidth />
-          </Grid>
-        </Grid>
-        <Divider />
         <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end"
-          }}
+          style={{ padding: "30px 0", display: "flex", alignItems: "center" }}
         >
-          <span>SUBTOTAL</span>
-          <span
+          <Typography variant="h5">Additional fees</Typography>
+          {collapse ? (
+            <KeyboardArrowUp onClick={() => setCollapse(false)} />
+          ) : (
+            <KeyboardArrowDown onClick={() => setCollapse(true)} />
+          )}
+        </div>
+        <Collapse in={collapse}>
+          <Grid
+            container
+            spacing={1}
+            xs={12}
+            style={{ marginBottom: 30, boxSizing: "border-box" }}
+          >
+            <Grid item xs={6} className={classes.head}>
+              Name
+            </Grid>
+            <Grid item xs={2} className={classes.head}>
+              Quantity
+            </Grid>
+            <Grid item xs={2} className={classes.head}>
+              Rate
+            </Grid>
+            <Grid item xs={2} className={classes.head}>
+              Amount
+            </Grid>
+          </Grid>
+
+          <Grid
+            container
+            spacing={1}
+            xs={12}
+            style={{ marginBottom: 30, boxSizing: "border-box" }}
+          >
+            <Grid item xs={6}>
+              <TextField
+                placeholder="Item name"
+                value="Litigator Scrubbing(optional)"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField placeholder="number of hours" fullWidth />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField placeholder="cost per hour" fullWidth />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField placeholder="Amount" fullWidth />
+            </Grid>
+          </Grid>
+          <Divider />
+          <div
             style={{
-              fontWeight: 600,
-              fontSize: 20
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end"
             }}
           >
-            &#36;00.00
-          </span>
-        </div>
+            <span>SUBTOTAL</span>
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              &#36;00.00
+            </span>
+          </div>
+        </Collapse>
       </form>
     </Dialog>
   );
