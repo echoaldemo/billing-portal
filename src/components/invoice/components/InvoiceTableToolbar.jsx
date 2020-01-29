@@ -76,7 +76,13 @@ const InvoiceTableToolbar = props => {
           </IconButton>
         </Tooltip>
       ) : (
-        <>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridGap: 20
+          }}
+        >
           <Tooltip title="Add new invoice">
             <Button className="add-btn" onClick={() => handleOpen("manual")}>
               <Add /> New Invoice
@@ -87,7 +93,7 @@ const InvoiceTableToolbar = props => {
               <Add /> Automatic Invoice
             </Button>
           </Tooltip>
-        </>
+        </div>
       )}
       <Manual
         open={state.manual}

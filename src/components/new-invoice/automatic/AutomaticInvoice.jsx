@@ -312,7 +312,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value:
                   billableHours.qty !== "" && billableHours.rate !== ""
-                    ? billableHours.qty * billableHours.rate
+                    ? formatter.format(billableHours.qty * billableHours.rate)
                     : "",
                 readOnly: true
               }}
@@ -360,7 +360,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value:
                   performance.qty !== "" && performance.rate !== ""
-                    ? performance.qty * performance.rate
+                    ? formatter.format(performance.qty * performance.rate)
                     : "",
                 readOnly: true
               }}
@@ -402,7 +402,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               placeholder="Amount"
               inputProps={{
                 value:
-                  did.qty !== "" && did.rate !== "" ? did.qty * did.rate : "",
+                  did.qty !== "" && did.rate !== ""
+                    ? formatter.format(did.qty * did.rate)
+                    : "",
                 readOnly: true
               }}
               fullWidth
