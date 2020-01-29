@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   AppBar,
@@ -69,7 +69,27 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     rate: "",
     amt: ""
   });
+  const [ls, setLS] = useState({
+    name: "Litigator Scrubbing",
+    qty: "",
+    rate: "",
+    amt: ""
+  });
+  const [merchantFees, setMerchantFees] = useState({
+    name: "Merchant Fees",
+    qty: "",
+    rate: "",
+    amt: ""
+  });
+  const [total, setTotal] = useState(0);
+  const [itemsTotal, setItemsTotal] = useState(0);
+  const [extraItemsTotal, setExtraItemsTotal] = useState(0);
   const [collapse, setCollapse] = useState(false);
+
+  useEffect(() => {
+    getItemsTotal();
+    getExtraItemsTotal();
+  });
 
   const handleSelectChange = (event) => {
     setSelectInputs({
@@ -78,12 +98,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     });
   };
   const handleBillableHoursChange = (e, label) => {
-    let amt;
     setBillableHours({ ...billableHours, [label]: e.target.value });
-    if (label !== "amt") {
-      amt = (billableHours.qty || 0) * (billableHours.rate || 0);
-    }
-    console.log(amt);
   };
   const handlePerformanceChange = (e, label) => {
     setPerformance({ ...performance, [label]: e.target.value });
@@ -91,6 +106,50 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const handleDIDsChange = (e, label) => {
     setDID({ ...did, [label]: e.target.value });
   };
+  const handleLSChange = (e, label) => {
+    setLS({ ...ls, [label]: e.target.value });
+  };
+  const handleMerchantFees = (e, label) => {
+    setMerchantFees({ ...merchantFees, [label]: e.target.value });
+  };
+  const handleTotalAmount = (key) => {
+    if (key === "1") {
+      let amt = (billableHours.qty || 0) * (billableHours.rate || 0);
+      setBillableHours({ ...billableHours, amt });
+    } else if (key === "2") {
+      let amt = (performance.qty || 0) * (performance.rate || 0);
+      setPerformance({ ...performance, amt });
+    } else if (key === "3") {
+      let amt = (did.qty || 0) * (did.rate || 0);
+      setDID({ ...did, amt });
+    } else if (key === "4") {
+      let amt = (ls.qty || 0) * (ls.rate || 0);
+      setLS({ ...ls, amt });
+    }
+  };
+
+  const getItemsTotal = () => {
+    let arr = [];
+    arr.push(billableHours.amt ? parseInt(billableHours.amt) : 0);
+    arr.push(performance.amt ? parseInt(performance.amt) : 0);
+    arr.push(did.amt ? parseInt(did.amt) : 0);
+    const it = arr.reduce((total, value) => total + value);
+    setTotal(parseInt(it) + parseInt(extraItemsTotal));
+    setItemsTotal(it);
+  };
+  const getExtraItemsTotal = () => {
+    let arr = [];
+    arr.push(ls.amt ? parseInt(ls.amt) : 0);
+    arr.push(merchantFees.amt ? parseInt(merchantFees.amt) : 0);
+    const et = arr.reduce((total, value) => total + value);
+    setTotal(parseInt(et) + parseInt(itemsTotal));
+    setExtraItemsTotal(et);
+  };
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  });
 
   return (
     <Dialog
@@ -192,18 +251,15 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                   fontSize: 32
                 }}
               >
-                &#36;00.00
+                {formatter.format(total)}
               </span>
             </div>
           </Grid>
         </Grid>
-
         <Divider />
-
         <div style={{ padding: "30px 0" }}>
           <Typography variant="h5">Items</Typography>
         </div>
-
         <Grid
           container
           spacing={1}
@@ -223,7 +279,6 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             Amount
           </Grid>
         </Grid>
-
         <Grid
           container
           spacing={1}
@@ -243,6 +298,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: billableHours.qty
               }}
+              onBlur={() => handleTotalAmount("1")}
               onChange={(e) => handleBillableHoursChange(e, "qty")}
               fullWidth
             />
@@ -253,6 +309,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: billableHours.rate
               }}
+              onBlur={() => handleTotalAmount("1")}
               onChange={(e) => handleBillableHoursChange(e, "rate")}
               fullWidth
             />
@@ -263,6 +320,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: billableHours.amt
               }}
+              onFocus={() => handleTotalAmount("1")}
+              onBlur={() => handleTotalAmount("1")}
               onChange={(e) => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
@@ -287,6 +346,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: performance.qty
               }}
+              onBlur={() => handleTotalAmount("2")}
+              onChange={(e) => handlePerformanceChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -296,6 +357,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: performance.rate
               }}
+              onBlur={() => handleTotalAmount("2")}
+              onChange={(e) => handlePerformanceChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -305,6 +368,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: performance.amt
               }}
+              onFocus={() => handleTotalAmount("2")}
+              onBlur={() => handleTotalAmount("2")}
+              onChange={(e) => handlePerformanceChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -324,6 +390,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: did.qty
               }}
+              onBlur={() => handleTotalAmount("3")}
+              onChange={(e) => handleDIDsChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -333,6 +401,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: did.rate
               }}
+              onBlur={() => handleTotalAmount("3")}
+              onChange={(e) => handleDIDsChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -342,11 +412,13 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               inputProps={{
                 value: did.amt
               }}
+              onFocus={() => handleTotalAmount("3")}
+              onBlur={() => handleTotalAmount("3")}
+              onChange={(e) => handleDIDsChange(e, "amt")}
               fullWidth
             />
           </Grid>
         </Grid>
-
         <Divider />
         <div
           style={{
@@ -362,11 +434,10 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               fontSize: 20
             }}
           >
-            &#36;00.00
+            {formatter.format(itemsTotal)}
           </span>
         </div>
         <Divider />
-
         <div
           style={{ padding: "30px 0", display: "flex", alignItems: "center" }}
         >
@@ -407,18 +478,69 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <Grid item xs={6}>
               <TextField
                 placeholder="Item name"
-                value="Litigator Scrubbing(optional)"
+                value={ls.name + "(optional)"}
                 fullWidth
               />
             </Grid>
             <Grid item xs={2}>
-              <TextField placeholder="number of hours" fullWidth />
+              <TextField
+                placeholder="number of hours"
+                onBlur={() => handleTotalAmount("4")}
+                inputProps={{
+                  value: ls.qty
+                }}
+                onChange={(e) => handleLSChange(e, "qty")}
+                fullWidth
+              />
             </Grid>
             <Grid item xs={2}>
-              <TextField placeholder="cost per hour" fullWidth />
+              <TextField
+                placeholder="cost per hour"
+                onBlur={() => handleTotalAmount("4")}
+                inputProps={{
+                  value: ls.rate
+                }}
+                onChange={(e) => handleLSChange(e, "rate")}
+                fullWidth
+              />
             </Grid>
             <Grid item xs={2}>
-              <TextField placeholder="Amount" fullWidth />
+              <TextField
+                placeholder="Amount"
+                onFocus={() => handleTotalAmount("4")}
+                inputProps={{
+                  value: ls.amt
+                }}
+                onBlur={() => handleTotalAmount("4")}
+                onChange={(e) => handleLSChange(e, "amt")}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            spacing={1}
+            xs={12}
+            style={{ marginBottom: 30, boxSizing: "border-box" }}
+          >
+            <Grid item xs={6}>
+              <TextField
+                placeholder="Item name"
+                value="Merchant fees"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={2}></Grid>
+            <Grid item xs={2}></Grid>
+            <Grid item xs={2}>
+              <TextField
+                placeholder="Amount"
+                inputProps={{
+                  value: merchantFees.amt
+                }}
+                onChange={(e) => handleMerchantFees(e, "amt")}
+                fullWidth
+              />
             </Grid>
           </Grid>
           <Divider />
@@ -436,7 +558,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 fontSize: 20
               }}
             >
-              &#36;00.00
+              {formatter.format(extraItemsTotal)}
             </span>
           </div>
         </Collapse>
