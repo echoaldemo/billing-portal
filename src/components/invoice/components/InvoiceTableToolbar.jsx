@@ -1,43 +1,19 @@
 import React from "react";
-import clsx from "clsx";
-import { lighten, makeStyles } from "@material-ui/core/styles";
 import {
   Button,
   Toolbar,
-  Typography,
-  IconButton,
   Tooltip,
   Menu,
   MenuItem
 } from "@material-ui/core";
 
-import { Add, Delete as DeleteIcon } from "@material-ui/icons";
+import { Add } from "@material-ui/icons";
 import Manual from "../../new-invoice/manual/ManualInvoice";
 import Automatic from "../../new-invoice/automatic/AutomaticInvoice";
 
-const useToolbarStyles = makeStyles(theme => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1)
-  },
-  highlight:
-    theme.palette.type === "light"
-      ? {
-        color: theme.palette.secondary.main,
-        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-      }
-      : {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.secondary.dark
-      },
-  title: {
-    flex: "1 1 100%"
-  }
-}));
 
 const InvoiceTableToolbar = props => {
-  const classes = useToolbarStyles();
-  const { numSelected } = props;
+
   const [state, setState] = React.useState({
     manual: false,
     automatic: false,

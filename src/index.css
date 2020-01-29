@@ -135,4 +135,5 @@ body {
 
 .MuiTabs-indicator{
 	background-color: #0f97fc !important;
+	height: 3px !important;
 }

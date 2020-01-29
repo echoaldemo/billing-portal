@@ -4,5 +4,6 @@ import InvoiceTableBody from "./InvoiceTableBody"
 import EditInvoice from "./edit-invoice/EditInvoice"
 import InvoiceTable from "./InvoiceTable"
 import TableTabs from "./TableTabs"
-
-export { TableTabs, InvoiceTableToolbar, InvoiceTableHeader, InvoiceTableBody, EditInvoice, InvoiceTable }
+import PendingTable from "./PendingTable"
+import PendingTableBody from "./PendingTableBody"
+export { TableTabs, InvoiceTableToolbar, InvoiceTableHeader, InvoiceTableBody, EditInvoice, InvoiceTable, PendingTable, PendingTableBody }
