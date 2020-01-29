@@ -6,7 +6,9 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Tooltip
+  Tooltip,
+  Menu,
+  MenuItem
 } from "@material-ui/core";
 
 import { Add, Delete as DeleteIcon } from "@material-ui/icons";
@@ -38,7 +40,8 @@ const InvoiceTableToolbar = props => {
   const { numSelected } = props;
   const [state, setState] = React.useState({
     manual: false,
-    automatic: false
+    automatic: false,
+    anchorEl: null
   });
 
   const handleOpen = label => {
@@ -47,6 +50,14 @@ const InvoiceTableToolbar = props => {
 
   const handleClose = label => {
     setState({ ...state, [label]: false });
+  };
+
+  const handleOpenMenu = event => {
+    setState({ ...state, anchorEl: event.currentTarget });
+  };
+
+  const handleCloseMenu = () => {
+    setState({ ...state, anchorEl: null });
   };
 
   return (
@@ -76,25 +87,33 @@ const InvoiceTableToolbar = props => {
           </IconButton>
         </Tooltip>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gridGap: 20
-          }}
-        >
-          <Tooltip title="Add new invoice">
-            <Button className="add-btn" onClick={() => handleOpen("manual")}>
-              <Add /> New Invoice
-            </Button>
-          </Tooltip>
-          <Tooltip title="Add new automatic invoice">
-            <Button className="add-btn" onClick={() => handleOpen("automatic")}>
-              <Add /> Automatic Invoice
-            </Button>
-          </Tooltip>
-        </div>
+        <Tooltip title="Add new invoice">
+          <Button className="add-btn" onClick={handleOpenMenu}>
+            <Add /> New Invoice
+          </Button>
+        </Tooltip>
       )}
+      <Menu
+        anchorEl={state.anchorEl}
+        keepMounted
+        open={Boolean(state.anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem
+          style={{ padding: "15px 20px" }}
+          onClick={() =>
+            setState({ ...state, automatic: true, anchorEl: null })
+          }
+        >
+          Automatic
+        </MenuItem>
+        <MenuItem
+          style={{ padding: "15px 20px" }}
+          onClick={() => setState({ ...state, manual: true, anchorEl: null })}
+        >
+          Manual
+        </MenuItem>
+      </Menu>
       <Manual
         open={state.manual}
         handleClose={() => handleClose("manual")}

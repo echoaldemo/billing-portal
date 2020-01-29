@@ -13,7 +13,8 @@ import {
   Grid,
   Divider,
   TextField,
-  Collapse
+  Collapse,
+  InputAdornment
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -77,12 +78,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     rate: "",
     amt: ""
   });
-  const [merchant, setMerchant] = useState({
-    name: "Merchant Fees",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
+  const [merchant, setMerchant] = useState("");
   const [collapse, setCollapse] = useState(false);
 
   const formatter = new Intl.NumberFormat("en-US", {
@@ -105,6 +101,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
   const handleDIDsChange = (e, label) => {
     setDID({ ...did, [label]: e.target.value });
+  };
+  const handleLitigator = (e, label) => {
+    setLitigator({ ...litigator, [label]: e.target.value });
   };
 
   const handleBillingChange = event => {
@@ -139,6 +138,22 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     if (total) return formatter.format(total);
     else return "0.00";
   };
+  const getAddSubtotal = () => {
+    const total = litigator.qty * litigator.rate + merchant;
+    if (total) return formatter.format(total);
+    else return "0.00";
+  };
+
+  const getTotal = () => {
+    const total =
+      billableHours.qty * billableHours.rate +
+      performance.qty * performance.rate +
+      did.qty * did.rate +
+      litigator.qty * litigator.rate +
+      merchant;
+    if (total) return formatter.format(total);
+    else return "0.00";
+  };
 
   return (
     <Dialog
@@ -159,7 +174,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <Close />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            New Manual Invoice
+            New Automatic Invoice
           </Typography>
           <Button autoFocus color="inherit" onClick={handleClose}>
             save
@@ -240,7 +255,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                   fontSize: 32
                 }}
               >
-                {getItemSubtotal()}
+                {getTotal()}
               </span>
             </div>
           </Grid>
@@ -287,7 +302,6 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           </Grid>
           <Grid item xs={2}>
             <TextField
-              number
               placeholder="number of hours"
               inputProps={{
                 value: billableHours.qty
@@ -470,20 +484,40 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6}>
+              <TextField value={litigator.name} fullWidth />
+            </Grid>
+            <Grid item xs={2}>
               <TextField
-                placeholder="Item name"
-                value="Litigator Scrubbing"
+                placeholder="number of hours"
+                onChange={e => handleLitigator(e, "qty")}
                 fullWidth
+                inputProps={{
+                  value: litigator.qty
+                }}
               />
             </Grid>
             <Grid item xs={2}>
-              <TextField placeholder="number of hours" fullWidth />
+              <TextField
+                placeholder="cost per hour"
+                onChange={e => handleLitigator(e, "rate")}
+                fullWidth
+                inputProps={{
+                  value: litigator.rate
+                }}
+              />
             </Grid>
             <Grid item xs={2}>
-              <TextField placeholder="cost per hour" fullWidth />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField placeholder="Amount" fullWidth />
+              <TextField
+                placeholder="Amount"
+                inputProps={{
+                  value:
+                    litigator.qty !== "" && litigator.rate !== ""
+                      ? formatter.format(litigator.qty * litigator.rate)
+                      : "",
+                  readOnly: true
+                }}
+                fullWidth
+              />
             </Grid>
           </Grid>
           <Grid
@@ -502,7 +536,21 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <Grid item xs={2}></Grid>
             <Grid item xs={2}></Grid>
             <Grid item xs={2}>
-              <TextField placeholder="Amount" fullWidth />
+              <TextField
+                onChange={e => setMerchant(parseFloat(e.target.value))}
+                inputProps={{
+                  value: merchant
+                    ? (Math.round(merchant * 100) / 100).toFixed(2)
+                    : "",
+                  align: "right"
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  )
+                }}
+                fullWidth
+              />
             </Grid>
           </Grid>
           <Divider />
@@ -520,7 +568,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 fontSize: 20
               }}
             >
-              &#36;0.00
+              {getAddSubtotal()}
             </span>
           </div>
         </Collapse>
