@@ -19,7 +19,7 @@ import {
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { getMock } from "../../../utils/api";
+import { getMock, get, post } from "../../../utils/api";
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -155,6 +155,92 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     else return "0.00";
   };
 
+  const createInvoice = () => {
+    const total =
+      billableHours.qty * billableHours.rate +
+      performance.qty * performance.rate +
+      did.qty * did.rate;
+    const data = {
+      DocNumber: "1070",
+      TxnDate: "2020-01-29",
+      CustomerRef: {
+        name: "Amy's Bird Sanctuary",
+        value: "1"
+      },
+      CustomerMemo: {
+        value: "Added customer memo."
+      },
+      DueDate: "2020-01-31",
+      Line: [
+        {
+          LineNum: 1,
+          Amount: billableHours.qty * billableHours.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "NON"
+            },
+            ItemRef: {
+              name: "Billable Hours",
+              value: "21"
+            },
+            Qty: billableHours.qty,
+            UnitPrice: billableHours.rate
+          },
+          Id: "1",
+          DetailType: "SalesItemLineDetail",
+          Description: "amount of services rendered in hours"
+        },
+        {
+          LineNum: 2,
+          Amount: performance.qty * performance.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "NON"
+            },
+            ItemRef: {
+              name: "Performance",
+              value: "22"
+            },
+            Qty: performance.qty,
+            UnitPrice: performance.rate
+          },
+          Id: "2",
+          DetailType: "SalesItemLineDetail"
+        },
+        {
+          LineNum: 3,
+          Amount: did.qty * did.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "NON"
+            },
+            ItemRef: {
+              name: "DID",
+              value: "23"
+            },
+            Qty: did.qty,
+            UnitPrice: did.rate
+          },
+          Id: "3",
+          DetailType: "SalesItemLineDetail",
+          Description: "amount of DIDs used"
+        },
+        {
+          DetailType: "SubTotalLineDetail",
+          Amount: total,
+          SubTotalLineDetail: {}
+        }
+      ]
+    };
+    post("/api/invoice")
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   return (
     <Dialog
       open={open}
@@ -176,7 +262,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             New Automatic Invoice
           </Typography>
-          <Button autoFocus color="inherit" onClick={handleClose}>
+          <Button autoFocus color="inherit" onClick={createInvoice}>
             save
           </Button>
         </Toolbar>
