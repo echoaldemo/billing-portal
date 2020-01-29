@@ -61,38 +61,16 @@ const InvoiceTableToolbar = props => {
   };
 
   return (
-    <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0
-      })}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          className={classes.title}
-          color="inherit"
-          variant="subtitle1"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-          <Typography className={classes.title} variant="h6" id="tableTitle">
-            List of all Invoices
-        </Typography>
-        )}
+    <Toolbar>
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-          <Tooltip title="Add new invoice">
-            <Button className="add-btn" onClick={handleOpenMenu}>
-              <Add /> New Invoice
+
+
+      <Tooltip title="Add new invoice">
+        <Button className="add-btn" onClick={handleOpenMenu}>
+          <Add /> New Invoice
           </Button>
-          </Tooltip>
-        )}
+      </Tooltip>
+
       <Menu
         anchorEl={state.anchorEl}
         keepMounted

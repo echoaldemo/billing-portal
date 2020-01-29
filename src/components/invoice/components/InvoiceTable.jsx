@@ -82,7 +82,6 @@ const InvoiceTable = () => {
   }
   return (
     <div>
-      <InvoiceTableToolbar numSelected={0} />
       {state.loading ? (
         <TableLoader />
       ) : (

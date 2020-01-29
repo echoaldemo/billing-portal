@@ -45,14 +45,14 @@ const InvoiceTableBody = ({ data }) => {
                 {formatter.format(item.TotalAmt)}
               </TableCell>
               <TableCell>
-                <span className="danger-color">Overdue by {i}</span>
+                <span className="danger-color">Pending <small>({i === 0 ? "hours ago" : `${i} days ago`} )</small></span>
               </TableCell>
               <TableCell>
-                <u style={{ cursor: "pointer" }} onClick={() => {
+                <u style={{ cursor: "pointer", fontSize: 12 }} onClick={() => {
                   setEditModal(true)
 
                 }}>
-                  <b>Edit </b>
+                  <b>View Details </b>
                 </u>
 
               </TableCell>
