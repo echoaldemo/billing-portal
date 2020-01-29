@@ -1,25 +1,11 @@
+/* eslint-disable */
 import React from "react";
-import PropTypes from "prop-types";
-import clsx from "clsx";
-import { lighten, makeStyles } from "@material-ui/core/styles";
 import {
   Table,
-  Button,
-  TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
   TablePagination,
-  TableRow,
-  TableSortLabel,
-  Toolbar,
-  Typography,
-  Checkbox,
-  IconButton,
-  Tooltip
 } from "@material-ui/core";
 
-import { Add, Delete as DeleteIcon } from "@material-ui/icons";
 
 import { get } from "utils/api";
 import { TableLoader } from "common_components";
@@ -100,24 +86,24 @@ const InvoiceTable = () => {
       {state.loading ? (
         <TableLoader />
       ) : (
-        <React.Fragment>
-          <TableContainer>
-            <Table>
-              <InvoiceTableHeader />
-              <InvoiceTableBody data={sortData(state.data)} />
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={state.data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
-        </React.Fragment>
-      )}
+          <React.Fragment>
+            <TableContainer>
+              <Table>
+                <InvoiceTableHeader />
+                <InvoiceTableBody data={sortData(state.data)} />
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={state.data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </React.Fragment>
+        )}
     </div>
   );
 };

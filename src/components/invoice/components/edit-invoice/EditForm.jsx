@@ -1,6 +1,6 @@
+/* eslint-disable */
 import React, { useState } from "react";
 import {
-  Dialog,
   AppBar,
   IconButton,
   Button,
@@ -17,8 +17,8 @@ import {
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-
-import { getMock } from "../../../utils/api";
+import { StateContext } from "context/StateContext"
+import { getMock } from "utils/api";
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -46,32 +46,45 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
+const EditForm = () => {
+  const { state } = React.useContext(StateContext)
+
   const classes = useStyles();
   const [selectInputs, setSelectInputs] = useState({
-    company: " ",
-    campaign: " ",
-    billingPeriod: " "
+    company: "1",
+    campaign: "2",
+    billingPeriod: "1"
   });
   const [billableHours, setBillableHours] = useState({
     name: "Billable hours",
-    qty: "",
-    rate: "",
-    amt: ""
+    qty: "2.0",
+    rate: "12.0",
+    amt: "1.0"
   });
   const [performance, setPerformance] = useState({
     name: "Performance",
-    qty: "",
-    rate: "",
-    amt: ""
+    qty: "1",
+    rate: "1.0",
+    amt: "2.0"
   });
   const [did, setDID] = useState({
     name: "DID",
-    qty: "",
-    rate: "",
-    amt: ""
+    qty: "1",
+    rate: "2.0",
+    amt: "23.3"
   });
-
+  const [litigator, setLitigator] = useState({
+    name: "Litigator Scrubbing",
+    qty: "1",
+    rate: "2",
+    amt: "3.2"
+  });
+  const [merchant, setMerchant] = useState({
+    name: "Merchant Fees",
+    qty: "3",
+    rate: "21",
+    amt: "12.0"
+  });
   const [collapse, setCollapse] = useState(false);
 
   const formatter = new Intl.NumberFormat("en-US", {
@@ -129,28 +142,25 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     else return "0.00";
   };
 
+
+
   return (
-    <Dialog
-      open={open}
-      maxWidth="sm"
-      onClose={handleClose}
-      classes={{ paperWidthSm: classes.dialog }}
-      TransitionComponent={Transition}
-    >
+
+    <React.Fragment>
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
-            onClick={handleClose}
+            // onClick={handleClose}
             aria-label="close"
           >
             <Close />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            New Manual Invoice
+            Edit Invoice
           </Typography>
-          <Button autoFocus color="inherit" onClick={handleClose}>
+          <Button autoFocus color="inherit" onClick={() => { return null }}>
             save
           </Button>
         </Toolbar>
@@ -512,8 +522,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           </div>
         </Collapse>
       </form>
-    </Dialog>
+    </React.Fragment>
   );
 };
 
-export default NewInvoice;
+export default EditForm;
