@@ -1,0 +1,60 @@
+image: node:latest
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  AWS_DEFAULT_REGION: us-east-2 # The region of our S3 bucket
+  BUCKET_NAME: billing.boom.ai         # Your bucket name
+
+cache:
+  paths:
+    - node_modules/
+
+buildJekyll:  # A job to build the static website - replace it with your build methods
+  stage: build
+  script:
+    - npm install
+    - CI=false npm run-script build
+   # - npm run-script build
+  artifacts:
+    paths:
+      - build/  # This is what we want to publish, replace with your `dist` directory
+
+deploys3:
+  image: "python:latest"  # We use python because there is a well-working AWS Sdk
+  stage: deploy
+  dependencies:
+    - buildJekyll      # We want to specify dependencies in an explicit way, to avoid confusion if there are different build jobs
+  before_script:
+    - pip install awscli # Install the SDK
+  script:
+    - aws s3 cp --recursive ./build s3://${BUCKET_NAME}/${CI_COMMIT_REF_SLUG} --recursive # Replace example-bucket with your bucket
+  environment:
+    name: ${CI_COMMIT_REF_SLUG}
+    url: http://${BUCKET_NAME}.s3-website.${AWS_DEFAULT_REGION}.amazonaws.com/${CI_COMMIT_REF_SLUG}  # This is the url of the bucket we saved before
+    on_stop: clean_s3 # When the branch is merged, we clean up after ourself
+  when: manual
+deploysprod:
+  image: "python:latest"  # We use python because there is a well-working AWS Sdk
+  stage: deploy
+  dependencies:
+    - buildJekyll      # We want to specify dependencies in an explicit way, to avoid confusion if there are different build jobs
+  before_script:
+    - pip install awscli # Install the SDK
+  script:
+    - aws s3 sync build s3://${BUCKET_NAME}  # Replace example-bucket with your bucket
+  when: manual
+clean_s3:
+  image: "python:latest"
+  stage: deploy
+  before_script:
+    - pip install awscli
+  script:
+    - aws s3 rm s3://${BUCKET_NAME}/${CI_COMMIT_REF_SLUG} --recursive # Replace example-bucket with your bucket
+  environment:
+    name: ${CI_COMMIT_REF_SLUG}
+    action: stop
+  when: manual
+  
