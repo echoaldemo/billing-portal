@@ -19,7 +19,14 @@ import {
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { getMock, get, post } from "../../../utils/api";
+import { getMock, post } from "../../../utils/api";
+
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from "@material-ui/pickers";
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -49,10 +56,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const classes = useStyles();
+  const today = new Date();
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
     campaign: " ",
-    billingPeriod: " "
+    billingPeriod: date
   });
   const [billableHours, setBillableHours] = useState({
     name: "Billable hours",
@@ -104,6 +114,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
   const handleLitigator = (e, label) => {
     setLitigator({ ...litigator, [label]: e.target.value });
+  };
+  const handleDateChange = date => {
+    setSelectInputs({ ...selectInputs, billingPeriod: date });
   };
 
   const handleBillingChange = event => {
@@ -232,7 +245,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
         }
       ]
     };
-    post("/api/invoice")
+    post("/api/invoice", data)
       .then(res => {
         console.log(res);
       })
@@ -304,18 +317,17 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
 
           <Grid item xs={3}>
             <InputLabel id="label1">Billing Period</InputLabel>
-            <Select
-              labelId="label1"
-              name="billingPeriod"
-              variant="outlined"
-              value={selectInputs.billingPeriod}
-              onChange={e => handleBillingChange(e)}
-              fullWidth
-            >
-              <MenuItem value=" ">Select billing period</MenuItem>
-              <MenuItem value="1">Monthly</MenuItem>
-              <MenuItem value="2">Weekly</MenuItem>
-            </Select>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                name="billingPeriod"
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                value={selectInputs.billingPeriod}
+                onChange={handleDateChange}
+              />
+            </MuiPickersUtilsProvider>
           </Grid>
 
           <Grid item xs={3}>
@@ -438,7 +450,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="number of interactions"
               inputProps={{
-                value: performance.qty
+                value: performance.qty,
+                readOnly: true
               }}
               onChange={e => handlePerformanceChange(e, "qty")}
               fullWidth
@@ -448,7 +461,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="cost per interactions"
               inputProps={{
-                value: performance.rate
+                value: performance.rate,
+                readOnly: true
               }}
               onChange={e => handlePerformanceChange(e, "rate")}
               fullWidth
@@ -481,7 +495,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="total DID"
               inputProps={{
-                value: did.qty
+                value: did.qty,
+                readOnly: true
               }}
               onChange={e => handleDIDsChange(e, "qty")}
               fullWidth
@@ -491,7 +506,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="cost per DID"
               inputProps={{
-                value: did.rate
+                value: did.rate,
+                readOnly: true
               }}
               onChange={e => handleDIDsChange(e, "rate")}
               fullWidth
