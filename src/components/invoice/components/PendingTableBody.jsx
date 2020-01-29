@@ -1,5 +1,7 @@
 import React from 'react'
-import { TableBody, TableCell, Checkbox, TableRow } from '@material-ui/core'
+import { TableBody, TableCell, Checkbox, TableRow, Stepper, Step, StepLabel } from '@material-ui/core'
+
+import AcUnitIcon from '@material-ui/icons/AcUnit';
 
 
 const PendingTableBody = ({ data }) => {
@@ -41,8 +43,16 @@ const PendingTableBody = ({ data }) => {
               <TableCell >
                 {item.total}
               </TableCell>
-              <TableCell >
-                {item.status}
+              <TableCell style={{ paddingRight: 0, paddingLeft: 0, display: "flex", }}>
+                <Stepper activeStep={1} alternativeLabel style={{ width: 5, margin: 0, padding: 0 }}>
+                  {[0, 1, 2].map(label => (
+                    <Step key={label}>
+                      <StepLabel StepIconComponent={AcUnitIcon}>
+                        1
+                      </StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
               </TableCell>
               <TableCell>
                 <u style={{ cursor: "pointer", fontSize: 14 }} >
