@@ -3,13 +3,13 @@ import React, { useReducer } from 'react';
 const initialState = {
 	active_tab: 0,
 	loading: false,
-	data: []
+	data: [],
+	openEdit: false
 };
 
 const StateContext = React.createContext();
 
 const StateProvider = ({ children }) => {
-	// 	dispatch({ type: 'LOADING', payload: { loading: val } });
 
 	const setLoading = (value) => {
 		dispatch({ type: 'set-loading', payload: { loading: value } })
@@ -17,6 +17,10 @@ const StateProvider = ({ children }) => {
 	const setData = (value) => {
 		dispatch({ type: 'set-data', payload: { data: value } })
 	}
+	const setEditModal = (value) => {
+		dispatch({ type: 'set-edit-modal', payload: { openEdit: value } })
+	}
+
 
 
 	const [state, dispatch] = useReducer((state, action) => {
@@ -27,6 +31,9 @@ const StateProvider = ({ children }) => {
 				return { ...state, loading: action.payload.loading };
 			case 'set-data':
 				return { ...state, data: action.payload.data };
+
+			case 'set-edit-modal':
+				return { ...state, openEdit: action.payload.openEdit }
 			default:
 				return null;
 		}
@@ -38,7 +45,8 @@ const StateProvider = ({ children }) => {
 				state,
 				dispatch,
 				setLoading,
-				setData
+				setData,
+				setEditModal
 			}}
 		>
 			{children}

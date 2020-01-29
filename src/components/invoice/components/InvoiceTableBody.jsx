@@ -1,4 +1,5 @@
 import React from 'react'
+import { StateContext } from "context/StateContext"
 import { TableBody, TableCell, Checkbox, TableRow } from '@material-ui/core'
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -7,7 +8,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 })
 
 const InvoiceTableBody = ({ data }) => {
-
+  const { setEditModal } = React.useContext(StateContext)
 
   return (
 
@@ -47,7 +48,10 @@ const InvoiceTableBody = ({ data }) => {
                 <span className="danger-color">Overdue by {i}</span>
               </TableCell>
               <TableCell>
-                <u style={{ cursor: "pointer" }}>
+                <u style={{ cursor: "pointer" }} onClick={() => {
+                  setEditModal(true)
+
+                }}>
                   <b>Edit </b>
                 </u>
 
