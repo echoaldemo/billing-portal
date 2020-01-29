@@ -21,13 +21,13 @@ const useToolbarStyles = makeStyles(theme => ({
   highlight:
     theme.palette.type === "light"
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      },
   title: {
     flex: "1 1 100%"
   }
@@ -64,10 +64,10 @@ const InvoiceTableToolbar = props => {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle">
-          List of all Invoices
+          <Typography className={classes.title} variant="h6" id="tableTitle">
+            List of all Invoices
         </Typography>
-      )}
+        )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
@@ -76,25 +76,25 @@ const InvoiceTableToolbar = props => {
           </IconButton>
         </Tooltip>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gridGap: 20
-          }}
-        >
-          <Tooltip title="Add new invoice">
-            <Button className="add-btn" onClick={() => handleOpen("manual")}>
-              <Add /> New Invoice
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gridGap: 20
+            }}
+          >
+            <Tooltip title="Add new invoice">
+              <Button className="add-btn" onClick={() => handleOpen("manual")}>
+                <Add /> New Invoice
             </Button>
-          </Tooltip>
-          <Tooltip title="Add new automatic invoice">
-            <Button className="add-btn" onClick={() => handleOpen("automatic")}>
-              <Add /> Automatic Invoice
+            </Tooltip>
+            <Tooltip title="Add new automatic invoice">
+              <Button className="add-btn" onClick={() => handleOpen("automatic")}>
+                <Add /> Automatic Invoice
             </Button>
-          </Tooltip>
-        </div>
-      )}
+            </Tooltip>
+          </div>
+        )}
       <Manual
         open={state.manual}
         handleClose={() => handleClose("manual")}

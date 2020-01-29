@@ -1,8 +1,11 @@
 import React from 'react';
 import { PanelHeader } from 'common_components';
-import { InvoiceTable, EditInvoice } from './components';
-import { Grid, Divider } from '@material-ui/core';
+import { InvoiceTable, EditInvoice, TableTabs } from './components';
+import { Grid, Typography, Box, Paper } from '@material-ui/core';
+import { StateContext } from "context/StateContext"
 const Invoice = () => {
+	const { state } = React.useContext(StateContext)
+
 	return (
 		<Grid container>
 			<Grid item lg={12}>
@@ -21,11 +24,21 @@ const Invoice = () => {
 					}
 				/>
 
-				<Divider />
+				<Paper className="mt-normal" square={true}>
+					<TableTabs />
 
-				<div className="mt-normal">
-					<InvoiceTable />
-				</div>
+					<TabPanel value={state.active_tab} index={0}>
+						<InvoiceTable />
+					</TabPanel>
+					<TabPanel value={state.active_tab} index={1}>
+						Item Two
+					</TabPanel>
+
+
+
+				</Paper>
+
+
 
 				<EditInvoice />
 
@@ -33,5 +46,22 @@ const Invoice = () => {
 		</Grid>
 	);
 };
+
+
+function TabPanel(props) {
+	const { children, value, index, ...other } = props;
+	return (
+		<Typography
+			component="div"
+			role="tabpanel"
+			hidden={value !== index}
+			id={`simple-tabpanel-${index}`}
+			aria-labelledby={`simple-tab-${index}`}
+			{...other}
+		>
+			{value === index && <Box>{children}</Box>}
+		</Typography>
+	);
+}
 
 export default Invoice;

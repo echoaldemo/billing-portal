@@ -13,7 +13,7 @@ export default function Navlinks() {
 		{
 			link: '/invoices',
 			icon: <RecordVoiceOver className="tab-icon" />,
-			name: "Invoices"
+			name: "Manage Invoices"
 		},
 		{
 			link: '/settings',

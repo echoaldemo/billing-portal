@@ -20,7 +20,9 @@ const StateProvider = ({ children }) => {
 	const setEditModal = (value) => {
 		dispatch({ type: 'set-edit-modal', payload: { openEdit: value } })
 	}
-
+	const setTab = (value) => {
+		dispatch({ type: 'set-tab', payload: { active_tab: value } })
+	}
 
 
 	const [state, dispatch] = useReducer((state, action) => {
@@ -46,7 +48,8 @@ const StateProvider = ({ children }) => {
 				dispatch,
 				setLoading,
 				setData,
-				setEditModal
+				setEditModal,
+				setTab
 			}}
 		>
 			{children}

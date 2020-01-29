@@ -81,7 +81,7 @@ const InvoiceTable = () => {
     );
   }
   return (
-    <div className="mt-normal">
+    <div>
       <InvoiceTableToolbar numSelected={0} />
       {state.loading ? (
         <TableLoader />

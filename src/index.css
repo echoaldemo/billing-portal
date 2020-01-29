@@ -124,9 +124,15 @@ body {
 }
 
 
-
+.bg-default{
+	background-color: #f89523 !important;
+}
 
 .footer-text{
 	font-size: 12px;
 	font-weight: normal;
+}
+
+.MuiTabs-indicator{
+	background-color: #0f97fc !important;
 }
