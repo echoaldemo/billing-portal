@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelHeader } from 'common_components';
-import InvoiceTable from './InvoiceTable';
+import { InvoiceTable, EditInvoice } from './components';
 import { Grid, Divider } from '@material-ui/core';
 const Invoice = () => {
 	return (
@@ -26,6 +26,9 @@ const Invoice = () => {
 				<div className="mt-normal">
 					<InvoiceTable />
 				</div>
+
+				<EditInvoice />
+
 			</Grid>
 		</Grid>
 	);

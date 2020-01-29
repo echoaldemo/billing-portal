@@ -17,57 +17,57 @@ const mock = [
   {
     summary: "Jude Agagad sent an invoice to Rapid Response.",
     icon: <Email />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "You issued an invoice to Shift44.",
     icon: <Add />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "Jomar Bandol modified an invoice for Rapid Response.",
-    icon: <Add />,
-    time: "2016-09-12 10:06 PM"
+    icon: <Edit />,
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "John Paul Garcia modified information of Shift44",
     icon: <Edit />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "Jules Ballaran deleted an invoice for Rapid Response.",
     icon: <Delete />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "You sent an invoice to Rapid Response.",
     icon: <Email />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "Sidney Bercasio deleted an invoice for Shift44.",
     icon: <Delete />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "John Paul Garcia modified information of Shift44",
     icon: <Edit />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "Samuel Lopez issued an invoice for Rapid Response.",
     icon: <Add />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "Samuel Lopez issued an invoice for Rapid Response.",
     icon: <Add />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   },
   {
     summary: "Sidney Bercasio deleted an invoice for Shift44.",
     icon: <Delete />,
-    time: "2016-09-12 10:06 PM"
+    time: "2020-28-01 10:06 PM"
   }
 ];
 
@@ -91,16 +91,17 @@ const ActivityLogs = () => {
       <Divider />
       <div style={{ width: "100%", height: "42vh", overflowY: "scroll" }}>
         <Timeline>
-          {mock.map(item => (
-            <>
+          {mock.map((item, i) => (
+            <React.Fragment key={i}>
               <TimelineEvent
+
                 title={item.summary}
                 createdAt={item.time}
                 icon={item.icon}
                 bubbleStyle={bubbleColor(item.summary)}
               />
               <div className={classes.root}></div>
-            </>
+            </React.Fragment>
           ))}
         </Timeline>
       </div>
