@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelHeader } from 'common_components';
-import { InvoiceTable, EditInvoice, TableTabs, PendingTable } from './components';
+import { InvoiceTable, EditInvoice, TableTabs, PendingTable, } from './components';
 import { Grid, Typography, Box, Paper } from '@material-ui/core';
 import { StateContext } from "context/StateContext"
 const Invoice = () => {
@@ -25,11 +25,13 @@ const Invoice = () => {
 				/>
 
 				<Paper className="mt-normal" square={true}>
+
 					<TableTabs />
 
 
 					{/* Pending */}
 					<TabPanel value={state.active_tab} index={0}>
+
 						<PendingTable />
 					</TabPanel>
 					{/* Approved */}

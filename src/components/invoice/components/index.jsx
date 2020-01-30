@@ -6,6 +6,8 @@ import InvoiceTable from './approved/InvoiceTable'
 import TableTabs from './TableTabs'
 import PendingTable from './PendingTable'
 import PendingTableBody from './PendingTableBody'
+import TableStepper from "./stepper/TableStepper"
+
 export {
   TableTabs,
   InvoiceTableToolbar,
@@ -14,5 +16,6 @@ export {
   EditInvoice,
   InvoiceTable,
   PendingTable,
-  PendingTableBody
+  PendingTableBody,
+  TableStepper
 }

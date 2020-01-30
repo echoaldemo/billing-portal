@@ -1,12 +1,18 @@
 import React from 'react'
-import { TableBody, TableCell, Checkbox, TableRow } from '@material-ui/core'
+import { TableBody, TableCell, Checkbox, TableRow, } from '@material-ui/core'
 
+import { TableStepper } from "./index"
+import { getRandomInt } from "utils/func"
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2
+})
 
 const PendingTableBody = ({ data }) => {
 
+
   return (
-
-
     <TableBody>
       {
         data.map((item, i) => {
@@ -38,11 +44,11 @@ const PendingTableBody = ({ data }) => {
               <TableCell >
                 {item.due_date}
               </TableCell>
-              <TableCell >
-                {item.total}
+              <TableCell>
+                {formatter.format(item.total)}
               </TableCell>
-              <TableCell >
-                {item.status}
+              <TableCell>
+                <TableStepper activeStep={getRandomInt(3)} />
               </TableCell>
               <TableCell>
                 <u style={{ cursor: "pointer", fontSize: 14 }} >
@@ -54,8 +60,6 @@ const PendingTableBody = ({ data }) => {
           )
         })
       }
-
-
     </TableBody >
   )
 }
