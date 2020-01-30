@@ -14,10 +14,15 @@ import {
   Grid,
   Divider,
   TextField,
-  Collapse
+  Collapse,
+  Checkbox,
+  ListItemText,
+  Input
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import { post, getAPI } from "utils/api";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -45,11 +50,22 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
+
 const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const classes = useStyles();
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
-    campaign: " ",
+    campaign: ["campaign 1", "campaign 2"],
     billingPeriod: " "
   });
   const [billableHours, setBillableHours] = useState({
@@ -86,13 +102,68 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const [itemsTotal, setItemsTotal] = useState(0);
   const [extraItemsTotal, setExtraItemsTotal] = useState(0);
   const [collapse, setCollapse] = useState(false);
+  const [activeCompanies, setActiveCompanies] = useState([]);
+  const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
 
   useEffect(() => {
     getItemsTotal();
     getExtraItemsTotal();
   });
+  useEffect(() => {
+    getActiveCompainies();
+  }, []);
+
+  const getActiveCompainies = () => {
+    getAPI("/identity/company/list?active=true").then((res) => {
+      setActiveCompanies(res.data);
+      setActiveCompaniesLoading(false);
+    });
+  };
+  const getActiveCampaigns = (uuid) => {
+    if (uuid === " ") {
+      return;
+    }
+    axios
+      .get(
+        `https://api.perfectpitchtech.com/identity/campaign/list?company=${uuid}&active=true`,
+        {
+          headers: {
+            Authorization: "Token 8ee5d9b89bff4f221f475f43bb5b1f26539e11b7"
+          }
+        }
+      )
+      .then((res) => {
+        setActiveCampaigns(res.data);
+        setActiveCampaignsLoading(false);
+      });
+  };
+
+  const handleSave = () => {
+    let line = [];
+    billableHours.amt &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: billableHours.amt,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "21"
+          }
+        }
+      });
+    post(`/api/invoice`, {
+      Line: line,
+      CustomerRef: {
+        value: "1"
+      }
+    }).then((res) => console.log(res));
+  };
 
   const handleSelectChange = (event) => {
+    if (event.target.name === "company") {
+      getActiveCampaigns(event.target.value);
+    }
     setSelectInputs({
       ...selectInputs,
       [event.target.name]: event.target.value
@@ -151,6 +222,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     currency: "USD",
     minimumFractionDigits: 2
   });
+  const formatter2 = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2
+  });
 
   return (
     <Dialog
@@ -173,7 +247,12 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             New Manual Invoice
           </Typography>
-          <Button autoFocus color="inherit" onClick={handleClose}>
+          <Button
+            autoFocus
+            color="inherit"
+            onClick={() => handleSave()}
+            disabled={!total}
+          >
             save
           </Button>
         </Toolbar>
@@ -189,17 +268,50 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               value={selectInputs.company}
               variant="outlined"
               onChange={(e) => handleSelectChange(e)}
+              disabled={activeCompaniesLoading}
+              MenuProps={MenuProps}
               fullWidth
             >
               <MenuItem value=" ">Select company</MenuItem>
-              <MenuItem value="1">Company 1</MenuItem>
-              <MenuItem value="2">Company 2</MenuItem>
+              {!activeCompaniesLoading &&
+                activeCompanies.map((c, i) => (
+                  <MenuItem value={c.uuid} key={i}>
+                    {c.name}
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
 
           <Grid item xs={3}>
             <InputLabel id="label1">Campaign</InputLabel>
             <Select
+              labelId="label1"
+              id="label1"
+              variant="outlined"
+              name="campaign"
+              multiple
+              value={selectInputs.campaign}
+              onChange={(e) => {
+                handleSelectChange(e);
+              }}
+              renderValue={(selected) =>
+                selected.length === activeCampaigns.length
+                  ? "All"
+                  : selected.join(", ")
+              }
+              fullWidth
+            >
+              {!activeCampaignsLoading &&
+                activeCampaigns.map((name, i) => (
+                  <MenuItem key={i} value={name.uuid}>
+                    <Checkbox
+                      checked={selectInputs.campaign.indexOf(name) > -1}
+                    />
+                    <ListItemText primary={name.name} />
+                  </MenuItem>
+                ))}
+            </Select>
+            {/* <Select
               labelId="label1"
               name="campaign"
               value={selectInputs.campaign}
@@ -210,7 +322,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               <MenuItem value=" ">Select campaign</MenuItem>
               <MenuItem value="1">campaign 1</MenuItem>
               <MenuItem value="2">campaign 2</MenuItem>
-            </Select>
+            </Select> */}
           </Grid>
 
           <Grid item xs={3}>
@@ -320,6 +432,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               placeholder="Amount"
               inputProps={{
                 value: billableHours.amt
+                  ? formatter2.format(billableHours.amt)
+                  : ""
               }}
               onFocus={() => handleTotalAmount("1")}
               onBlur={() => handleTotalAmount("1")}
@@ -367,7 +481,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: performance.amt
+                value: performance.amt ? formatter2.format(performance.amt) : ""
               }}
               onFocus={() => handleTotalAmount("2")}
               onBlur={() => handleTotalAmount("2")}
@@ -411,7 +525,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: did.amt
+                value: did.amt ? formatter2.format(did.amt) : ""
               }}
               onFocus={() => handleTotalAmount("3")}
               onBlur={() => handleTotalAmount("3")}
@@ -510,7 +624,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 placeholder="Amount"
                 onFocus={() => handleTotalAmount("4")}
                 inputProps={{
-                  value: ls.amt
+                  value: ls.amt ? formatter2.format(ls.amt) : ""
                 }}
                 onBlur={() => handleTotalAmount("4")}
                 onChange={(e) => handleLSChange(e, "amt")}
@@ -538,6 +652,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 placeholder="Amount"
                 inputProps={{
                   value: merchantFees.amt
+                    ? formatter2.format(merchantFees.amt)
+                    : ""
                 }}
                 onChange={(e) => handleMerchantFees(e, "amt")}
                 fullWidth
