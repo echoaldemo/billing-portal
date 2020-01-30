@@ -326,6 +326,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 margin="normal"
                 value={selectInputs.billingPeriod}
                 onChange={handleDateChange}
+                inputVariant="outlined"
               />
             </MuiPickersUtilsProvider>
           </Grid>
