@@ -21,7 +21,8 @@ import {
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { post } from "utils/api";
+import axios from "axios";
+import { post, getAPI } from "utils/api";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -48,6 +49,17 @@ const useStyles = makeStyles((theme) => ({
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
 
 const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const classes = useStyles();
@@ -90,11 +102,43 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const [itemsTotal, setItemsTotal] = useState(0);
   const [extraItemsTotal, setExtraItemsTotal] = useState(0);
   const [collapse, setCollapse] = useState(false);
+  const [activeCompanies, setActiveCompanies] = useState([]);
+  const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
 
   useEffect(() => {
     getItemsTotal();
     getExtraItemsTotal();
   });
+  useEffect(() => {
+    getActiveCompainies();
+  }, []);
+
+  const getActiveCompainies = () => {
+    getAPI("/identity/company/list?active=true").then((res) => {
+      setActiveCompanies(res.data);
+      setActiveCompaniesLoading(false);
+    });
+  };
+  const getActiveCampaigns = (uuid) => {
+    if (uuid === " ") {
+      return;
+    }
+    axios
+      .get(
+        `https://api.perfectpitchtech.com/identity/campaign/list?company=${uuid}&active=true`,
+        {
+          headers: {
+            Authorization: "Token 8ee5d9b89bff4f221f475f43bb5b1f26539e11b7"
+          }
+        }
+      )
+      .then((res) => {
+        setActiveCampaigns(res.data);
+        setActiveCampaignsLoading(false);
+      });
+  };
 
   const handleSave = () => {
     let line = [];
@@ -117,7 +161,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
 
   const handleSelectChange = (event) => {
-    console.log(event.target.value);
+    if (event.target.name === "company") {
+      getActiveCampaigns(event.target.value);
+    }
     setSelectInputs({
       ...selectInputs,
       [event.target.name]: event.target.value
@@ -222,11 +268,17 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               value={selectInputs.company}
               variant="outlined"
               onChange={(e) => handleSelectChange(e)}
+              disabled={activeCompaniesLoading}
+              MenuProps={MenuProps}
               fullWidth
             >
               <MenuItem value=" ">Select company</MenuItem>
-              <MenuItem value="1">Company 1</MenuItem>
-              <MenuItem value="2">Company 2</MenuItem>
+              {!activeCompaniesLoading &&
+                activeCompanies.map((c, i) => (
+                  <MenuItem value={c.uuid} key={i}>
+                    {c.name}
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
 
@@ -239,18 +291,25 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="campaign"
               multiple
               value={selectInputs.campaign}
-              onChange={(e) => handleSelectChange(e)}
-              renderValue={(selected) => selected.join(", ")}
+              onChange={(e) => {
+                handleSelectChange(e);
+              }}
+              renderValue={(selected) =>
+                selected.length === activeCampaigns.length
+                  ? "All"
+                  : selected.join(", ")
+              }
               fullWidth
             >
-              {["campaign 1", "campaign 2"].map((name) => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox
-                    checked={selectInputs.campaign.indexOf(name) > -1}
-                  />
-                  <ListItemText primary={name} />
-                </MenuItem>
-              ))}
+              {!activeCampaignsLoading &&
+                activeCampaigns.map((name, i) => (
+                  <MenuItem key={i} value={name.uuid}>
+                    <Checkbox
+                      checked={selectInputs.campaign.indexOf(name) > -1}
+                    />
+                    <ListItemText primary={name.name} />
+                  </MenuItem>
+                ))}
             </Select>
             {/* <Select
               labelId="label1"
