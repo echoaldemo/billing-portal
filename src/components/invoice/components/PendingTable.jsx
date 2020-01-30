@@ -1,36 +1,37 @@
 /* eslint-disable */
-import React from "react";
+import React from 'react'
+import { StateContext } from "context/StateContext"
+import { TableLoader } from "common_components"
+import { get } from "utils/api"
+import {
+  InvoiceTableHeader,
+  PendingTableBody
+} from "./index";
 import {
   Table,
   TableContainer,
   TablePagination,
 } from "@material-ui/core";
 
-
-import { get } from "utils/api";
-import { TableLoader } from "common_components";
-import {
-  InvoiceTableHeader,
-  InvoiceTableToolbar,
-  InvoiceTableBody
-} from "./index";
-import { StateContext } from "context/StateContext";
+import { mockData } from "./mockData"
 
 const headCells = [
-  { id: 'invoice', numeric: false, disablePadding: true, label: 'Invoice' },
-  { id: 'customer', numeric: true, disablePadding: false, label: 'Customer' },
-  { id: 'date', numeric: true, disablePadding: false, label: 'Date' },
-  { id: 'due-data', numeric: true, disablePadding: false, label: 'Due Date' },
-  { id: 'balance', numeric: true, disablePadding: false, label: 'Balance' },
-  { id: 'total', numeric: true, disablePadding: false, label: 'Total' },
-  { id: 'status', numeric: true, disablePadding: false, label: 'Status' },
-  { id: 'actions', numeric: true, disablePadding: false, label: 'Actions' },
-
+  { id: 'invoice', label: 'Invoice' },
+  { id: 'invoice_type', label: 'Invoice Type' },
+  { id: 'company', label: 'Company' },
+  { id: 'campaigns', label: 'Campaigns' },
+  { id: 'start_date', label: 'Start date' },
+  { id: 'due-date', label: 'Due date' },
+  { id: 'total', label: 'Total' },
+  { id: 'status', label: 'Status' },
+  { id: 'actions', label: 'Actions' },
 
 ];
-const InvoiceTable = () => {
-  const [loading, setLoading] = React.useState(false)
-  const [data, setData] = React.useState([])
+
+
+const PendingTable = () => {
+  const { state, setLoading, setData } = React.useContext(StateContext);
+
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
@@ -52,7 +53,7 @@ const InvoiceTable = () => {
     get("/api/invoice")
       .then(res => {
         setLoading(false);
-        setData(res.data.QueryResponse.Invoice);
+        setData(mockData());
         console.log(res.data.QueryResponse.Invoice);
       })
       .catch(err => {
@@ -94,20 +95,22 @@ const InvoiceTable = () => {
   }
   return (
     <div>
-      {loading ? (
+
+      {state.loading ? (
         <TableLoader />
       ) : (
           <React.Fragment>
             <TableContainer>
               <Table>
                 <InvoiceTableHeader headCells={headCells} />
-                <InvoiceTableBody data={sortData(data)} />
+                <PendingTableBody data={sortData(state.data)} />
               </Table>
             </TableContainer>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={data.length}
+              count={state.data.length}
+              rowsPerPage={rowsPerPage}
               page={page}
               onChangePage={handleChangePage}
               onChangeRowsPerPage={handleChangeRowsPerPage}
@@ -115,7 +118,7 @@ const InvoiceTable = () => {
           </React.Fragment>
         )}
     </div>
-  );
-};
+  )
+}
 
-export default InvoiceTable;
+export default PendingTable
