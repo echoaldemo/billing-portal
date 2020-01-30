@@ -6,8 +6,9 @@ const baseMock = "http://5e2fcff79c29c900145db496.mockapi.io";
 
 const get = (endpoint, data) => axios.get(`${baseUrl}${endpoint}`, data);
 const post = (endpoint, data) => axios.post(`${baseUrl}${endpoint}`, data);
+const auth = (endpoint, data) => axios.post(`${baseUrl}${endpoint}`, { data });
 
 const getMock = (endpoint, data) =>
   axios.get(`${baseMock}${endpoint}`, { data });
 
-export { get, post, getMock };
+export { get, post, getMock, auth };

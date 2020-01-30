@@ -62,6 +62,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
     campaign: " ",
+    billingType: " ",
     billingPeriod: date
   });
   const [billableHours, setBillableHours] = useState({
@@ -282,7 +283,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       </AppBar>
 
       <form className={classes.form}>
-        <Grid container spacing={2} xs={12} style={{ marginBottom: 30 }}>
+        <Grid container spacing={2} xs={12} style={{ marginBottom: 10 }}>
           <Grid item xs={3}>
             <InputLabel id="label">Company</InputLabel>
             <Select
@@ -316,6 +317,22 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           </Grid>
 
           <Grid item xs={3}>
+            <InputLabel id="label1">Billing Type</InputLabel>
+            <Select
+              labelId="label1"
+              name="billingType"
+              variant="outlined"
+              value={selectInputs.billingType}
+              onChange={e => handleBillingChange(e)}
+              fullWidth
+            >
+              <MenuItem value=" ">Select billing type</MenuItem>
+              <MenuItem value="1">Monthly</MenuItem>
+              <MenuItem value="2">Weekly</MenuItem>
+            </Select>
+          </Grid>
+
+          <Grid item xs={3}>
             <InputLabel id="label1">Billing Period</InputLabel>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
@@ -323,7 +340,6 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
-                margin="normal"
                 value={selectInputs.billingPeriod}
                 onChange={handleDateChange}
                 inputVariant="outlined"
@@ -331,7 +347,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             </MuiPickersUtilsProvider>
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={12}>
             <div
               style={{
                 display: "flex",
