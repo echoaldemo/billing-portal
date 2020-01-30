@@ -14,10 +14,14 @@ import {
   Grid,
   Divider,
   TextField,
-  Collapse
+  Collapse,
+  Checkbox,
+  ListItemText,
+  Input
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import { post } from "utils/api";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -49,7 +53,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const classes = useStyles();
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
-    campaign: " ",
+    campaign: ["campaign 1", "campaign 2"],
     billingPeriod: " "
   });
   const [billableHours, setBillableHours] = useState({
@@ -92,7 +96,28 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     getExtraItemsTotal();
   });
 
+  const handleSave = () => {
+    let line = [];
+    billableHours.amt &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: billableHours.amt,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "21"
+          }
+        }
+      });
+    post(`/api/invoice`, {
+      Line: line,
+      CustomerRef: {
+        value: "1"
+      }
+    }).then((res) => console.log(res));
+  };
+
   const handleSelectChange = (event) => {
+    console.log(event.target.value);
     setSelectInputs({
       ...selectInputs,
       [event.target.name]: event.target.value
@@ -151,6 +176,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     currency: "USD",
     minimumFractionDigits: 2
   });
+  const formatter2 = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2
+  });
 
   return (
     <Dialog
@@ -173,7 +201,12 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             New Manual Invoice
           </Typography>
-          <Button autoFocus color="inherit" onClick={handleClose}>
+          <Button
+            autoFocus
+            color="inherit"
+            onClick={() => handleSave()}
+            disabled={!total}
+          >
             save
           </Button>
         </Toolbar>
@@ -201,6 +234,26 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <InputLabel id="label1">Campaign</InputLabel>
             <Select
               labelId="label1"
+              id="label1"
+              variant="outlined"
+              name="campaign"
+              multiple
+              value={selectInputs.campaign}
+              onChange={(e) => handleSelectChange(e)}
+              renderValue={(selected) => selected.join(", ")}
+              fullWidth
+            >
+              {["campaign 1", "campaign 2"].map((name) => (
+                <MenuItem key={name} value={name}>
+                  <Checkbox
+                    checked={selectInputs.campaign.indexOf(name) > -1}
+                  />
+                  <ListItemText primary={name} />
+                </MenuItem>
+              ))}
+            </Select>
+            {/* <Select
+              labelId="label1"
               name="campaign"
               value={selectInputs.campaign}
               variant="outlined"
@@ -210,7 +263,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               <MenuItem value=" ">Select campaign</MenuItem>
               <MenuItem value="1">campaign 1</MenuItem>
               <MenuItem value="2">campaign 2</MenuItem>
-            </Select>
+            </Select> */}
           </Grid>
 
           <Grid item xs={3}>
@@ -320,6 +373,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               placeholder="Amount"
               inputProps={{
                 value: billableHours.amt
+                  ? formatter2.format(billableHours.amt)
+                  : ""
               }}
               onFocus={() => handleTotalAmount("1")}
               onBlur={() => handleTotalAmount("1")}
@@ -367,7 +422,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: performance.amt
+                value: performance.amt ? formatter2.format(performance.amt) : ""
               }}
               onFocus={() => handleTotalAmount("2")}
               onBlur={() => handleTotalAmount("2")}
@@ -411,7 +466,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: did.amt
+                value: did.amt ? formatter2.format(did.amt) : ""
               }}
               onFocus={() => handleTotalAmount("3")}
               onBlur={() => handleTotalAmount("3")}
@@ -510,7 +565,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 placeholder="Amount"
                 onFocus={() => handleTotalAmount("4")}
                 inputProps={{
-                  value: ls.amt
+                  value: ls.amt ? formatter2.format(ls.amt) : ""
                 }}
                 onBlur={() => handleTotalAmount("4")}
                 onChange={(e) => handleLSChange(e, "amt")}
@@ -538,6 +593,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 placeholder="Amount"
                 inputProps={{
                   value: merchantFees.amt
+                    ? formatter2.format(merchantFees.amt)
+                    : ""
                 }}
                 onChange={(e) => handleMerchantFees(e, "amt")}
                 fullWidth
