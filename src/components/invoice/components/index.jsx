@@ -6,4 +6,5 @@ import InvoiceTable from "./InvoiceTable"
 import TableTabs from "./TableTabs"
 import PendingTable from "./PendingTable"
 import PendingTableBody from "./PendingTableBody"
-export { TableTabs, InvoiceTableToolbar, InvoiceTableHeader, InvoiceTableBody, EditInvoice, InvoiceTable, PendingTable, PendingTableBody }
+import TableStepper from "./stepper/TableStepper"
+export { TableStepper, TableTabs, InvoiceTableToolbar, InvoiceTableHeader, InvoiceTableBody, EditInvoice, InvoiceTable, PendingTable, PendingTableBody }

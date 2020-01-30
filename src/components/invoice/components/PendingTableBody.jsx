@@ -1,14 +1,18 @@
 import React from 'react'
-import { TableBody, TableCell, Checkbox, TableRow, Stepper, Step, StepLabel } from '@material-ui/core'
+import { TableBody, TableCell, Checkbox, TableRow, } from '@material-ui/core'
 
-import AcUnitIcon from '@material-ui/icons/AcUnit';
-
+import { TableStepper } from "./index"
+import { getRandomInt } from "utils/func"
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2
+})
 
 const PendingTableBody = ({ data }) => {
 
+
   return (
-
-
     <TableBody>
       {
         data.map((item, i) => {
@@ -40,19 +44,11 @@ const PendingTableBody = ({ data }) => {
               <TableCell >
                 {item.due_date}
               </TableCell>
-              <TableCell >
-                {item.total}
+              <TableCell>
+                {formatter.format(item.total)}
               </TableCell>
-              <TableCell style={{ paddingRight: 0, paddingLeft: 0, display: "flex", }}>
-                <Stepper activeStep={1} alternativeLabel style={{ width: 5, margin: 0, padding: 0 }}>
-                  {[0, 1, 2].map(label => (
-                    <Step key={label}>
-                      <StepLabel StepIconComponent={AcUnitIcon}>
-                        1
-                      </StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
+              <TableCell>
+                <TableStepper activeStep={getRandomInt(3)} />
               </TableCell>
               <TableCell>
                 <u style={{ cursor: "pointer", fontSize: 14 }} >
@@ -64,8 +60,6 @@ const PendingTableBody = ({ data }) => {
           )
         })
       }
-
-
     </TableBody >
   )
 }
