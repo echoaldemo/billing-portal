@@ -5,13 +5,15 @@ import { TableLoader } from "common_components"
 import { get } from "utils/api"
 import {
   InvoiceTableHeader,
-  PendingTableBody
+  PendingTableBody,
+  TableStepper
 } from "./index";
 import {
   Table,
   TableContainer,
   TablePagination,
 } from "@material-ui/core";
+import AcUnitIcon from '@material-ui/icons/AcUnit';
 
 import { mockData } from "./mockData"
 
@@ -48,18 +50,18 @@ const PendingTable = () => {
   };
 
   React.useEffect(() => {
-    setLoading(true);
-
-    get("/api/invoice")
-      .then(res => {
-        setLoading(false);
-        setData(mockData());
-        console.log(res.data.QueryResponse.Invoice);
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      });
+    // setLoading(true);
+    setData(mockData());
+    // get("/api/invoice")
+    //   .then(res => {
+    //     setLoading(false);
+    //     setData(mockData());
+    //     console.log(res.data.QueryResponse.Invoice);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //     setLoading(false);
+    //   });
   }, []);
 
   function desc(a, b, orderBy) {
