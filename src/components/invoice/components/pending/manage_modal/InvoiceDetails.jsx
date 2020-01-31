@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function InvoiceDetails() {
+export default function InvoiceDetails({ data }) {
   const classes = useStyles();
 
   return (
@@ -21,15 +21,34 @@ export default function InvoiceDetails() {
       container
       style={{ display: "flex", justifyContent: "space-between" }}
     >
-      <Grid item lg={5}>
+      <Grid item lg={6}>
         <List subheader={<h4>Invoice Details</h4>} className={classes.root}>
           <ListItem>
-            <ListItemText primary="adasd" />
-            <ListItemSecondaryAction>asdasd</ListItemSecondaryAction>
+            <ListItemText primary="Invoice Type" />
+            <ListItemSecondaryAction>Automatic</ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Company" />
+            <ListItemSecondaryAction>
+              7 Summits Marketing
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Campaigns" />
+            <ListItemSecondaryAction>Home Improvement</ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Start Date" />
+            <ListItemSecondaryAction>January 12, 2019</ListItemSecondaryAction>
+          </ListItem>
+
+          <ListItem>
+            <ListItemText primary="Due Date" />
+            <ListItemSecondaryAction>December 2, 2020</ListItemSecondaryAction>
           </ListItem>
         </List>
       </Grid>
-      <Grid item lg={5}>
+      <Grid item lg={6}>
         <List subheader={<h4>Items</h4>} className={classes.root}>
           <ListItem>
             <ListItemText primary="adasd" />

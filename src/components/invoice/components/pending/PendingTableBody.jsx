@@ -25,6 +25,7 @@ const PendingTableBody = ({ data }) => {
 
   return (
     <TableBody>
+      {console.log(data)}
       {data.map((item, i) => {
         return (
           <TableRow hover aria-checked={false} key={i}>
