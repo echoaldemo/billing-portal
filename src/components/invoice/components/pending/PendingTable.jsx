@@ -17,7 +17,7 @@ const headCells = [
   { id: "start_date", label: "Start date" },
   { id: "due-date", label: "Due date" },
   { id: "total", label: "Total" },
-  { id: "status", label: "Status/Stages" },
+  { id: "status", label: "Status" },
   { id: "actions", label: "Actions" }
 ];
 

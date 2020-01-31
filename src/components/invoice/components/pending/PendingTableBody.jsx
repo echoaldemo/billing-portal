@@ -1,10 +1,8 @@
 import React from "react";
 import { TableBody, TableCell, Checkbox, TableRow } from "@material-ui/core";
 
-import { TableStepper } from "../index";
 import { getRandomInt } from "utils/func";
 import { StateContext } from "context/StateContext";
-
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -13,6 +11,17 @@ const formatter = new Intl.NumberFormat("en-US", {
 
 const PendingTableBody = ({ data }) => {
   const { dispatch } = React.useContext(StateContext);
+
+  const randomStatus = () => {
+    let arr = [
+      { color: "#455F38", label: "Sent" },
+      { color: "orange", label: "Reviewed" },
+      { color: "#399E07", label: "Approved" }
+    ];
+
+    const value = arr[getRandomInt(2)];
+    return <b style={{ color: value.color }}>{value.label}</b>;
+  };
 
   return (
     <TableBody>
@@ -29,9 +38,7 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{item.TxnDate}</TableCell>
             <TableCell>{item.DueDate}</TableCell>
             <TableCell>{formatter.format(item.total)}</TableCell>
-            <TableCell>
-              <TableStepper activeStep={getRandomInt(3)} />
-            </TableCell>
+            <TableCell>{randomStatus()}</TableCell>
             <TableCell
               onClick={() => {
                 dispatch({
