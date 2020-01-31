@@ -1,5 +1,5 @@
 import React from "react";
-import TopNav from "common_components/SignIn/SignIn";
+import TopNav from "common-components/SignIn/SignIn";
 
 import Navbar from "./appbar/Navbar";
 import Navlink from "./navlinks/Navlinks";

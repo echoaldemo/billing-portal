@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Paper, Container } from "@material-ui/core";
 import Chart from "react-google-charts";
-import { PanelHeader } from "common_components";
+import { PanelHeader } from "common-components";
 import CardInfo from "./card-info";
 import ActivityLogs from "./activity-logs";
 const pieOptions = {

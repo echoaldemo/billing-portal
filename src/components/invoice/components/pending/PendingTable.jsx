@@ -1,35 +1,25 @@
 /* eslint-disable */
-import React from 'react'
-import { StateContext } from "context/StateContext"
-import { TableLoader } from "common_components"
-import { get } from "utils/api"
-import {
-  InvoiceTableHeader,
-  PendingTableBody,
-  TableStepper
-} from "../index";
-import {
-  Table,
-  TableContainer,
-  TablePagination,
-} from "@material-ui/core";
+import React from "react";
+import { StateContext } from "context/StateContext";
+import { TableLoader } from "common-components";
+import { get } from "utils/api";
+import { InvoiceTableHeader, PendingTableBody, TableStepper } from "../index";
+import { Table, TableContainer, TablePagination } from "@material-ui/core";
 
-import { mockData } from "../mockData"
-import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice"
+import { mockData } from "../mockData";
+import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
 
 const headCells = [
-  { id: 'invoice', label: 'Invoice' },
-  { id: 'invoice_type', label: 'Invoice Type' },
-  { id: 'company', label: 'Company' },
-  { id: 'campaigns', label: 'Campaigns' },
-  { id: 'start_date', label: 'Start date' },
-  { id: 'due-date', label: 'Due date' },
-  { id: 'total', label: 'Total' },
-  { id: 'status', label: 'Status/Stages' },
-  { id: 'actions', label: 'Actions' },
-
+  { id: "invoice", label: "Invoice" },
+  { id: "invoice_type", label: "Invoice Type" },
+  { id: "company", label: "Company" },
+  { id: "campaigns", label: "Campaigns" },
+  { id: "start_date", label: "Start date" },
+  { id: "due-date", label: "Due date" },
+  { id: "total", label: "Total" },
+  { id: "status", label: "Status/Stages" },
+  { id: "actions", label: "Actions" }
 ];
-
 
 const PendingTable = () => {
   const { state, setLoading, setData } = React.useContext(StateContext);
@@ -50,18 +40,18 @@ const PendingTable = () => {
   };
 
   React.useEffect(() => {
-    // setLoading(true);
+    setLoading(true);
     setData(mockData());
-    // get("/api/invoice")
-    //   .then(res => {
-    //     setLoading(false);
-    //     setData(mockData());
-    //     console.log(res.data.QueryResponse.Invoice);
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //     setLoading(false);
-    //   });
+    get("/api/pending/list")
+      .then(res => {
+        setLoading(false);
+        setData(res.data);
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
   }, []);
 
   function desc(a, b, orderBy) {
@@ -97,31 +87,30 @@ const PendingTable = () => {
   }
   return (
     <div>
-
       {state.loading ? (
         <TableLoader />
       ) : (
-          <React.Fragment>
-            <TableContainer>
-              <Table>
-                <InvoiceTableHeader headCells={headCells} />
-                <PendingTableBody data={sortData(state.data)} />
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={state.data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onChangePage={handleChangePage}
-              onChangeRowsPerPage={handleChangeRowsPerPage}
-            />
-          </React.Fragment>
-        )}
+        <React.Fragment>
+          <TableContainer>
+            <Table>
+              <InvoiceTableHeader headCells={headCells} />
+              <PendingTableBody data={sortData(state.data)} />
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={state.data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </React.Fragment>
+      )}
       <ManagePendingInvoice />
     </div>
-  )
-}
+  );
+};
 
-export default PendingTable
+export default PendingTable;

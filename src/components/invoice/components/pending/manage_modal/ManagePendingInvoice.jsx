@@ -1,14 +1,22 @@
-import React from 'react'
-import { Dialog } from "@material-ui/core"
-import { StateContext } from "context/StateContext"
-import "./style/index.scss"
+import React from "react";
+import { Dialog, Divider, AppBar } from "@material-ui/core";
+import { StateContext } from "context/StateContext";
+import "./style/index.scss";
+import { Modal } from "common-components";
 export default function ManagePendingInvoice() {
-  const { state, dispatch } = React.useContext(StateContext)
+  const { state, dispatch } = React.useContext(StateContext);
 
   return (
-    <Dialog square={true} open={state.openManage} onClose={() => { dispatch({ type: 'set-manage-modal', payload: { openManage: false } }) }} >
-      <h1>Manage Modal</h1>
-
-    </Dialog>
-  )
+    <Modal
+      square={true}
+      open={state.openManage}
+      onClose={() => {
+        dispatch({ type: "set-manage-modal", payload: { openManage: false } });
+      }}
+      title={<b>Manage Pending Invoice</b>}
+      width={800}
+    >
+      <h1>asdsad</h1>
+    </Modal>
+  );
 }
