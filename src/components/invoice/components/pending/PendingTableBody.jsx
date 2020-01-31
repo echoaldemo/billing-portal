@@ -1,8 +1,10 @@
 import React from 'react'
 import { TableBody, TableCell, Checkbox, TableRow, } from '@material-ui/core'
 
-import { TableStepper } from "./index"
+import { TableStepper } from "../index"
 import { getRandomInt } from "utils/func"
+import { StateContext } from "context/StateContext"
+
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -10,7 +12,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 })
 
 const PendingTableBody = ({ data }) => {
-
+  const { dispatch } = React.useContext(StateContext)
 
   return (
     <TableBody>
@@ -50,7 +52,7 @@ const PendingTableBody = ({ data }) => {
               <TableCell>
                 <TableStepper activeStep={getRandomInt(3)} />
               </TableCell>
-              <TableCell>
+              <TableCell onClick={() => { dispatch({ type: 'set-manage-modal', payload: { openManage: true } }) }}>
                 <u style={{ cursor: "pointer", fontSize: 14 }} >
                   <b>Manage</b>
                 </u>

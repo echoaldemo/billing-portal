@@ -7,15 +7,15 @@ import {
   InvoiceTableHeader,
   PendingTableBody,
   TableStepper
-} from "./index";
+} from "../index";
 import {
   Table,
   TableContainer,
   TablePagination,
 } from "@material-ui/core";
-import AcUnitIcon from '@material-ui/icons/AcUnit';
 
-import { mockData } from "./mockData"
+import { mockData } from "../mockData"
+import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice"
 
 const headCells = [
   { id: 'invoice', label: 'Invoice' },
@@ -25,7 +25,7 @@ const headCells = [
   { id: 'start_date', label: 'Start date' },
   { id: 'due-date', label: 'Due date' },
   { id: 'total', label: 'Total' },
-  { id: 'status', label: 'Status' },
+  { id: 'status', label: 'Status/Stages' },
   { id: 'actions', label: 'Actions' },
 
 ];
@@ -119,6 +119,7 @@ const PendingTable = () => {
             />
           </React.Fragment>
         )}
+      <ManagePendingInvoice />
     </div>
   )
 }

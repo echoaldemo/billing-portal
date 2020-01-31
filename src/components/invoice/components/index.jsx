@@ -4,8 +4,8 @@ import InvoiceTableBody from './approved/InvoiceTableBody'
 import EditInvoice from './edit-invoice/EditInvoice'
 import InvoiceTable from './approved/InvoiceTable'
 import TableTabs from './TableTabs'
-import PendingTable from './PendingTable'
-import PendingTableBody from './PendingTableBody'
+import PendingTable from './pending/PendingTable'
+import PendingTableBody from './pending/PendingTableBody'
 import TableStepper from "./stepper/TableStepper"
 
 export {
