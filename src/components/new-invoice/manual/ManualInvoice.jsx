@@ -65,7 +65,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const classes = useStyles();
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
-    campaign: ["campaign 1", "campaign 2"],
+    campaign: [],
     billingPeriod: " "
   });
   const [billableHours, setBillableHours] = useState({
@@ -125,19 +125,18 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     if (uuid === " ") {
       return;
     }
-    axios
-      .get(
-        `https://api.perfectpitchtech.com/identity/campaign/list?company=${uuid}&active=true`,
-        {
-          headers: {
-            Authorization: "Token 8ee5d9b89bff4f221f475f43bb5b1f26539e11b7"
-          }
-        }
-      )
-      .then((res) => {
+    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(
+      (res) => {
+        console.log(res.data.map((d) => d.uuid));
+        setSelectInputs({
+          ...selectInputs,
+          campaign: res.data.map((d) => d.uuid),
+          company: uuid
+        });
         setActiveCampaigns(res.data);
         setActiveCampaignsLoading(false);
-      });
+      }
+    );
   };
 
   const handleSave = () => {
@@ -161,13 +160,15 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
 
   const handleSelectChange = (event) => {
+    console.log(event.target.name, event.target.value);
     if (event.target.name === "company") {
       getActiveCampaigns(event.target.value);
+    } else {
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
+      });
     }
-    setSelectInputs({
-      ...selectInputs,
-      [event.target.name]: event.target.value
-    });
   };
   const handleBillableHoursChange = (e, label) => {
     setBillableHours({ ...billableHours, [label]: e.target.value });
@@ -295,17 +296,27 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 handleSelectChange(e);
               }}
               renderValue={(selected) =>
-                selected.length === activeCampaigns.length
+                selected.length === 0
+                  ? "Select campaign"
+                  : selected.length === activeCampaigns.length
                   ? "All"
-                  : selected.join(", ")
+                  : selected
+                      .map((s) =>
+                        activeCampaigns
+                          .filter((a) => a.uuid === s)
+                          .map((data) => data.name)
+                      )
+                      .join(", ")
               }
+              disabled={activeCampaignsLoading}
+              displayEmpty
               fullWidth
             >
               {!activeCampaignsLoading &&
                 activeCampaigns.map((name, i) => (
                   <MenuItem key={i} value={name.uuid}>
                     <Checkbox
-                      checked={selectInputs.campaign.indexOf(name) > -1}
+                      checked={selectInputs.campaign.indexOf(name.uuid) > -1}
                     />
                     <ListItemText primary={name.name} />
                   </MenuItem>
