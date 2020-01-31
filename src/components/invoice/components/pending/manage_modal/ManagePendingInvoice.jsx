@@ -1,8 +1,10 @@
 import React from "react";
-import { Dialog, Divider, AppBar } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
-import "./style/index.scss";
 import { Modal } from "common-components";
+import { TableStepper } from "common-components";
+import { Divider } from "@material-ui/core";
+import InvoiceDetails from "./InvoiceDetails";
+
 export default function ManagePendingInvoice() {
   const { state, dispatch } = React.useContext(StateContext);
 
@@ -16,7 +18,13 @@ export default function ManagePendingInvoice() {
       title={<b>Manage Pending Invoice</b>}
       width={800}
     >
-      <h1>asdsad</h1>
+      <TableStepper activeStep={1} />
+      <Divider />
+      <InvoiceDetails />
+
+      <Divider />
+
+      <h4>Elit consequat ex ipsum tempor quis id sit ipsum voluptate.</h4>
     </Modal>
   );
 }
