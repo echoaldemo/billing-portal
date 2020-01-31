@@ -4,7 +4,8 @@ const initialState = {
 	active_tab: 0,
 	loading: false,
 	data: [],
-	openEdit: false
+	openEdit: false,
+	openManage: false
 };
 
 const StateContext = React.createContext();
@@ -25,6 +26,7 @@ const StateProvider = ({ children }) => {
 	}
 
 
+
 	const [state, dispatch] = useReducer((state, action) => {
 		switch (action.type) {
 			case 'set-tab':
@@ -36,6 +38,8 @@ const StateProvider = ({ children }) => {
 
 			case 'set-edit-modal':
 				return { ...state, openEdit: action.payload.openEdit }
+			case 'set-manage-modal':
+				return { ...state, openManage: action.payload.openManage }
 			default:
 				return null;
 		}
