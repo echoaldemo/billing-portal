@@ -29,6 +29,8 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
+import moment from "moment";
+import { parse } from "date-fns";
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -217,21 +219,31 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
 
   const createInvoice = () => {
+    let dt = new Date(selectInputs.billingPeriod);
+    dt.setMonth(dt.getMonth() + 1);
+    const dueDate = dt.toLocaleDateString().replace(/\//g, "-");
+
+    const company = activeCompanies.filter(
+      item => item.uuid === selectInputs.company
+    )[0].name;
+
+    const campaigns = activeCampaigns
+      .filter(item => selectInputs.campaign.indexOf(item.uuid) !== -1)
+      .map(data => data.name)
+      .join(", ");
+
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
       did.qty * did.rate;
     const data = {
-      DocNumber: "1070",
-      TxnDate: "2020-01-29",
-      CustomerRef: {
-        name: "Amy's Bird Sanctuary",
-        value: "1"
-      },
-      CustomerMemo: {
-        value: "Added customer memo."
-      },
-      DueDate: "2020-01-31",
+      docNumber: "1070",
+      invoiceType: "Automatic",
+      company,
+      campaigns,
+      startDate: dt,
+      dueDate,
+      total,
       Line: [
         {
           LineNum: 1,
