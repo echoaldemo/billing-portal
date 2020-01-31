@@ -16,12 +16,10 @@ import {
   TextField,
   Collapse,
   Checkbox,
-  ListItemText,
-  Input
+  ListItemText
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import { post, getAPI } from "utils/api";
 
 const useStyles = makeStyles(theme => ({
@@ -125,19 +123,16 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     if (uuid === " ") {
       return;
     }
-    axios
-      .get(
-        `https://api.perfectpitchtech.com/identity/campaign/list?company=${uuid}&active=true`,
-        {
-          headers: {
-            Authorization: "Token 8ee5d9b89bff4f221f475f43bb5b1f26539e11b7"
-          }
-        }
-      )
-      .then(res => {
-        setActiveCampaigns(res.data);
-        setActiveCampaignsLoading(false);
+    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(res => {
+      console.log(res.data.map(d => d.uuid));
+      setSelectInputs({
+        ...selectInputs,
+        campaign: res.data.map(d => d.uuid),
+        company: uuid
       });
+      setActiveCampaigns(res.data);
+      setActiveCampaignsLoading(false);
+    });
   };
 
   const handleSave = () => {
@@ -161,13 +156,15 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
 
   const handleSelectChange = event => {
+    console.log(event.target.name, event.target.value);
     if (event.target.name === "company") {
       getActiveCampaigns(event.target.value);
+    } else {
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
+      });
     }
-    setSelectInputs({
-      ...selectInputs,
-      [event.target.name]: event.target.value
-    });
   };
   const handleBillableHoursChange = (e, label) => {
     setBillableHours({ ...billableHours, [label]: e.target.value });
@@ -295,34 +292,32 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 handleSelectChange(e);
               }}
               renderValue={selected =>
-                selected.length === activeCampaigns.length
+                selected.length === 0
+                  ? "Select campaign"
+                  : selected.length === activeCampaigns.length
                   ? "All"
-                  : selected.join(", ")
+                  : selected
+                      .map(s =>
+                        activeCampaigns
+                          .filter(a => a.uuid === s)
+                          .map(data => data.name)
+                      )
+                      .join(", ")
               }
+              disabled={activeCampaignsLoading}
+              displayEmpty
               fullWidth
             >
               {!activeCampaignsLoading &&
                 activeCampaigns.map((name, i) => (
                   <MenuItem key={i} value={name.uuid}>
                     <Checkbox
-                      checked={selectInputs.campaign.indexOf(name) > -1}
+                      checked={selectInputs.campaign.indexOf(name.uuid) > -1}
                     />
                     <ListItemText primary={name.name} />
                   </MenuItem>
                 ))}
             </Select>
-            {/* <Select
-              labelId="label1"
-              name="campaign"
-              value={selectInputs.campaign}
-              variant="outlined"
-              onChange={(e) => handleSelectChange(e)}
-              fullWidth
-            >
-              <MenuItem value=" ">Select campaign</MenuItem>
-              <MenuItem value="1">campaign 1</MenuItem>
-              <MenuItem value="2">campaign 2</MenuItem>
-            </Select> */}
           </Grid>
 
           <Grid item xs={3}>

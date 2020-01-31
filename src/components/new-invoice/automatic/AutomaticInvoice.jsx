@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   AppBar,
@@ -14,12 +14,14 @@ import {
   Divider,
   TextField,
   Collapse,
-  InputAdornment
+  InputAdornment,
+  Checkbox,
+  ListItemText
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { getMock, post } from "../../../utils/api";
+import { getMock, post, getAPI } from "../../../utils/api";
 
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -50,6 +52,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -61,7 +74,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
-    campaign: " ",
+    campaign: [],
     billingType: " ",
     billingPeriod: date
   });
@@ -91,6 +104,36 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   });
   const [merchant, setMerchant] = useState("");
   const [collapse, setCollapse] = useState(false);
+  const [activeCompanies, setActiveCompanies] = useState([]);
+  const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
+
+  useEffect(() => {
+    getActiveCompainies();
+  }, []);
+
+  const getActiveCompainies = () => {
+    getAPI("/identity/company/list?active=true").then(res => {
+      setActiveCompanies(res.data);
+      setActiveCompaniesLoading(false);
+    });
+  };
+  const getActiveCampaigns = uuid => {
+    if (uuid === " ") {
+      return;
+    }
+    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(res => {
+      console.log(res.data.map(d => d.uuid));
+      setSelectInputs({
+        ...selectInputs,
+        campaign: res.data.map(d => d.uuid),
+        company: uuid
+      });
+      setActiveCampaigns(res.data);
+      setActiveCampaignsLoading(false);
+    });
+  };
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -99,10 +142,14 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   });
 
   const handleSelectChange = event => {
-    setSelectInputs({
-      ...selectInputs,
-      [event.target.name]: event.target.value
-    });
+    if (event.target.name === "company") {
+      getActiveCampaigns(event.target.value);
+    } else {
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
+      });
+    }
   };
   const handleBillableHoursChange = (e, label) => {
     setBillableHours({ ...billableHours, [label]: e.target.value });
@@ -246,7 +293,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
         }
       ]
     };
-    post("/api/invoice", data)
+    post("/api/create_pending", data)
       .then(res => {
         console.log(res);
       })
@@ -292,11 +339,17 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               value={selectInputs.company}
               variant="outlined"
               onChange={e => handleSelectChange(e)}
+              disabled={activeCompaniesLoading}
+              MenuProps={MenuProps}
               fullWidth
             >
               <MenuItem value=" ">Select company</MenuItem>
-              <MenuItem value="1">Company 1</MenuItem>
-              <MenuItem value="2">Company 2</MenuItem>
+              {!activeCompaniesLoading &&
+                activeCompanies.map((c, i) => (
+                  <MenuItem value={c.uuid} key={i}>
+                    {c.name}
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
 
@@ -304,15 +357,40 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <InputLabel id="label1">Campaign</InputLabel>
             <Select
               labelId="label1"
-              name="campaign"
-              value={selectInputs.campaign}
+              id="label1"
               variant="outlined"
-              onChange={e => handleSelectChange(e)}
+              name="campaign"
+              multiple
+              value={selectInputs.campaign}
+              onChange={e => {
+                handleSelectChange(e);
+              }}
+              renderValue={selected =>
+                selected.length === 0
+                  ? "Select campaign"
+                  : selected.length === activeCampaigns.length
+                  ? "All"
+                  : selected
+                      .map(s =>
+                        activeCampaigns
+                          .filter(a => a.uuid === s)
+                          .map(data => data.name)
+                      )
+                      .join(", ")
+              }
+              disabled={activeCampaignsLoading}
+              displayEmpty
               fullWidth
             >
-              <MenuItem value=" ">Select campaign</MenuItem>
-              <MenuItem value="1">campaign 1</MenuItem>
-              <MenuItem value="2">campaign 2</MenuItem>
+              {!activeCampaignsLoading &&
+                activeCampaigns.map((name, i) => (
+                  <MenuItem key={i} value={name.uuid}>
+                    <Checkbox
+                      checked={selectInputs.campaign.indexOf(name.uuid) > -1}
+                    />
+                    <ListItemText primary={name.name} />
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
 
