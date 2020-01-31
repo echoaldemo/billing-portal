@@ -2,7 +2,7 @@ import React from "react";
 import { StateContext } from "context/StateContext";
 import { Modal } from "common-components";
 import { TableStepper } from "common-components";
-import { Divider } from "@material-ui/core";
+import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
 
 export default function ManagePendingInvoice() {
@@ -24,7 +24,21 @@ export default function ManagePendingInvoice() {
 
       <Divider />
 
-      <h4>Elit consequat ex ipsum tempor quis id sit ipsum voluptate.</h4>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+      >
+        <h4>Elit consequat ex ipsum tempor quis id sit ipsum voluptate.</h4>
+        <Button
+          variant="contained"
+          style={{ fontWeight: "bold", textDecoration: "none" }}
+        >
+          Complete Review
+        </Button>
+      </div>
     </Modal>
   );
 }
