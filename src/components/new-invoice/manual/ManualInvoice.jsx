@@ -16,15 +16,13 @@ import {
   TextField,
   Collapse,
   Checkbox,
-  ListItemText,
-  Input
+  ListItemText
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import { post, getAPI } from "utils/api";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   appBar: {
     position: "relative",
     backgroundColor: "#5F7D98"
@@ -116,27 +114,25 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   }, []);
 
   const getActiveCompainies = () => {
-    getAPI("/identity/company/list?active=true").then((res) => {
+    getAPI("/identity/company/list?active=true").then(res => {
       setActiveCompanies(res.data);
       setActiveCompaniesLoading(false);
     });
   };
-  const getActiveCampaigns = (uuid) => {
+  const getActiveCampaigns = uuid => {
     if (uuid === " ") {
       return;
     }
-    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(
-      (res) => {
-        console.log(res.data.map((d) => d.uuid));
-        setSelectInputs({
-          ...selectInputs,
-          campaign: res.data.map((d) => d.uuid),
-          company: uuid
-        });
-        setActiveCampaigns(res.data);
-        setActiveCampaignsLoading(false);
-      }
-    );
+    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(res => {
+      console.log(res.data.map(d => d.uuid));
+      setSelectInputs({
+        ...selectInputs,
+        campaign: res.data.map(d => d.uuid),
+        company: uuid
+      });
+      setActiveCampaigns(res.data);
+      setActiveCampaignsLoading(false);
+    });
   };
 
   const handleSave = () => {
@@ -156,10 +152,10 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       CustomerRef: {
         value: "1"
       }
-    }).then((res) => console.log(res));
+    }).then(res => console.log(res));
   };
 
-  const handleSelectChange = (event) => {
+  const handleSelectChange = event => {
     console.log(event.target.name, event.target.value);
     if (event.target.name === "company") {
       getActiveCampaigns(event.target.value);
@@ -185,7 +181,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const handleMerchantFees = (e, label) => {
     setMerchantFees({ ...merchantFees, [label]: e.target.value });
   };
-  const handleTotalAmount = (key) => {
+  const handleTotalAmount = key => {
     if (key === "1") {
       let amt = (billableHours.qty || 0) * (billableHours.rate || 0);
       setBillableHours({ ...billableHours, amt });
@@ -268,7 +264,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="company"
               value={selectInputs.company}
               variant="outlined"
-              onChange={(e) => handleSelectChange(e)}
+              onChange={e => handleSelectChange(e)}
               disabled={activeCompaniesLoading}
               MenuProps={MenuProps}
               fullWidth
@@ -292,19 +288,19 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="campaign"
               multiple
               value={selectInputs.campaign}
-              onChange={(e) => {
+              onChange={e => {
                 handleSelectChange(e);
               }}
-              renderValue={(selected) =>
+              renderValue={selected =>
                 selected.length === 0
                   ? "Select campaign"
                   : selected.length === activeCampaigns.length
                   ? "All"
                   : selected
-                      .map((s) =>
+                      .map(s =>
                         activeCampaigns
-                          .filter((a) => a.uuid === s)
-                          .map((data) => data.name)
+                          .filter(a => a.uuid === s)
+                          .map(data => data.name)
                       )
                       .join(", ")
               }
@@ -322,18 +318,6 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                   </MenuItem>
                 ))}
             </Select>
-            {/* <Select
-              labelId="label1"
-              name="campaign"
-              value={selectInputs.campaign}
-              variant="outlined"
-              onChange={(e) => handleSelectChange(e)}
-              fullWidth
-            >
-              <MenuItem value=" ">Select campaign</MenuItem>
-              <MenuItem value="1">campaign 1</MenuItem>
-              <MenuItem value="2">campaign 2</MenuItem>
-            </Select> */}
           </Grid>
 
           <Grid item xs={3}>
@@ -343,7 +327,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               name="billingPeriod"
               variant="outlined"
               value={selectInputs.billingPeriod}
-              onChange={(e) => handleSelectChange(e)}
+              onChange={e => handleSelectChange(e)}
               fullWidth
             >
               <MenuItem value=" ">Select billing period</MenuItem>
@@ -423,7 +407,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 value: billableHours.qty
               }}
               onBlur={() => handleTotalAmount("1")}
-              onChange={(e) => handleBillableHoursChange(e, "qty")}
+              onChange={e => handleBillableHoursChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -434,7 +418,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 value: billableHours.rate
               }}
               onBlur={() => handleTotalAmount("1")}
-              onChange={(e) => handleBillableHoursChange(e, "rate")}
+              onChange={e => handleBillableHoursChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -448,7 +432,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               }}
               onFocus={() => handleTotalAmount("1")}
               onBlur={() => handleTotalAmount("1")}
-              onChange={(e) => handleBillableHoursChange(e, "amt")}
+              onChange={e => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -473,7 +457,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 value: performance.qty
               }}
               onBlur={() => handleTotalAmount("2")}
-              onChange={(e) => handlePerformanceChange(e, "qty")}
+              onChange={e => handlePerformanceChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -484,7 +468,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 value: performance.rate
               }}
               onBlur={() => handleTotalAmount("2")}
-              onChange={(e) => handlePerformanceChange(e, "rate")}
+              onChange={e => handlePerformanceChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -496,7 +480,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               }}
               onFocus={() => handleTotalAmount("2")}
               onBlur={() => handleTotalAmount("2")}
-              onChange={(e) => handlePerformanceChange(e, "amt")}
+              onChange={e => handlePerformanceChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -517,7 +501,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 value: did.qty
               }}
               onBlur={() => handleTotalAmount("3")}
-              onChange={(e) => handleDIDsChange(e, "qty")}
+              onChange={e => handleDIDsChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -528,7 +512,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 value: did.rate
               }}
               onBlur={() => handleTotalAmount("3")}
-              onChange={(e) => handleDIDsChange(e, "rate")}
+              onChange={e => handleDIDsChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -540,7 +524,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               }}
               onFocus={() => handleTotalAmount("3")}
               onBlur={() => handleTotalAmount("3")}
-              onChange={(e) => handleDIDsChange(e, "amt")}
+              onChange={e => handleDIDsChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -615,7 +599,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 inputProps={{
                   value: ls.qty
                 }}
-                onChange={(e) => handleLSChange(e, "qty")}
+                onChange={e => handleLSChange(e, "qty")}
                 fullWidth
               />
             </Grid>
@@ -626,7 +610,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 inputProps={{
                   value: ls.rate
                 }}
-                onChange={(e) => handleLSChange(e, "rate")}
+                onChange={e => handleLSChange(e, "rate")}
                 fullWidth
               />
             </Grid>
@@ -638,7 +622,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                   value: ls.amt ? formatter2.format(ls.amt) : ""
                 }}
                 onBlur={() => handleTotalAmount("4")}
-                onChange={(e) => handleLSChange(e, "amt")}
+                onChange={e => handleLSChange(e, "amt")}
                 fullWidth
               />
             </Grid>
@@ -666,7 +650,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                     ? formatter2.format(merchantFees.amt)
                     : ""
                 }}
-                onChange={(e) => handleMerchantFees(e, "amt")}
+                onChange={e => handleMerchantFees(e, "amt")}
                 fullWidth
               />
             </Grid>

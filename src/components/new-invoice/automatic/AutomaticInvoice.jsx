@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   AppBar,
@@ -14,12 +14,22 @@ import {
   Divider,
   TextField,
   Collapse,
-  InputAdornment
+  InputAdornment,
+  Checkbox,
+  ListItemText
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { getMock } from "../../../utils/api";
+import { getMock, post, getAPI } from "../../../utils/api";
+
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from "@material-ui/pickers";
+
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -43,16 +53,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   const classes = useStyles();
+  const today = new Date();
+  const date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
   const [selectInputs, setSelectInputs] = useState({
     company: " ",
-    campaign: " ",
-    billingPeriod: " "
+    campaign: [],
+    billingType: " ",
+    billingPeriod: date
   });
   const [billableHours, setBillableHours] = useState({
     name: "Billable hours",
@@ -80,6 +105,36 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   });
   const [merchant, setMerchant] = useState("");
   const [collapse, setCollapse] = useState(false);
+  const [activeCompanies, setActiveCompanies] = useState([]);
+  const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
+
+  useEffect(() => {
+    getActiveCompainies();
+  }, []);
+
+  const getActiveCompainies = () => {
+    getAPI("/identity/company/list?active=true").then(res => {
+      setActiveCompanies(res.data);
+      setActiveCompaniesLoading(false);
+    });
+  };
+  const getActiveCampaigns = uuid => {
+    if (uuid === " ") {
+      return;
+    }
+    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(res => {
+      console.log(res.data.map(d => d.uuid));
+      setSelectInputs({
+        ...selectInputs,
+        campaign: res.data.map(d => d.uuid),
+        company: uuid
+      });
+      setActiveCampaigns(res.data);
+      setActiveCampaignsLoading(false);
+    });
+  };
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -88,10 +143,14 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   });
 
   const handleSelectChange = event => {
-    setSelectInputs({
-      ...selectInputs,
-      [event.target.name]: event.target.value
-    });
+    if (event.target.name === "company") {
+      getActiveCampaigns(event.target.value);
+    } else {
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
+      });
+    }
   };
   const handleBillableHoursChange = (e, label) => {
     setBillableHours({ ...billableHours, [label]: e.target.value });
@@ -104,6 +163,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   };
   const handleLitigator = (e, label) => {
     setLitigator({ ...litigator, [label]: e.target.value });
+  };
+  const handleDateChange = date => {
+    setSelectInputs({ ...selectInputs, billingPeriod: date });
   };
 
   const handleBillingChange = event => {
@@ -155,6 +217,102 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     else return "0.00";
   };
 
+  const createInvoice = () => {
+    let dt = new Date(selectInputs.billingPeriod);
+    dt.setMonth(dt.getMonth() + 1);
+    const dueDate = dt.toLocaleDateString().replace(/\//g, "-");
+
+    const company = activeCompanies.filter(
+      item => item.uuid === selectInputs.company
+    )[0].name;
+
+    const campaigns = activeCampaigns
+      .filter(item => selectInputs.campaign.indexOf(item.uuid) !== -1)
+      .map(data => data.name)
+      .join(", ");
+
+    const total =
+      billableHours.qty * billableHours.rate +
+      performance.qty * performance.rate +
+      did.qty * did.rate;
+    const data = {
+      docNumber: "1070",
+      invoiceType: "Automatic",
+      company,
+      campaigns,
+      startDate: dt,
+      dueDate,
+      total,
+      Line: [
+        {
+          LineNum: 1,
+          Amount: billableHours.qty * billableHours.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "NON"
+            },
+            ItemRef: {
+              name: "Billable Hours",
+              value: "21"
+            },
+            Qty: billableHours.qty,
+            UnitPrice: billableHours.rate
+          },
+          Id: "1",
+          DetailType: "SalesItemLineDetail",
+          Description: "amount of services rendered in hours"
+        },
+        {
+          LineNum: 2,
+          Amount: performance.qty * performance.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "NON"
+            },
+            ItemRef: {
+              name: "Performance",
+              value: "22"
+            },
+            Qty: performance.qty,
+            UnitPrice: performance.rate
+          },
+          Id: "2",
+          DetailType: "SalesItemLineDetail"
+        },
+        {
+          LineNum: 3,
+          Amount: did.qty * did.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: "NON"
+            },
+            ItemRef: {
+              name: "DID",
+              value: "23"
+            },
+            Qty: did.qty,
+            UnitPrice: did.rate
+          },
+          Id: "3",
+          DetailType: "SalesItemLineDetail",
+          Description: "amount of DIDs used"
+        },
+        {
+          DetailType: "SubTotalLineDetail",
+          Amount: total,
+          SubTotalLineDetail: {}
+        }
+      ]
+    };
+    post("/api/create_pending", data)
+      .then(res => {
+        handleClose()
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   return (
     <Dialog
       open={open}
@@ -176,14 +334,14 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             New Automatic Invoice
           </Typography>
-          <Button autoFocus color="inherit" onClick={handleClose}>
+          <Button autoFocus color="inherit" onClick={createInvoice}>
             save
           </Button>
         </Toolbar>
       </AppBar>
 
       <form className={classes.form}>
-        <Grid container spacing={2} xs={12} style={{ marginBottom: 30 }}>
+        <Grid container spacing={2} xs={12} style={{ marginBottom: 10 }}>
           <Grid item xs={3}>
             <InputLabel id="label">Company</InputLabel>
             <Select
@@ -192,11 +350,17 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               value={selectInputs.company}
               variant="outlined"
               onChange={e => handleSelectChange(e)}
+              disabled={activeCompaniesLoading}
+              MenuProps={MenuProps}
               fullWidth
             >
               <MenuItem value=" ">Select company</MenuItem>
-              <MenuItem value="1">Company 1</MenuItem>
-              <MenuItem value="2">Company 2</MenuItem>
+              {!activeCompaniesLoading &&
+                activeCompanies.map((c, i) => (
+                  <MenuItem value={c.uuid} key={i}>
+                    {c.name}
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
 
@@ -204,35 +368,75 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <InputLabel id="label1">Campaign</InputLabel>
             <Select
               labelId="label1"
-              name="campaign"
-              value={selectInputs.campaign}
+              id="label1"
               variant="outlined"
-              onChange={e => handleSelectChange(e)}
+              name="campaign"
+              multiple
+              value={selectInputs.campaign}
+              onChange={e => {
+                handleSelectChange(e);
+              }}
+              renderValue={selected =>
+                selected.length === 0
+                  ? "Select campaign"
+                  : selected.length === activeCampaigns.length
+                  ? "All"
+                  : selected
+                      .map(s =>
+                        activeCampaigns
+                          .filter(a => a.uuid === s)
+                          .map(data => data.name)
+                      )
+                      .join(", ")
+              }
+              disabled={activeCampaignsLoading}
+              displayEmpty
               fullWidth
             >
-              <MenuItem value=" ">Select campaign</MenuItem>
-              <MenuItem value="1">campaign 1</MenuItem>
-              <MenuItem value="2">campaign 2</MenuItem>
+              {!activeCampaignsLoading &&
+                activeCampaigns.map((name, i) => (
+                  <MenuItem key={i} value={name.uuid}>
+                    <Checkbox
+                      checked={selectInputs.campaign.indexOf(name.uuid) > -1}
+                    />
+                    <ListItemText primary={name.name} />
+                  </MenuItem>
+                ))}
             </Select>
           </Grid>
 
           <Grid item xs={3}>
-            <InputLabel id="label1">Billing Period</InputLabel>
+            <InputLabel id="label1">Billing Type</InputLabel>
             <Select
               labelId="label1"
-              name="billingPeriod"
+              name="billingType"
               variant="outlined"
-              value={selectInputs.billingPeriod}
+              value={selectInputs.billingType}
               onChange={e => handleBillingChange(e)}
               fullWidth
             >
-              <MenuItem value=" ">Select billing period</MenuItem>
+              <MenuItem value=" ">Select billing type</MenuItem>
               <MenuItem value="1">Monthly</MenuItem>
               <MenuItem value="2">Weekly</MenuItem>
             </Select>
           </Grid>
 
           <Grid item xs={3}>
+            <InputLabel id="label1">Billing Period</InputLabel>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                name="billingPeriod"
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                value={selectInputs.billingPeriod}
+                onChange={handleDateChange}
+                inputVariant="outlined"
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+
+          <Grid item xs={12}>
             <div
               style={{
                 display: "flex",
@@ -352,7 +556,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="number of interactions"
               inputProps={{
-                value: performance.qty
+                value: performance.qty,
+                readOnly: true
               }}
               onChange={e => handlePerformanceChange(e, "qty")}
               fullWidth
@@ -362,7 +567,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="cost per interactions"
               inputProps={{
-                value: performance.rate
+                value: performance.rate,
+                readOnly: true
               }}
               onChange={e => handlePerformanceChange(e, "rate")}
               fullWidth
@@ -395,7 +601,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="total DID"
               inputProps={{
-                value: did.qty
+                value: did.qty,
+                readOnly: true
               }}
               onChange={e => handleDIDsChange(e, "qty")}
               fullWidth
@@ -405,7 +612,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="cost per DID"
               inputProps={{
-                value: did.rate
+                value: did.rate,
+                readOnly: true
               }}
               onChange={e => handleDIDsChange(e, "rate")}
               fullWidth
