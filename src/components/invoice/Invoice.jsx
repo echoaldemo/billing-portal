@@ -1,5 +1,5 @@
 import React from 'react';
-import { PanelHeader } from 'common_components';
+import { PanelHeader } from 'common-components';
 import { InvoiceTable, EditInvoice, TableTabs, PendingTable, } from './components';
 import { Grid, Typography, Box, Paper } from '@material-ui/core';
 import { StateContext } from "context/StateContext"

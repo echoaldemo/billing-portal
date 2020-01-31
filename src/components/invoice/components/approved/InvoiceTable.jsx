@@ -3,7 +3,7 @@ import React from 'react'
 import { Table, TableContainer, TablePagination } from '@material-ui/core'
 
 import { get } from 'utils/api'
-import { TableLoader } from 'common_components'
+import { TableLoader } from 'common-components'
 import { InvoiceTableHeader } from '../index'
 import InvoiceTableBody from './InvoiceTableBody'
 import { StateContext } from 'context/StateContext'
@@ -87,23 +87,23 @@ const InvoiceTable = () => {
       {loading ? (
         <TableLoader />
       ) : (
-        <React.Fragment>
-          <TableContainer>
-            <Table>
-              <InvoiceTableHeader headCells={headCells} />
-              <InvoiceTableBody data={sortData(data)} />
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={data.length}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
-        </React.Fragment>
-      )}
+          <React.Fragment>
+            <TableContainer>
+              <Table>
+                <InvoiceTableHeader headCells={headCells} />
+                <InvoiceTableBody data={sortData(data)} />
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data.length}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </React.Fragment>
+        )}
     </div>
   )
 }
