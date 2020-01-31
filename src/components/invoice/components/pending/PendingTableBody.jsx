@@ -31,12 +31,12 @@ const PendingTableBody = ({ data }) => {
             <TableCell padding="checkbox">
               <Checkbox />
             </TableCell>
-            <TableCell>{item.DocNumber}</TableCell>
-            <TableCell>{item.invoice_type}</TableCell>
+            <TableCell>{item.docNumber}</TableCell>
+            <TableCell>{item.invoiceType}</TableCell>
             <TableCell>{item.company}</TableCell>
             <TableCell>{item.campaigns}</TableCell>
-            <TableCell>{item.TxnDate}</TableCell>
-            <TableCell>{item.DueDate}</TableCell>
+            <TableCell>{item.startDate}</TableCell>
+            <TableCell>{item.dueDate}</TableCell>
             <TableCell>{formatter.format(item.total)}</TableCell>
             <TableCell>{randomStatus()}</TableCell>
             <TableCell

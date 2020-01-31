@@ -29,8 +29,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-import moment from "moment";
-import { parse } from "date-fns";
+
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -307,7 +306,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     };
     post("/api/create_pending", data)
       .then(res => {
-        console.log(res);
+        handleClose()
       })
       .catch(err => {
         console.log(err);
