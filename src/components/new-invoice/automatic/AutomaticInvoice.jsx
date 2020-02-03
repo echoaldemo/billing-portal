@@ -60,7 +60,7 @@ const defaultLS = {
   amt: ""
 };
 const defaultSelectInputs = {
-  company: "",
+  company: " ",
   campaign: [],
   billingType: " ",
   billingPeriod: date
@@ -202,7 +202,6 @@ const NewInvoice = ({ open = false, handleClose }) => {
   const createInvoice = () => {
     setLoading(true);
     handleClose();
-
     let dt = new Date(selectInputs.billingPeriod);
 
     let startDate =
@@ -312,6 +311,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
           .then(res => {
             setLoading(false);
             setData(res.data);
+            resetState();
           })
           .catch(err => {
             console.log(err);
@@ -320,6 +320,15 @@ const NewInvoice = ({ open = false, handleClose }) => {
       .catch(err => {
         console.log(err);
       });
+  };
+
+  const resetState = () => {
+    setBillableHours(defaultBillableHours);
+    setPerformance(defaultPerformance);
+    setDID(defaultDID);
+    setLitigator(defaultLS);
+    setMerchant(" ");
+    setSelectInputs(defaultSelectInputs);
   };
 
   return (
