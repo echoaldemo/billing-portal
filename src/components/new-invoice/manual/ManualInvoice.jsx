@@ -7,7 +7,6 @@ import {
   Button,
   Typography,
   Toolbar,
-  Slide,
   Select,
   MenuItem,
   InputLabel,
@@ -19,45 +18,20 @@ import {
   ListItemText
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
+import { useStyles, MenuProps, Transition } from "./styles/ManualInvoice.style";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from "@material-ui/pickers";
 import { post, getAPI } from "utils/api";
+import { mockCompanies, mockCampaigns } from "./mockdata";
 
-const useStyles = makeStyles((theme) => ({
-  appBar: {
-    position: "relative",
-    backgroundColor: "#5F7D98"
-  },
-  title: {
-    marginLeft: theme.spacing(2),
-    flex: 1
-  },
-  form: {
-    padding: 30
-  },
-  head: {
-    backgroundColor: "#5F7D98",
-    border: "1px solid #fff",
-    color: "#fff"
-  },
-  dialog: {
-    minWidth: "80vw"
-  }
-}));
+console.log(mockCompanies, mockCampaigns);
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
+const today = new Date();
+const date =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
 const defaultBillableHours = {
   name: "Billable hours",
@@ -92,7 +66,8 @@ const defaultMerchantFees = {
 const defaultSelectInputs = {
   company: "",
   campaign: [],
-  billingPeriod: " "
+  billingType: " ",
+  billingPeriod: date
 };
 
 const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
@@ -121,10 +96,10 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   }, []);
 
   const getActiveCompainies = () => {
-    getAPI("/identity/company/list?active=true").then((res) => {
-      setActiveCompanies(res.data);
+    setTimeout(() => {
+      setActiveCompanies(mockCompanies);
       setActiveCompaniesLoading(false);
-    });
+    }, 1000);
   };
   const getActiveCampaigns = (uuid) => {
     if (uuid === "") {
@@ -132,21 +107,24 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
       return;
     }
-    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(
-      (res) => {
-        setSelectInputs({
-          ...selectInputs,
-          campaign: res.data.map((d) => d.uuid),
-          company: uuid
-        });
-        setActiveCampaigns(res.data);
-        setActiveCampaignsLoading(false);
-      }
-    );
+    setTimeout(() => {
+      const campaigns = mockCampaigns.filter((c) => c.company === uuid);
+      console.log(campaigns);
+      setSelectInputs({
+        ...selectInputs,
+        campaign: campaigns.map((d) => d.uuid),
+        company: uuid
+      });
+      setActiveCampaigns(campaigns);
+      setActiveCampaignsLoading(false);
+    }, 1000);
   };
 
   const handleSave = () => {
     let line = [];
+    let dt = new Date(selectInputs.billingPeriod);
+    dt.setMonth(dt.getMonth() + 1);
+    const dueDate = dt.toLocaleDateString().replace(/\//g, "-");
     billableHours.amt &&
       line.push({
         DetailType: "SalesItemLineDetail",
@@ -192,7 +170,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       const company = activeCompanies
         .filter((i) => i.uuid === selectInputs.company)
         .map((data) => data.name)
-        .join(",");
+        .join(", ");
       const campaigns = selectInputs.campaign
         .map((i) =>
           activeCampaigns.filter((j) => j.uuid === i).map((data) => data.name)
@@ -206,8 +184,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
         invoiceType: "manual",
         company,
         campaigns,
-        startDate: "2020-01-30",
-        dueDate: "2020-02-30",
+        startDate: dt,
+        dueDate,
         total
       }).then((res) => {
         handleClose();
@@ -230,6 +208,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
         [event.target.name]: event.target.value
       });
     }
+  };
+  const handleDateChange = (date) => {
+    setSelectInputs({ ...selectInputs, billingPeriod: date });
   };
   const handleBillableHoursChange = (e, label) => {
     setBillableHours({ ...billableHours, [label]: e.target.value });
@@ -394,19 +375,33 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <InputLabel id="label1">Billing Period</InputLabel>
             <Select
               labelId="label1"
-              name="billingPeriod"
+              name="billingType"
               variant="outlined"
-              value={selectInputs.billingPeriod}
+              value={selectInputs.billingType}
               onChange={(e) => handleSelectChange(e)}
               fullWidth
             >
-              <MenuItem value=" ">Select billing period</MenuItem>
+              <MenuItem value=" ">Select billing type</MenuItem>
               <MenuItem value="1">Monthly</MenuItem>
               <MenuItem value="2">Weekly</MenuItem>
             </Select>
           </Grid>
-
           <Grid item xs={3}>
+            <InputLabel id="label1">Billing Period</InputLabel>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                name="billingPeriod"
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                value={selectInputs.billingPeriod}
+                onChange={handleDateChange}
+                inputVariant="outlined"
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+
+          <Grid item xs={12}>
             <div
               style={{
                 display: "flex",
