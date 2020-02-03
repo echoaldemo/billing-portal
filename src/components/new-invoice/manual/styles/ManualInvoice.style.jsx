@@ -12,7 +12,8 @@ export const useStyles = makeStyles((theme) => ({
     flex: 1
   },
   form: {
-    padding: 30
+    padding: 30,
+    overflow: "auto"
   },
   head: {
     backgroundColor: "#5F7D98",
@@ -21,6 +22,16 @@ export const useStyles = makeStyles((theme) => ({
   },
   dialog: {
     minWidth: "80vw"
+  },
+  save: {
+    borderRadius: "3px 0 0 3px",
+    color: "#fff",
+    padding: 0
+  },
+  more: {
+    borderRadius: "0 3px 3px 0",
+    minWidth: 10,
+    padding: 0
   }
 }));
 
