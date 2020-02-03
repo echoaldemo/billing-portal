@@ -11,7 +11,8 @@ export default function ManagePendingInvoice() {
   return (
     <Modal
       square={true}
-      open={state.openManage}
+      // open={state.openManage}
+      open={true}
       onClose={() => {
         dispatch({ type: "set-manage-modal", payload: { openManage: false } });
       }}
