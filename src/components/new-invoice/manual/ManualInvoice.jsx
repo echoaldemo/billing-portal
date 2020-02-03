@@ -20,7 +20,9 @@ import {
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { post, getAPI } from "utils/api";
+import { post, getAPI, get } from "utils/api";
+import { StateContext } from "context/StateContext";
+import { mockCompanies, mockCampaigns } from "../mock";
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -59,43 +61,51 @@ const MenuProps = {
   }
 };
 
-const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
+const defaultBillableHours = {
+  name: "Billable hours",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultPerformance = {
+  name: "Performance",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultDID = {
+  name: "DID",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultLS = {
+  name: "Litigator Scrubbing",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultMerchantFees = {
+  name: "Merchant Fees",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultSelectInputs = {
+  company: "",
+  campaign: [],
+  billingPeriod: " "
+};
+
+const NewInvoice = ({ open = false, handleClose }) => {
   const classes = useStyles();
-  const [selectInputs, setSelectInputs] = useState({
-    company: " ",
-    campaign: [],
-    billingPeriod: " "
-  });
-  const [billableHours, setBillableHours] = useState({
-    name: "Billable hours",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [performance, setPerformance] = useState({
-    name: "Performance",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [did, setDID] = useState({
-    name: "DID",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [ls, setLS] = useState({
-    name: "Litigator Scrubbing",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [merchantFees, setMerchantFees] = useState({
-    name: "Merchant Fees",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
+  const { setLoading, setData } = React.useContext(StateContext);
+  const [selectInputs, setSelectInputs] = useState(defaultSelectInputs);
+  const [billableHours, setBillableHours] = useState(defaultBillableHours);
+  const [performance, setPerformance] = useState(defaultPerformance);
+  const [did, setDID] = useState(defaultDID);
+  const [ls, setLS] = useState(defaultLS);
+  const [merchantFees, setMerchantFees] = useState(defaultMerchantFees);
   const [total, setTotal] = useState(0);
   const [itemsTotal, setItemsTotal] = useState(0);
   const [extraItemsTotal, setExtraItemsTotal] = useState(0);
@@ -114,28 +124,32 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   }, []);
 
   const getActiveCompainies = () => {
-    getAPI("/identity/company/list?active=true").then(res => {
-      setActiveCompanies(res.data);
+    setTimeout(() => {
+      setActiveCompanies(mockCompanies);
       setActiveCompaniesLoading(false);
-    });
+    }, 1000);
   };
   const getActiveCampaigns = uuid => {
-    if (uuid === " ") {
+    if (uuid === "") {
+      setActiveCampaignsLoading(true);
+      setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
       return;
     }
-    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(res => {
-      console.log(res.data.map(d => d.uuid));
+    setTimeout(() => {
+      const campaigns = mockCampaigns.filter(c => c.company === uuid);
+      console.log(campaigns);
       setSelectInputs({
         ...selectInputs,
-        campaign: res.data.map(d => d.uuid),
+        campaign: campaigns.map(d => d.uuid),
         company: uuid
       });
-      setActiveCampaigns(res.data);
+      setActiveCampaigns(campaigns);
       setActiveCampaignsLoading(false);
-    });
+    }, 1000);
   };
-
   const handleSave = () => {
+    setLoading(true);
+    handleClose();
     let line = [];
     billableHours.amt &&
       line.push({
@@ -144,19 +158,81 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
         SalesItemLineDetail: {
           ItemRef: {
             value: "21"
-          }
+          },
+          Qty: billableHours.qty,
+          UnitPrice: billableHours.rate
         }
       });
-    post(`/api/invoice`, {
-      Line: line,
-      CustomerRef: {
-        value: "1"
-      }
-    }).then(res => console.log(res));
+    performance.amt &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: performance.amt,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "21"
+          },
+          Qty: performance.qty,
+          UnitPrice: performance.rate
+        }
+      });
+    did.amt &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: did.amt,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "21"
+          },
+          Qty: did.qty,
+          UnitPrice: did.rate
+        }
+      });
+    line.push({
+      DetailType: "SubTotalLineDetail",
+      Amount: total,
+      SubTotalLineDetail: {}
+    });
+    if (line.length > 1) {
+      const company = activeCompanies
+        .filter(i => i.uuid === selectInputs.company)
+        .map(data => data.name)
+        .join(",");
+      const campaigns = selectInputs.campaign
+        .map(i =>
+          activeCampaigns.filter(j => j.uuid === i).map(data => data.name)
+        )
+        .join(",");
+      post(`/api/create_pending`, {
+        docNumber: "1070",
+        Line: line,
+        total,
+        docNumber: "1070",
+        invoiceType: "manual",
+        company,
+        campaigns,
+        startDate: "2020-01-30",
+        dueDate: "2020-02-30",
+        total
+      }).then(res => {
+        get("/api/pending/list")
+          .then(res => {
+            setLoading(false);
+            setData(res.data.reverse());
+          })
+          .catch(err => {
+            console.log(err);
+          });
+        setBillableHours(defaultBillableHours);
+        setPerformance(defaultPerformance);
+        setDID(defaultDID);
+        setLS(defaultLS);
+        setMerchantFees(defaultMerchantFees);
+        setSelectInputs(defaultSelectInputs);
+      });
+    }
   };
 
   const handleSelectChange = event => {
-    console.log(event.target.name, event.target.value);
     if (event.target.name === "company") {
       getActiveCampaigns(event.target.value);
     } else {
@@ -248,7 +324,11 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             autoFocus
             color="inherit"
             onClick={() => handleSave()}
-            disabled={!total}
+            disabled={
+              !total ||
+              !Boolean(selectInputs.company) ||
+              !Boolean(selectInputs.campaign.length)
+            }
           >
             save
           </Button>
@@ -267,9 +347,10 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               onChange={e => handleSelectChange(e)}
               disabled={activeCompaniesLoading}
               MenuProps={MenuProps}
+              displayEmpty
               fullWidth
             >
-              <MenuItem value=" ">Select company</MenuItem>
+              <MenuItem value="">Select company</MenuItem>
               {!activeCompaniesLoading &&
                 activeCompanies.map((c, i) => (
                   <MenuItem value={c.uuid} key={i}>
@@ -427,11 +508,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
               placeholder="Amount"
               inputProps={{
                 value: billableHours.amt
-                  ? formatter2.format(billableHours.amt)
-                  : ""
               }}
-              onFocus={() => handleTotalAmount("1")}
-              onBlur={() => handleTotalAmount("1")}
+              // onFocus={() => handleTotalAmount("1")}
+              // onBlur={() => handleTotalAmount("1")}
               onChange={e => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
@@ -476,10 +555,10 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: performance.amt ? formatter2.format(performance.amt) : ""
+                value: performance.amt
               }}
-              onFocus={() => handleTotalAmount("2")}
-              onBlur={() => handleTotalAmount("2")}
+              // onFocus={() => handleTotalAmount("2")}
+              // onBlur={() => handleTotalAmount("2")}
               onChange={e => handlePerformanceChange(e, "amt")}
               fullWidth
             />
@@ -520,10 +599,10 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: did.amt ? formatter2.format(did.amt) : ""
+                value: did.amt
               }}
-              onFocus={() => handleTotalAmount("3")}
-              onBlur={() => handleTotalAmount("3")}
+              // onFocus={() => handleTotalAmount("3")}
+              // onBlur={() => handleTotalAmount("3")}
               onChange={e => handleDIDsChange(e, "amt")}
               fullWidth
             />
@@ -619,9 +698,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 placeholder="Amount"
                 onFocus={() => handleTotalAmount("4")}
                 inputProps={{
-                  value: ls.amt ? formatter2.format(ls.amt) : ""
+                  value: ls.amt
                 }}
-                onBlur={() => handleTotalAmount("4")}
+                // onBlur={() => handleTotalAmount("4")}
                 onChange={e => handleLSChange(e, "amt")}
                 fullWidth
               />
@@ -647,8 +726,6 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
                 placeholder="Amount"
                 inputProps={{
                   value: merchantFees.amt
-                    ? formatter2.format(merchantFees.amt)
-                    : ""
                 }}
                 onChange={e => handleMerchantFees(e, "amt")}
                 fullWidth

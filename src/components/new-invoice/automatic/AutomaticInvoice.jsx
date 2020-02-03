@@ -6,7 +6,6 @@ import {
   Button,
   Typography,
   Toolbar,
-  Slide,
   Select,
   MenuItem,
   InputLabel,
@@ -19,9 +18,6 @@ import {
   ListItemText
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
-
-import { getMock, post, getAPI } from "../../../utils/api";
 
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -30,79 +26,55 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 
+import { StateContext } from "context/StateContext";
+import { useStyles, MenuProps, Transition } from "./styles";
+import { getMock, post, get } from "../../../utils/api";
+import { mockCompanies, mockCampaigns } from "../mock";
 
-const useStyles = makeStyles(theme => ({
-  appBar: {
-    position: "relative",
-    backgroundColor: "#5F7D98"
-  },
-  title: {
-    marginLeft: theme.spacing(2),
-    flex: 1
-  },
-  form: {
-    padding: 30
-  },
-  head: {
-    backgroundColor: "#5F7D98",
-    border: "1px solid #fff",
-    color: "#fff"
-  },
-  dialog: {
-    minWidth: "80vw"
-  }
-}));
+const today = new Date();
+const date =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+const defaultBillableHours = {
+  name: "Billable hours",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultPerformance = {
+  name: "Performance",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultDID = {
+  name: "DID",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultLS = {
+  name: "Litigator Scrubbing",
+  qty: "",
+  rate: "",
+  amt: ""
+};
+const defaultSelectInputs = {
+  company: " ",
+  campaign: [],
+  billingType: " ",
+  billingPeriod: date
 };
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
+const NewInvoice = ({ open = false, handleClose }) => {
+  const { setLoading, setData } = React.useContext(StateContext);
   const classes = useStyles();
-  const today = new Date();
-  const date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const [selectInputs, setSelectInputs] = useState({
-    company: " ",
-    campaign: [],
-    billingType: " ",
-    billingPeriod: date
-  });
-  const [billableHours, setBillableHours] = useState({
-    name: "Billable hours",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [performance, setPerformance] = useState({
-    name: "Performance",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [did, setDID] = useState({
-    name: "DID",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
-  const [litigator, setLitigator] = useState({
-    name: "Litigator Scrubbing",
-    qty: "",
-    rate: "",
-    amt: ""
-  });
+
+  const [selectInputs, setSelectInputs] = useState(defaultSelectInputs);
+  const [billableHours, setBillableHours] = useState(defaultBillableHours);
+  const [performance, setPerformance] = useState(defaultPerformance);
+  const [did, setDID] = useState(defaultDID);
+  const [litigator, setLitigator] = useState(defaultLS);
   const [merchant, setMerchant] = useState("");
   const [collapse, setCollapse] = useState(false);
   const [activeCompanies, setActiveCompanies] = useState([]);
@@ -115,25 +87,28 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
   }, []);
 
   const getActiveCompainies = () => {
-    getAPI("/identity/company/list?active=true").then(res => {
-      setActiveCompanies(res.data);
+    setTimeout(() => {
+      setActiveCompanies(mockCompanies);
       setActiveCompaniesLoading(false);
-    });
+    }, 1000);
   };
   const getActiveCampaigns = uuid => {
-    if (uuid === " ") {
+    if (uuid === "") {
+      setActiveCampaignsLoading(true);
+      setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
       return;
     }
-    getAPI(`/identity/campaign/list?company=${uuid}&active=true`).then(res => {
-      console.log(res.data.map(d => d.uuid));
+    setTimeout(() => {
+      const campaigns = mockCampaigns.filter(c => c.company === uuid);
+      console.log(campaigns);
       setSelectInputs({
         ...selectInputs,
-        campaign: res.data.map(d => d.uuid),
+        campaign: campaigns.map(d => d.uuid),
         company: uuid
       });
-      setActiveCampaigns(res.data);
+      setActiveCampaigns(campaigns);
       setActiveCampaignsLoading(false);
-    });
+    }, 1000);
   };
 
   const formatter = new Intl.NumberFormat("en-US", {
@@ -217,10 +192,34 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     else return "0.00";
   };
 
+  const appendLeadingZeroes = n => {
+    if (n <= 9) {
+      return "0" + n;
+    }
+    return n;
+  };
+
   const createInvoice = () => {
+    setLoading(true);
+    handleClose();
     let dt = new Date(selectInputs.billingPeriod);
-    dt.setMonth(dt.getMonth() + 1);
-    const dueDate = dt.toLocaleDateString().replace(/\//g, "-");
+
+    let startDate =
+      dt.getFullYear() +
+      "-" +
+      appendLeadingZeroes(dt.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(dt.getDate());
+
+    if (selectInputs.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+    else dt.setDate(dt.getDate() + 7);
+
+    const dueDate =
+      dt.getFullYear() +
+      "-" +
+      appendLeadingZeroes(dt.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(dt.getDate());
 
     const company = activeCompanies.filter(
       item => item.uuid === selectInputs.company
@@ -234,13 +233,15 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
-      did.qty * did.rate;
+      did.qty * did.rate +
+      litigator.qty * litigator.rate +
+      merchant;
     const data = {
       docNumber: "1070",
       invoiceType: "Automatic",
       company,
       campaigns,
-      startDate: dt,
+      startDate,
       dueDate,
       total,
       Line: [
@@ -305,12 +306,29 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       ]
     };
     post("/api/create_pending", data)
-      .then(res => {
-        handleClose()
+      .then(() => {
+        get("/api/pending/list")
+          .then(res => {
+            setLoading(false);
+            setData(res.data.reverse());
+            resetState();
+          })
+          .catch(err => {
+            console.log(err);
+          });
       })
       .catch(err => {
         console.log(err);
       });
+  };
+
+  const resetState = () => {
+    setBillableHours(defaultBillableHours);
+    setPerformance(defaultPerformance);
+    setDID(defaultDID);
+    setLitigator(defaultLS);
+    setMerchant(" ");
+    setSelectInputs(defaultSelectInputs);
   };
 
   return (
