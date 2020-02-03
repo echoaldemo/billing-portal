@@ -10,7 +10,8 @@ const Modal = ({
   onClose,
   title,
   contentStyle,
-  children
+  children,
+  renderEditButton
 }) => {
   return (
     <Dialog
@@ -64,15 +65,11 @@ const Modal = ({
           </div>
 
           <div>
-            <Button
-              style={{
-                textTransform: "none",
-                fontWeight: "bold",
-                color: "#FFF"
-              }}
-            >
-              Edit
-            </Button>
+            {renderEditButton ? (
+              <React.Fragment> {renderEditButton()} </React.Fragment>
+            ) : (
+              <React.Fragment>&nbsp;</React.Fragment>
+            )}
           </div>
         </div>
       </DialogTitle>

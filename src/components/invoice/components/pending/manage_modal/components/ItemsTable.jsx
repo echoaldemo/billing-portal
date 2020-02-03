@@ -7,18 +7,20 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { TableFooter } from "@material-ui/core";
 
-function createData(name, amount, quantity) {
-  return { name, amount, quantity };
-}
+export default function ItemsTable({ formState, setFormState }) {
+  const getTotalQty = () => {
+    let totalQty = 0;
+    formState.Line.map(item => {
+      if (item.SalesItemLineDetail) {
+        totalQty += item.SalesItemLineDetail.Qty;
+      }
+    });
 
-const rows = [
-  createData("Billable Hours", 159, 6.0),
-  createData("Billable Hours", 159, 6.0),
-  createData("Billable Hours", 159, 6.0),
-  createData("Billable Hours", 159, 6.0)
-];
+    return totalQty;
+  };
 
-export default function ItemsTable() {
+  const totalObj = formState.Line[formState.Line.length - 1];
+
   return (
     <TableContainer style={{ border: "solid 1px #F1f1f1" }}>
       <Table aria-label="simple table">
@@ -36,30 +38,38 @@ export default function ItemsTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell component="th" scope="row">
-                {row.amount}
-              </TableCell>
-              <TableCell component="th" scope="row">
-                {row.quantity}
-              </TableCell>
-            </TableRow>
-          ))}
+          {formState.Line.map(row => {
+            if (row.SalesItemLineDetail)
+              return (
+                <TableRow key={row.name}>
+                  <TableCell component="th" scope="row">
+                    {console.log(row.SalesItemLineDetail, "<=")}
+                    {row.SalesItemLineDetail.ItemRef.name}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.SalesItemLineDetail.Qty}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {formatter.format(row.SalesItemLineDetail.UnitPrice)}
+                  </TableCell>
+                </TableRow>
+              );
+          })}
         </TableBody>
         <TableFooter>
+          {console.log(totalObj, "<=====")}
           <TableRow>
             <TableCell component="th" scope="row">
               <b style={{ fontSize: 15 }}>Total</b>
             </TableCell>
+
             <TableCell component="th" scope="row">
-              <b style={{ fontSize: 15 }}>124</b>
+              <b style={{ fontSize: 15 }}>{getTotalQty()}</b>
             </TableCell>
             <TableCell component="th" scope="row">
-              <b style={{ fontSize: 15 }}>$24,332.00</b>
+              <b style={{ fontSize: 15 }}>
+                {formatter.format(totalObj.Amount)}
+              </b>
             </TableCell>
           </TableRow>
         </TableFooter>
@@ -67,3 +77,9 @@ export default function ItemsTable() {
     </TableContainer>
   );
 }
+
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2
+});
