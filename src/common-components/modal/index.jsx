@@ -1,10 +1,18 @@
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import React from "react";
+import { Dialog, DialogTitle, DialogContent, Button } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
-
-const Modal = ({ open, width, height, onClose, title, contentStyle, children }) => {
+const Modal = ({
+  open,
+  width,
+  height,
+  onClose,
+  title,
+  contentStyle,
+  children,
+  renderEditButton
+}) => {
   return (
     <Dialog
       maxWidth="xl"
@@ -13,9 +21,9 @@ const Modal = ({ open, width, height, onClose, title, contentStyle, children }) 
         square: true,
         style: {
           minWidth: width ? width : 420,
-          minHeight: height ? height : 'auto',
+          minHeight: height ? height : "auto",
           maxWidth: width ? width : 420,
-          maxHeight: height ? height : 'auto'
+          maxHeight: height ? height : "auto"
         }
       }}
       onClose={() => {
@@ -24,19 +32,27 @@ const Modal = ({ open, width, height, onClose, title, contentStyle, children }) 
     >
       <DialogTitle
         style={{
-          backgroundColor: '#5f7d98',
-          color: '#FFF',
+          backgroundColor: "#5f7d98",
+          color: "#FFF",
           padding: 10
         }}
       >
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
           }}
         >
-          <div style={{ width: 30 }}>&nbsp;</div>
+          <div>
+            <IconButton
+              onClick={() => {
+                onClose();
+              }}
+            >
+              <CloseIcon style={{ color: "#FFF" }} />
+            </IconButton>
+          </div>
           <div>
             <span
               style={{
@@ -47,14 +63,13 @@ const Modal = ({ open, width, height, onClose, title, contentStyle, children }) 
               {title}
             </span>
           </div>
+
           <div>
-            <IconButton
-              onClick={() => {
-                onClose();
-              }}
-            >
-              <CloseIcon style={{ color: '#FFF' }} />
-            </IconButton>
+            {renderEditButton ? (
+              <React.Fragment> {renderEditButton()} </React.Fragment>
+            ) : (
+              <React.Fragment>&nbsp;</React.Fragment>
+            )}
           </div>
         </div>
       </DialogTitle>
@@ -62,7 +77,7 @@ const Modal = ({ open, width, height, onClose, title, contentStyle, children }) 
         dividers
         style={{
           ...contentStyle,
-          overflow: 'auto'
+          overflow: "auto"
         }}
       >
         {children}

@@ -11,7 +11,7 @@ import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
 
 const headCells = [
   { id: "invoice", label: "Invoice" },
-  { id: "invoice_type", label: "Invoice Type" },
+  { id: "invoice_type", label: "Type" },
   { id: "company", label: "Company" },
   { id: "campaigns", label: "Campaigns" },
   { id: "start_date", label: "Start date" },

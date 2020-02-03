@@ -3,4 +3,12 @@ import Breadcrumbs from "./breadcrumbs";
 import TableLoader from "./table-loader";
 import Modal from "./modal";
 import TableStepper from "./stepper/TableStepper";
-export { PanelHeader, Breadcrumbs, TableLoader, Modal, TableStepper };
+import InputField from "./input-field";
+export {
+  InputField,
+  PanelHeader,
+  Breadcrumbs,
+  TableLoader,
+  Modal,
+  TableStepper
+};

@@ -1,16 +1,20 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 
 const initialState = {
   active_tab: 0,
   loading: false,
   data: [],
   openEdit: false,
-  openManage: false
+  openManage: false,
+  selectedData: {},
+  editManageData: false
 };
 
 const StateContext = React.createContext();
 
 const StateProvider = ({ children }) => {
+  const [modalLoading, setModalLoading] = useState(false);
+
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
@@ -37,6 +41,10 @@ const StateProvider = ({ children }) => {
         return { ...state, openEdit: action.payload.openEdit };
       case "set-manage-modal":
         return { ...state, openManage: action.payload.openManage };
+      case "set-selected-data":
+        return { ...state, selectedData: action.payload.selectedData };
+      case "set-edit-manage-data":
+        return { ...state, editManageData: action.payload.editManageData };
       default:
         return null;
     }
@@ -50,7 +58,9 @@ const StateProvider = ({ children }) => {
         setLoading,
         setData,
         setEditModal,
-        setTab
+        setTab,
+        modalLoading,
+        setModalLoading
       }}
     >
       {children}

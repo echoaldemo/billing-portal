@@ -3,6 +3,7 @@ import { TableBody, TableCell, Checkbox, TableRow } from "@material-ui/core";
 
 import { getRandomInt } from "utils/func";
 import { StateContext } from "context/StateContext";
+import { truncate } from "utils/func";
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -10,7 +11,7 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 const PendingTableBody = ({ data }) => {
-  const { dispatch } = React.useContext(StateContext);
+  const { dispatch, setModalLoading } = React.useContext(StateContext);
 
   const randomStatus = () => {
     let arr = [
@@ -23,10 +24,25 @@ const PendingTableBody = ({ data }) => {
     return <b style={{ color: value.color }}>{value.label}</b>;
   };
 
+  const passAllData = item => {
+    dispatch({
+      type: "set-manage-modal",
+      payload: { openManage: true }
+    });
+    setModalLoading(true);
+
+    setTimeout(() => {
+      dispatch({ type: "set-selected-data", payload: { selectedData: item } });
+      setModalLoading(false);
+    }, 500);
+  };
+
   return (
     <TableBody>
       {console.log(data)}
       {data.map((item, i) => {
+        let campaigns = item.campaigns.split(",");
+        console.log(campaigns);
         return (
           <TableRow hover aria-checked={false} key={i}>
             <TableCell padding="checkbox">
@@ -35,15 +51,14 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{item.docNumber}</TableCell>
             <TableCell>{item.invoiceType}</TableCell>
             <TableCell>{item.company}</TableCell>
-            <TableCell
-              style={{
-                maxWidth: 150,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap"
-              }}
-            >
-              {item.campaigns}
+            <TableCell className="hover-details">
+              <a href="#" style={{ color: "#444851" }}>
+                {truncate(
+                  item.campaigns,
+                  15,
+                  `, +${item.campaigns.split(",").length} more`
+                )}
+              </a>
             </TableCell>
             <TableCell>{item.startDate}</TableCell>
             <TableCell>{item.dueDate}</TableCell>
@@ -51,10 +66,7 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{randomStatus()}</TableCell>
             <TableCell
               onClick={() => {
-                dispatch({
-                  type: "set-manage-modal",
-                  payload: { openManage: true }
-                });
+                passAllData(item);
               }}
             >
               <u style={{ cursor: "pointer", fontSize: 14 }}>

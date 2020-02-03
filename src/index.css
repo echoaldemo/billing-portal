@@ -108,7 +108,10 @@ body {
   justify-content: center;
   align-items: center;
 }
-
+.display-space-between {
+  display: flex;
+  justify-content: space-between;
+}
 .h-500 {
   height: 500px;
 }
@@ -141,4 +144,21 @@ body {
 }
 .MuiTypography-body1 {
   font-weight: bold !important;
+}
+
+.section-title-text {
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: #444851;
+}
+.section-title-text b {
+  font-size: 12px;
+}
+.modal-details-container {
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
