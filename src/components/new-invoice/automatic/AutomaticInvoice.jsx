@@ -30,7 +30,6 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 
-
 const useStyles = makeStyles(theme => ({
   appBar: {
     position: "relative",
@@ -217,10 +216,30 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     else return "0.00";
   };
 
+  const appendLeadingZeroes = n => {
+    if (n <= 9) {
+      return "0" + n;
+    }
+    return n;
+  };
+
   const createInvoice = () => {
     let dt = new Date(selectInputs.billingPeriod);
+
+    let startDate =
+      dt.getFullYear() +
+      "-" +
+      appendLeadingZeroes(dt.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(dt.getDate());
     dt.setMonth(dt.getMonth() + 1);
-    const dueDate = dt.toLocaleDateString().replace(/\//g, "-");
+
+    const dueDate =
+      dt.getFullYear() +
+      "-" +
+      appendLeadingZeroes(dt.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(dt.getDate());
 
     const company = activeCompanies.filter(
       item => item.uuid === selectInputs.company
@@ -240,7 +259,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       invoiceType: "Automatic",
       company,
       campaigns,
-      startDate: dt,
+      startDate,
       dueDate,
       total,
       Line: [
@@ -306,7 +325,7 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
     };
     post("/api/create_pending", data)
       .then(res => {
-        handleClose()
+        handleClose();
       })
       .catch(err => {
         console.log(err);
