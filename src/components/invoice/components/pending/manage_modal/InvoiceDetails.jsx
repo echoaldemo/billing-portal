@@ -21,7 +21,7 @@ export default function InvoiceDetails({ data }) {
       container
       style={{ display: "flex", justifyContent: "space-between" }}
     >
-      <Grid item lg={6}>
+      <Grid item lg={6} md={12}>
         <List subheader={<h4>Invoice Details</h4>} className={classes.root}>
           <ListItem>
             <ListItemText primary="Invoice Type" />
@@ -48,7 +48,7 @@ export default function InvoiceDetails({ data }) {
           </ListItem>
         </List>
       </Grid>
-      <Grid item lg={6}>
+      <Grid item lg={6} md={12}>
         <List subheader={<h4>Items</h4>} className={classes.root}>
           <ListItem>
             <ListItemText primary="adasd" />
