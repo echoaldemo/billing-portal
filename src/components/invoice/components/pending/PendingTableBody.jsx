@@ -35,7 +35,16 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{item.docNumber}</TableCell>
             <TableCell>{item.invoiceType}</TableCell>
             <TableCell>{item.company}</TableCell>
-            <TableCell>{item.campaigns}</TableCell>
+            <TableCell
+              style={{
+                maxWidth: 150,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+              }}
+            >
+              {item.campaigns}
+            </TableCell>
             <TableCell>{item.startDate}</TableCell>
             <TableCell>{item.dueDate}</TableCell>
             <TableCell>{formatter.format(item.total)}</TableCell>

@@ -45,7 +45,7 @@ const PendingTable = () => {
     get("/api/pending/list")
       .then(res => {
         setLoading(false);
-        setData(res.data);
+        setData(res.data.reverse());
         console.log(res.data);
       })
       .catch(err => {

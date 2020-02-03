@@ -310,7 +310,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
         get("/api/pending/list")
           .then(res => {
             setLoading(false);
-            setData(res.data);
+            setData(res.data.reverse());
             resetState();
           })
           .catch(err => {
