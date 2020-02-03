@@ -6,7 +6,7 @@ import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
 
 export default function ManagePendingInvoice() {
-  const { state, dispatch } = React.useContext(StateContext);
+  const { dispatch } = React.useContext(StateContext);
 
   return (
     <Modal
@@ -17,7 +17,7 @@ export default function ManagePendingInvoice() {
         dispatch({ type: "set-manage-modal", payload: { openManage: false } });
       }}
       title={<b>Manage Pending Invoice</b>}
-      width={800}
+      width={930}
     >
       <TableStepper activeStep={1} />
       <Divider />

@@ -86,7 +86,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function getSteps() {
-  return ["Sent", "Reviewed", "Approve"];
+  return ["Draft", "Reviewed", "Approve"];
 }
 
 export default function TableStepper({ activeStep }) {

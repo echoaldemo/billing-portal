@@ -1,23 +1,28 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import DetailsContainer from "./components/DetailsContainer";
-const useStyles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    backgroundColor: theme.palette.background.paper
-  }
-}));
-
+import { InputField } from "common-components";
+import { Grid } from "@material-ui/core";
+import ItemsTable from "./components/ItemsTable";
 export default function InvoiceDetails({ data }) {
-  const classes = useStyles();
-
   return (
     <div className="modal-details-container">
-      <div className="display-space-between">
-        <DetailsContainer title="DOC Number" value="1070" />
-        <DetailsContainer title="Company" value="Sample Company 1" />
-        <DetailsContainer title="Campaigns" value="Zen Demo Campaign" />
-      </div>
+      <Grid container spacing={3}>
+        <Grid item lg={3} xs={3} md={3}>
+          <InputField label="Company" value="Sample Company" disabled />
+        </Grid>
+        <Grid item lg={3} xs={3} md={3}>
+          <InputField label="Company" value="Sample Company" disabled />
+        </Grid>
+        <Grid item lg={3} xs={3} md={3}>
+          <InputField label="Company" value="Sample Company" disabled />
+        </Grid>
+        <Grid item lg={3} xs={3} md={3}>
+          <InputField label="Company" value="Sample Company" disabled />
+        </Grid>
+      </Grid>
+      <br />
+      <ItemsTable />
+      <br />
+      <br />
     </div>
   );
 }

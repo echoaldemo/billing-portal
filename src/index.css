@@ -147,7 +147,7 @@ body {
 }
 
 .section-title-text {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: normal;
   font-stretch: normal;
   font-style: normal;
@@ -156,7 +156,7 @@ body {
   color: #444851;
 }
 .section-title-text b {
-  font-size: 16px;
+  font-size: 12px;
 }
 .modal-details-container {
   padding-top: 15px;
