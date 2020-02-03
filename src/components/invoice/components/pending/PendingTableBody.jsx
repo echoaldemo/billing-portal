@@ -55,7 +55,7 @@ const PendingTableBody = ({ data }) => {
               <a href="#" style={{ color: "#444851" }}>
                 {truncate(
                   item.campaigns,
-                  15,
+                  8,
                   `, +${item.campaigns.split(",").length} more`
                 )}
               </a>
