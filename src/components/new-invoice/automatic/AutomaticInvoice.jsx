@@ -232,7 +232,9 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       appendLeadingZeroes(dt.getMonth() + 1) +
       "-" +
       appendLeadingZeroes(dt.getDate());
-    dt.setMonth(dt.getMonth() + 1);
+
+    if (selectInputs.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+    else dt.setDate(dt.getDate() + 7);
 
     const dueDate =
       dt.getFullYear() +
@@ -240,6 +242,8 @@ const NewInvoice = ({ open = false, handleOpen, handleClose }) => {
       appendLeadingZeroes(dt.getMonth() + 1) +
       "-" +
       appendLeadingZeroes(dt.getDate());
+
+    console.log(startDate, dueDate);
 
     const company = activeCompanies.filter(
       item => item.uuid === selectInputs.company
