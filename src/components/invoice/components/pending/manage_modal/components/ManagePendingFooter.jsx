@@ -7,27 +7,67 @@ export default function ManagePendingFooter() {
     StateContext
   );
 
-  const updateStateStatus = () => {
+  const updateStateStatus = status => {
     dispatch({
       type: "set-update-loading",
       payload: { updateLoading: true }
     });
 
-    patch(`/api/pending/edit/${state.selectedData.id}`, { status: 1 })
+    patch(`/api/pending/edit/${state.selectedData.id}`, { status: status })
       .then(res => {
-        console.log("Res", res[0]);
         dispatch({
           type: "set-update-loading",
           payload: { updateLoading: false }
         });
         dispatch({
           type: "set-selected-data",
-          payload: { selectedData: res.data[0] }
+          payload: { selectedData: res.data }
         });
       })
       .then(() => {
         getPendingInvoicesData();
       });
+  };
+
+  const renderStageButton = item => {
+    switch (item) {
+      case 0:
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            style={{
+              fontWeight: "bold",
+              backgroundColor: "#f89222",
+              textDecoration: "none"
+            }}
+            onClick={() => {
+              updateStateStatus(1);
+            }}
+          >
+            Complete Review
+          </Button>
+        );
+      case 1:
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            style={{
+              fontWeight: "bold",
+              backgroundColor: "#2ca01d",
+              textDecoration: "none"
+            }}
+            onClick={() => {
+              updateStateStatus(2);
+            }}
+          >
+            Approve Invoice
+          </Button>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -61,18 +101,7 @@ export default function ManagePendingFooter() {
           Skip
         </Button>
         &emsp;
-        <Button
-          variant="contained"
-          color="primary"
-          style={{
-            fontWeight: "bold",
-            backgroundColor: "#0f97fc",
-            textDecoration: "none"
-          }}
-          onClick={updateStateStatus}
-        >
-          Complete Review
-        </Button>
+        {renderStageButton(state.selectedData.status)}
       </div>
     </div>
   );

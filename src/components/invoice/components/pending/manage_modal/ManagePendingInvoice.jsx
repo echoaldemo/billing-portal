@@ -6,7 +6,9 @@ import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
 import ManagePendingFooter from "./components/ManagePendingFooter";
 const EditButton = () => {
-  const { state, dispatch } = React.useContext(StateContext);
+  const { state, dispatch, updatePendingTableData } = React.useContext(
+    StateContext
+  );
   return (
     <Button
       style={{

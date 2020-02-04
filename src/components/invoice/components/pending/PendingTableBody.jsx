@@ -21,13 +21,13 @@ const statusToString = status => {
     case 1:
       return (
         <div className="display-align-center review-color">
-          <Visibility fontSize="small" /> &nbsp; <b>Waiting for Review</b>
+          <Visibility fontSize="small" /> &nbsp; <b>Reviewed</b>
         </div>
       );
     case 2:
       return (
         <div className="display-align-center approve-color">
-          <ThumbUp fontSize="small" /> &nbsp; <b>Waiting for Approval</b>
+          <ThumbUp fontSize="small" /> &nbsp; <b>Approved</b>
         </div>
       );
   }
