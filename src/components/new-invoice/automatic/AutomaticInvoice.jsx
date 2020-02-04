@@ -346,15 +346,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      maxWidth="sm"
-      onClose={closeModal}
-      classes={{ paperWidthSm: classes.dialog }}
-      TransitionComponent={Transition}
-      disableBackdropClick
-      disableEscapeKeyDown
-    >
+    <>
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
@@ -820,7 +812,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
           </div>
         </Collapse>
       </form>
-    </Dialog>
+    </>
   );
 };
 

@@ -4,28 +4,24 @@ import {
   Toolbar,
   Tooltip,
   Menu,
-  MenuItem
+  MenuItem,
+  Dialog
 } from "@material-ui/core";
 
 import { Add } from "@material-ui/icons";
 import Manual from "../../new-invoice/manual/ManualInvoice";
 import Automatic from "../../new-invoice/automatic/AutomaticInvoice";
-
+import { useStyles, Transition } from "../../new-invoice/automatic/styles";
 
 const InvoiceTableToolbar = props => {
-
+  const classes = useStyles();
   const [state, setState] = React.useState({
-    manual: false,
-    automatic: false,
-    anchorEl: null
+    anchorEl: null,
+    type: ""
   });
 
-  const handleOpen = label => {
-    setState({ ...state, [label]: true });
-  };
-
-  const handleClose = label => {
-    setState({ ...state, [label]: false });
+  const handleClose = () => {
+    setState({ ...state, type: "" });
   };
 
   const handleOpenMenu = event => {
@@ -36,15 +32,19 @@ const InvoiceTableToolbar = props => {
     setState({ ...state, anchorEl: null });
   };
 
+  const renderModal = () => {
+    if (state.type === "manual")
+      return <Manual handleClose={() => handleClose("manual")} />;
+    else if (state.type === "automatic")
+      return <Automatic handleClose={() => handleClose("automatic")} />;
+  };
+
   return (
     <Toolbar>
-
-
-
       <Tooltip title="Add new invoice">
         <Button className="add-btn" onClick={handleOpenMenu}>
           <Add /> New Invoice
-          </Button>
+        </Button>
       </Tooltip>
 
       <Menu
@@ -56,28 +56,35 @@ const InvoiceTableToolbar = props => {
         <MenuItem
           style={{ padding: "15px 20px" }}
           onClick={() =>
-            setState({ ...state, automatic: true, anchorEl: null })
+            setState({
+              ...state,
+              automatic: true,
+              type: "automatic",
+              anchorEl: null
+            })
           }
         >
           Automatic
         </MenuItem>
         <MenuItem
           style={{ padding: "15px 20px" }}
-          onClick={() => setState({ ...state, manual: true, anchorEl: null })}
+          onClick={() =>
+            setState({ ...state, manual: true, type: "manual", anchorEl: null })
+          }
         >
           Manual
         </MenuItem>
       </Menu>
-      <Manual
-        open={state.manual}
-        handleClose={() => handleClose("manual")}
-        handleOpen={handleOpen}
-      />
-      <Automatic
-        open={state.automatic}
-        handleClose={() => handleClose("automatic")}
-        handleOpen={handleOpen}
-      />
+      <Dialog
+        open={state.type !== ""}
+        maxWidth="sm"
+        classes={{ paperWidthSm: classes.dialog }}
+        disableBackdropClick
+        disableEscapeKeyDown
+        TransitionComponent={Transition}
+      >
+        {renderModal()}
+      </Dialog>
     </Toolbar>
   );
 };
