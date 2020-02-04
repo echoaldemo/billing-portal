@@ -7,7 +7,6 @@ import {
   Button,
   Typography,
   Toolbar,
-  Slide,
   Select,
   MenuItem,
   InputLabel,
@@ -16,50 +15,25 @@ import {
   TextField,
   Collapse,
   Checkbox,
-  ListItemText
+  ListItemText,
+  Menu
 } from "@material-ui/core";
 import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
-import { post, getAPI, get } from "utils/api";
+import { useStyles, MenuProps, Transition } from "./styles/ManualInvoice.style";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from "@material-ui/pickers";
+import { post, get } from "utils/api";
 import { StateContext } from "context/StateContext";
-import { mockCompanies, mockCampaigns } from "../mock";
+import { mockCompanies, mockCampaigns } from "./mockdata";
 
-const useStyles = makeStyles(theme => ({
-  appBar: {
-    position: "relative",
-    backgroundColor: "#5F7D98"
-  },
-  title: {
-    marginLeft: theme.spacing(2),
-    flex: 1
-  },
-  form: {
-    padding: 30
-  },
-  head: {
-    backgroundColor: "#5F7D98",
-    border: "1px solid #fff",
-    color: "#fff"
-  },
-  dialog: {
-    minWidth: "80vw"
-  }
-}));
+console.log(mockCompanies, mockCampaigns);
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
+const today = new Date();
+const date =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
 const defaultBillableHours = {
   name: "Billable hours",
@@ -87,14 +61,17 @@ const defaultLS = {
 };
 const defaultMerchantFees = {
   name: "Merchant Fees",
-  qty: "",
-  rate: "",
-  amt: ""
+  company: "",
+  campaign: [],
+  billingType: " ",
+  billingPeriod: date
 };
+
 const defaultSelectInputs = {
   company: "",
   campaign: [],
-  billingPeriod: " "
+  billingType: " ",
+  billingPeriod: date
 };
 
 const NewInvoice = ({ open = false, handleClose }) => {
@@ -114,6 +91,9 @@ const NewInvoice = ({ open = false, handleClose }) => {
   const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
   const [activeCampaigns, setActiveCampaigns] = useState([]);
   const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
+  const [state, setState] = useState({
+    anchorEl: null
+  });
 
   useEffect(() => {
     getItemsTotal();
@@ -129,28 +109,52 @@ const NewInvoice = ({ open = false, handleClose }) => {
       setActiveCompaniesLoading(false);
     }, 1000);
   };
-  const getActiveCampaigns = uuid => {
+  const getActiveCampaigns = (uuid) => {
     if (uuid === "") {
       setActiveCampaignsLoading(true);
       setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
       return;
     }
     setTimeout(() => {
-      const campaigns = mockCampaigns.filter(c => c.company === uuid);
+      const campaigns = mockCampaigns.filter((c) => c.company === uuid);
       console.log(campaigns);
       setSelectInputs({
         ...selectInputs,
-        campaign: campaigns.map(d => d.uuid),
+        campaign: campaigns.map((d) => d.uuid),
         company: uuid
       });
       setActiveCampaigns(campaigns);
       setActiveCampaignsLoading(false);
     }, 1000);
   };
+
+  const appendLeadingZeroes = (n) => {
+    if (n <= 9) {
+      return "0" + n;
+    }
+    return n;
+  };
   const handleSave = () => {
     setLoading(true);
     handleClose();
     let line = [];
+    let dt = new Date(selectInputs.billingPeriod);
+
+    let startDate =
+      dt.getFullYear() +
+      "-" +
+      appendLeadingZeroes(dt.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(dt.getDate());
+    dt.setMonth(dt.getMonth() + 1);
+
+    const dueDate =
+      dt.getFullYear() +
+      "-" +
+      appendLeadingZeroes(dt.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(dt.getDate());
+
     billableHours.amt &&
       line.push({
         DetailType: "SalesItemLineDetail",
@@ -159,8 +163,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
           ItemRef: {
             value: "21"
           },
-          Qty: billableHours.qty,
-          UnitPrice: billableHours.rate
+          Qty: billableHours.qty || 0,
+          UnitPrice: billableHours.rate || 0
         }
       });
     performance.amt &&
@@ -171,8 +175,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
           ItemRef: {
             value: "21"
           },
-          Qty: performance.qty,
-          UnitPrice: performance.rate
+          Qty: performance.qty || 0,
+          UnitPrice: performance.rate || 0
         }
       });
     did.amt &&
@@ -183,8 +187,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
           ItemRef: {
             value: "21"
           },
-          Qty: did.qty,
-          UnitPrice: did.rate
+          Qty: did.qty || 0,
+          UnitPrice: did.rate || 0
         }
       });
     line.push({
@@ -194,32 +198,31 @@ const NewInvoice = ({ open = false, handleClose }) => {
     });
     if (line.length > 1) {
       const company = activeCompanies
-        .filter(i => i.uuid === selectInputs.company)
-        .map(data => data.name)
-        .join(",");
+        .filter((i) => i.uuid === selectInputs.company)
+        .map((data) => data.name)
+        .join(", ");
       const campaigns = selectInputs.campaign
-        .map(i =>
-          activeCampaigns.filter(j => j.uuid === i).map(data => data.name)
+        .map((i) =>
+          activeCampaigns.filter((j) => j.uuid === i).map((data) => data.name)
         )
         .join(",");
       post(`/api/create_pending`, {
-        docNumber: "1070",
+        docNumber: Math.floor(Math.random() * 9999),
         Line: line,
         total,
-        docNumber: "1070",
         invoiceType: "manual",
         company,
         campaigns,
-        startDate: "2020-01-30",
-        dueDate: "2020-02-30",
+        startDate,
+        dueDate,
         total
-      }).then(res => {
+      }).then((res) => {
         get("/api/pending/list")
-          .then(res => {
+          .then((res) => {
             setLoading(false);
             setData(res.data.reverse());
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
         setBillableHours(defaultBillableHours);
@@ -232,7 +235,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
     }
   };
 
-  const handleSelectChange = event => {
+  const handleSelectChange = (event) => {
     if (event.target.name === "company") {
       getActiveCampaigns(event.target.value);
     } else {
@@ -241,6 +244,9 @@ const NewInvoice = ({ open = false, handleClose }) => {
         [event.target.name]: event.target.value
       });
     }
+  };
+  const handleDateChange = (date) => {
+    setSelectInputs({ ...selectInputs, billingPeriod: date });
   };
   const handleBillableHoursChange = (e, label) => {
     setBillableHours({ ...billableHours, [label]: e.target.value });
@@ -257,7 +263,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
   const handleMerchantFees = (e, label) => {
     setMerchantFees({ ...merchantFees, [label]: e.target.value });
   };
-  const handleTotalAmount = key => {
+  const handleTotalAmount = (key) => {
     if (key === "1") {
       let amt = (billableHours.qty || 0) * (billableHours.rate || 0);
       setBillableHours({ ...billableHours, amt });
@@ -298,6 +304,18 @@ const NewInvoice = ({ open = false, handleClose }) => {
   const formatter2 = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 2
   });
+  const handleShowMore = (e) => {
+    setState({
+      ...state,
+      anchorEl: e.currentTarget
+    });
+  };
+  const handleCloseMore = () => {
+    setState({
+      ...state,
+      anchorEl: null
+    });
+  };
 
   return (
     <Dialog
@@ -321,9 +339,10 @@ const NewInvoice = ({ open = false, handleClose }) => {
             New Manual Invoice
           </Typography>
           <Button
-            autoFocus
-            color="inherit"
+            classes={{ root: classes.save }}
             onClick={() => handleSave()}
+            color="inherit"
+            variant="outlined"
             disabled={
               !total ||
               !Boolean(selectInputs.company) ||
@@ -332,6 +351,28 @@ const NewInvoice = ({ open = false, handleClose }) => {
           >
             save
           </Button>
+          <Button
+            classes={{ root: classes.more }}
+            variant="outlined"
+            color="inherit"
+            onClick={handleShowMore}
+            disabled={
+              !total ||
+              !Boolean(selectInputs.company) ||
+              !Boolean(selectInputs.campaign.length)
+            }
+          >
+            <KeyboardArrowDown />
+          </Button>
+          <Menu
+            anchorEl={state.anchorEl}
+            keepMounted
+            open={Boolean(state.anchorEl)}
+            onClose={handleCloseMore}
+          >
+            <MenuItem style={{ padding: "15px 20px" }}>Send</MenuItem>
+            <MenuItem style={{ padding: "15px 20px" }}>Approve</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
 
@@ -344,7 +385,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
               name="company"
               value={selectInputs.company}
               variant="outlined"
-              onChange={e => handleSelectChange(e)}
+              onChange={(e) => handleSelectChange(e)}
               disabled={activeCompaniesLoading}
               MenuProps={MenuProps}
               displayEmpty
@@ -369,19 +410,19 @@ const NewInvoice = ({ open = false, handleClose }) => {
               name="campaign"
               multiple
               value={selectInputs.campaign}
-              onChange={e => {
+              onChange={(e) => {
                 handleSelectChange(e);
               }}
-              renderValue={selected =>
+              renderValue={(selected) =>
                 selected.length === 0
                   ? "Select campaign"
                   : selected.length === activeCampaigns.length
                   ? "All"
                   : selected
-                      .map(s =>
+                      .map((s) =>
                         activeCampaigns
-                          .filter(a => a.uuid === s)
-                          .map(data => data.name)
+                          .filter((a) => a.uuid === s)
+                          .map((data) => data.name)
                       )
                       .join(", ")
               }
@@ -405,19 +446,33 @@ const NewInvoice = ({ open = false, handleClose }) => {
             <InputLabel id="label1">Billing Period</InputLabel>
             <Select
               labelId="label1"
-              name="billingPeriod"
+              name="billingType"
               variant="outlined"
-              value={selectInputs.billingPeriod}
-              onChange={e => handleSelectChange(e)}
+              value={selectInputs.billingType}
+              onChange={(e) => handleSelectChange(e)}
               fullWidth
             >
-              <MenuItem value=" ">Select billing period</MenuItem>
+              <MenuItem value=" ">Select billing type</MenuItem>
               <MenuItem value="1">Monthly</MenuItem>
               <MenuItem value="2">Weekly</MenuItem>
             </Select>
           </Grid>
-
           <Grid item xs={3}>
+            <InputLabel id="label1">Billing Period</InputLabel>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                name="billingPeriod"
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                value={selectInputs.billingPeriod}
+                onChange={handleDateChange}
+                inputVariant="outlined"
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+
+          <Grid item xs={12}>
             <div
               style={{
                 display: "flex",
@@ -488,7 +543,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 value: billableHours.qty
               }}
               onBlur={() => handleTotalAmount("1")}
-              onChange={e => handleBillableHoursChange(e, "qty")}
+              onChange={(e) => handleBillableHoursChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -499,7 +554,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 value: billableHours.rate
               }}
               onBlur={() => handleTotalAmount("1")}
-              onChange={e => handleBillableHoursChange(e, "rate")}
+              onChange={(e) => handleBillableHoursChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -509,9 +564,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
               inputProps={{
                 value: billableHours.amt
               }}
-              // onFocus={() => handleTotalAmount("1")}
-              // onBlur={() => handleTotalAmount("1")}
-              onChange={e => handleBillableHoursChange(e, "amt")}
+              onChange={(e) => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -536,7 +589,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 value: performance.qty
               }}
               onBlur={() => handleTotalAmount("2")}
-              onChange={e => handlePerformanceChange(e, "qty")}
+              onChange={(e) => handlePerformanceChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -547,7 +600,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 value: performance.rate
               }}
               onBlur={() => handleTotalAmount("2")}
-              onChange={e => handlePerformanceChange(e, "rate")}
+              onChange={(e) => handlePerformanceChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -559,7 +612,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
               }}
               // onFocus={() => handleTotalAmount("2")}
               // onBlur={() => handleTotalAmount("2")}
-              onChange={e => handlePerformanceChange(e, "amt")}
+              onChange={(e) => handlePerformanceChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -580,7 +633,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 value: did.qty
               }}
               onBlur={() => handleTotalAmount("3")}
-              onChange={e => handleDIDsChange(e, "qty")}
+              onChange={(e) => handleDIDsChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -591,7 +644,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 value: did.rate
               }}
               onBlur={() => handleTotalAmount("3")}
-              onChange={e => handleDIDsChange(e, "rate")}
+              onChange={(e) => handleDIDsChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -603,7 +656,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
               }}
               // onFocus={() => handleTotalAmount("3")}
               // onBlur={() => handleTotalAmount("3")}
-              onChange={e => handleDIDsChange(e, "amt")}
+              onChange={(e) => handleDIDsChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -678,7 +731,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 inputProps={{
                   value: ls.qty
                 }}
-                onChange={e => handleLSChange(e, "qty")}
+                onChange={(e) => handleLSChange(e, "qty")}
                 fullWidth
               />
             </Grid>
@@ -689,7 +742,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 inputProps={{
                   value: ls.rate
                 }}
-                onChange={e => handleLSChange(e, "rate")}
+                onChange={(e) => handleLSChange(e, "rate")}
                 fullWidth
               />
             </Grid>
@@ -701,7 +754,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                   value: ls.amt
                 }}
                 // onBlur={() => handleTotalAmount("4")}
-                onChange={e => handleLSChange(e, "amt")}
+                onChange={(e) => handleLSChange(e, "amt")}
                 fullWidth
               />
             </Grid>
@@ -727,7 +780,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 inputProps={{
                   value: merchantFees.amt
                 }}
-                onChange={e => handleMerchantFees(e, "amt")}
+                onChange={(e) => handleMerchantFees(e, "amt")}
                 fullWidth
               />
             </Grid>
