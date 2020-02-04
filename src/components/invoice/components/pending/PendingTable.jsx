@@ -4,12 +4,18 @@ import { StateContext } from "context/StateContext";
 import { TableLoader } from "common-components";
 import { get } from "utils/api";
 import { InvoiceTableHeader, PendingTableBody, TableStepper } from "../index";
-import { Table, TableContainer, TablePagination } from "@material-ui/core";
+import {
+  Table,
+  TableContainer,
+  TablePagination,
+  Divider
+} from "@material-ui/core";
 
 import { mockData } from "../mockData";
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
 
 const headCells = [
+  { id: "status", label: "Status" },
   { id: "invoice", label: "Invoice" },
   { id: "invoice_type", label: "Type" },
   { id: "company", label: "Company" },
@@ -17,12 +23,11 @@ const headCells = [
   { id: "start_date", label: "Start date" },
   { id: "due-date", label: "Due date" },
   { id: "total", label: "Total" },
-  { id: "status", label: "Status" },
   { id: "actions", label: "Actions" }
 ];
 
 const PendingTable = () => {
-  const { state, setLoading, setData } = React.useContext(StateContext);
+  const { state, getPendingInvoicesData } = React.useContext(StateContext);
 
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -40,18 +45,7 @@ const PendingTable = () => {
   };
 
   React.useEffect(() => {
-    setLoading(true);
-    setData(mockData());
-    get("/api/pending/list")
-      .then(res => {
-        setLoading(false);
-        setData(res.data.reverse());
-        console.log(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      });
+    getPendingInvoicesData();
   }, []);
 
   function desc(a, b, orderBy) {
@@ -91,12 +85,13 @@ const PendingTable = () => {
         <TableLoader />
       ) : (
         <React.Fragment>
-          <TableContainer>
+          <TableContainer style={{ minHeight: 480 }}>
             <Table>
               <InvoiceTableHeader headCells={headCells} />
               <PendingTableBody data={sortData(state.data)} />
             </Table>
           </TableContainer>
+          <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"

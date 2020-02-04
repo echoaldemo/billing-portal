@@ -160,5 +160,42 @@ body {
 }
 .modal-details-container {
   padding-top: 15px;
-  padding-bottom: 15px;
+}
+.menu-button-container {
+  display: flex;
+  flex-direction: column;
+  border-radius: 0px !important;
+}
+.menu-item {
+  line-height: 2;
+  cursor: pointer;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.menu-item:hover {
+  background-color: #0f97fc;
+  color: #f1f1f1;
+  transition: ease-in 0.1s;
+}
+.delete-hover:hover {
+  background-color: #ee5b38;
+  transition: ease-in 0.1s;
+}
+.display-align-center {
+  display: flex;
+  align-items: center;
+}
+.draft-color {
+  color: #666;
+}
+.review-color {
+  color: #f89222;
+}
+.approve-color {
+  color: #2ca01d;
 }

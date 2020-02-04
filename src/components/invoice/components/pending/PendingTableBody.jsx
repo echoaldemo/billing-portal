@@ -1,53 +1,49 @@
 import React from "react";
 import { TableBody, TableCell, Checkbox, TableRow } from "@material-ui/core";
-
 import { getRandomInt } from "utils/func";
-import { StateContext } from "context/StateContext";
 import { truncate } from "utils/func";
+import MenuButton from "./MenuButton";
+import { Drafts, Visibility, ThumbUp } from "@material-ui/icons";
+import moment from "moment";
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2
 });
+const statusToString = status => {
+  switch (status) {
+    case 0:
+      return (
+        <div className="display-align-center draft-color">
+          <Drafts fontSize="small" /> &nbsp; <b>Draft</b>
+        </div>
+      );
+    case 1:
+      return (
+        <div className="display-align-center review-color">
+          <Visibility fontSize="small" /> &nbsp; <b>Waiting for Review</b>
+        </div>
+      );
+    case 2:
+      return (
+        <div className="display-align-center approve-color">
+          <ThumbUp fontSize="small" /> &nbsp; <b>Waiting for Approval</b>
+        </div>
+      );
+  }
+};
 
 const PendingTableBody = ({ data }) => {
-  const { dispatch, setModalLoading } = React.useContext(StateContext);
-
-  const randomStatus = () => {
-    let arr = [
-      { color: "#455F38", label: "Sent" },
-      { color: "orange", label: "Reviewed" },
-      { color: "#399E07", label: "Approved" }
-    ];
-
-    const value = arr[getRandomInt(2)];
-    return <b style={{ color: value.color }}>{value.label}</b>;
-  };
-
-  const passAllData = item => {
-    dispatch({
-      type: "set-manage-modal",
-      payload: { openManage: true }
-    });
-    setModalLoading(true);
-
-    setTimeout(() => {
-      dispatch({ type: "set-selected-data", payload: { selectedData: item } });
-      setModalLoading(false);
-    }, 500);
-  };
-
   return (
     <TableBody>
-      {console.log(data)}
       {data.map((item, i) => {
-        let campaigns = item.campaigns.split(",");
-        console.log(campaigns);
+        // let campaigns = item.campaigns.split(",");
         return (
           <TableRow hover aria-checked={false} key={i}>
             <TableCell padding="checkbox">
               <Checkbox />
             </TableCell>
+            <TableCell>{statusToString(item.status)}</TableCell>
             <TableCell>{item.docNumber}</TableCell>
             <TableCell>{item.invoiceType}</TableCell>
             <TableCell>{item.company}</TableCell>
@@ -55,23 +51,17 @@ const PendingTableBody = ({ data }) => {
               <a href="#" style={{ color: "#444851" }}>
                 {truncate(
                   item.campaigns,
-                  15,
+                  8,
                   `, +${item.campaigns.split(",").length} more`
                 )}
               </a>
             </TableCell>
-            <TableCell>{item.startDate}</TableCell>
-            <TableCell>{item.dueDate}</TableCell>
+            <TableCell>{moment(item.startDate).format("MMMM D, Y")}</TableCell>
+            <TableCell>{moment(item.dueDate).format("MMMM D, Y")}</TableCell>
             <TableCell>{formatter.format(item.total)}</TableCell>
-            <TableCell>{randomStatus()}</TableCell>
-            <TableCell
-              onClick={() => {
-                passAllData(item);
-              }}
-            >
-              <u style={{ cursor: "pointer", fontSize: 14 }}>
-                <b>Manage</b>
-              </u>
+
+            <TableCell>
+              <MenuButton item={item} />
             </TableCell>
           </TableRow>
         );
