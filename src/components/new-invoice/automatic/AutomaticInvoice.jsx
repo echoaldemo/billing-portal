@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Dialog,
   AppBar,
   IconButton,
   Button,
@@ -27,7 +26,7 @@ import {
 } from "@material-ui/pickers";
 
 import { StateContext } from "context/StateContext";
-import { useStyles, MenuProps, Transition } from "./styles";
+import { useStyles, MenuProps } from "./styles";
 import { getMock, post, get } from "../../../utils/api";
 import { mockCompanies, mockCampaigns } from "../mock";
 
@@ -66,7 +65,7 @@ const defaultSelectInputs = {
   billingPeriod: date
 };
 
-const NewInvoice = ({ open = false, handleClose }) => {
+const NewInvoice = ({ handleClose, renderLoading }) => {
   const { setLoading, setData } = React.useContext(StateContext);
   const classes = useStyles();
 
@@ -201,7 +200,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
 
   const createInvoice = () => {
     setLoading(true);
-    handleClose();
+    renderLoading();
     let dt = new Date(selectInputs.billingPeriod);
 
     let startDate =
@@ -306,7 +305,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
         get("/api/pending/list")
           .then(res => {
             setLoading(false);
-            setData(res.data.reverse());
+            setData(res.data);
             resetState();
           })
           .catch(err => {

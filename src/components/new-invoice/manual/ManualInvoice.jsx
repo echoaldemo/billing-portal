@@ -80,7 +80,7 @@ const defaultSelectInputs = {
   billingPeriod: date
 };
 
-const NewInvoice = ({ open = false, handleClose }) => {
+const NewInvoice = ({ handleClose, renderLoading }) => {
   const classes = useStyles();
   const { setLoading, setData } = React.useContext(StateContext);
   const [selectInputs, setSelectInputs] = useState(defaultSelectInputs);
@@ -149,7 +149,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
       return;
     }
     setLoading(true);
-    handleClose();
+    renderLoading();
     let line = [];
     let dt = new Date(selectInputs.billingPeriod);
 
@@ -238,7 +238,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
         get("/api/pending/list")
           .then(res => {
             setLoading(false);
-            setData(res.data.reverse());
+            setData(res.data);
           })
           .catch(err => {
             console.log(err);

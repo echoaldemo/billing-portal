@@ -5,6 +5,7 @@ import Modal from "./modal";
 import TableStepper from "./stepper/TableStepper";
 import InputField from "./input-field";
 import LoadingModal from "./loading-modal";
+import LoadingNoDialog from "./loading-modal/LoadingNoDialog";
 export {
   InputField,
   PanelHeader,
@@ -12,5 +13,6 @@ export {
   TableLoader,
   Modal,
   TableStepper,
-  LoadingModal
+  LoadingModal,
+  LoadingNoDialog
 };

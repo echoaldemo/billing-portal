@@ -13,6 +13,8 @@ import Manual from "../../new-invoice/manual/ManualInvoice";
 import Automatic from "../../new-invoice/automatic/AutomaticInvoice";
 import { useStyles, Transition } from "../../new-invoice/automatic/styles";
 
+import { LoadingNoDialog as Loading } from "common-components";
+
 const InvoiceTableToolbar = props => {
   const classes = useStyles();
   const [state, setState] = React.useState({
@@ -32,11 +34,30 @@ const InvoiceTableToolbar = props => {
     setState({ ...state, anchorEl: null });
   };
 
+  const renderLoading = () => {
+    setState({ ...state, type: "loading" });
+    setTimeout(() => {
+      handleClose();
+    }, 2000);
+  };
+
   const renderModal = () => {
     if (state.type === "manual")
-      return <Manual handleClose={() => handleClose("manual")} />;
+      return (
+        <Manual
+          renderLoading={renderLoading}
+          handleClose={() => handleClose("manual")}
+        />
+      );
     else if (state.type === "automatic")
-      return <Automatic handleClose={() => handleClose("automatic")} />;
+      return (
+        <Automatic
+          renderLoading={renderLoading}
+          handleClose={() => handleClose("automatic")}
+        />
+      );
+    else if (state.type === "loading")
+      return <Loading text="Saving invoice..." />;
   };
 
   return (
@@ -58,7 +79,6 @@ const InvoiceTableToolbar = props => {
           onClick={() =>
             setState({
               ...state,
-              automatic: true,
               type: "automatic",
               anchorEl: null
             })
@@ -68,9 +88,7 @@ const InvoiceTableToolbar = props => {
         </MenuItem>
         <MenuItem
           style={{ padding: "15px 20px" }}
-          onClick={() =>
-            setState({ ...state, manual: true, type: "manual", anchorEl: null })
-          }
+          onClick={() => setState({ ...state, type: "manual", anchorEl: null })}
         >
           Manual
         </MenuItem>
@@ -78,7 +96,9 @@ const InvoiceTableToolbar = props => {
       <Dialog
         open={state.type !== ""}
         maxWidth="sm"
-        classes={{ paperWidthSm: classes.dialog }}
+        classes={
+          state.type === "loading" ? {} : { paperWidthSm: classes.dialog }
+        }
         disableBackdropClick
         disableEscapeKeyDown
         TransitionComponent={Transition}
