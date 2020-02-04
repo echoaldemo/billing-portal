@@ -26,12 +26,48 @@ export const useStyles = makeStyles((theme) => ({
   save: {
     borderRadius: "3px 0 0 3px",
     color: "#fff",
-    padding: 0
+    padding: "5px 0",
+    backgroundColor: "#7C8A97",
+    fontWeight: 600,
+    "&:hover": {
+      opacity: "0.7"
+    }
+  },
+  save_disabled: {
+    borderRadius: "3px 0 0 3px",
+    color: "rgba(255,255,255,0.24) !important",
+    padding: "5px 0",
+    backgroundColor: "#7C8A97",
+    fontWeight: 600,
+    "&:hover": {
+      opacity: "0.7"
+    }
   },
   more: {
     borderRadius: "0 3px 3px 0",
+    color: "#fff",
     minWidth: 10,
-    padding: 0
+    padding: "5px 5px",
+    backgroundColor: "#7C8A97",
+    fontWeight: 600,
+    "&:hover": {
+      opacity: "0.7"
+    }
+  },
+  more_disabled: {
+    borderRadius: "0 3px 3px 0",
+    color: "rgba(255,255,255,0.24) !important",
+    minWidth: 10,
+    padding: "5px 5px",
+    backgroundColor: "#7C8A97",
+    fontWeight: 600,
+    "&:hover": {
+      opacity: "0.7"
+    }
+  },
+  actions: {
+    backgroundColor: "#5F7D98",
+    color: "#fff"
   }
 }));
 

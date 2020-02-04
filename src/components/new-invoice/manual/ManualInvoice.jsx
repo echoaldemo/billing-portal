@@ -16,9 +16,15 @@ import {
   Collapse,
   Checkbox,
   ListItemText,
-  Menu
+  Menu,
+  Popover
 } from "@material-ui/core";
-import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import {
+  Close,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  ArrowDropDown
+} from "@material-ui/icons";
 import { useStyles, MenuProps, Transition } from "./styles/ManualInvoice.style";
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -135,6 +141,13 @@ const NewInvoice = ({ open = false, handleClose }) => {
     return n;
   };
   const handleSave = () => {
+    if (
+      !total ||
+      !Boolean(selectInputs.company) ||
+      !Boolean(selectInputs.campaign.length)
+    ) {
+      return;
+    }
     setLoading(true);
     handleClose();
     let line = [];
@@ -146,7 +159,9 @@ const NewInvoice = ({ open = false, handleClose }) => {
       appendLeadingZeroes(dt.getMonth() + 1) +
       "-" +
       appendLeadingZeroes(dt.getDate());
-    dt.setMonth(dt.getMonth() + 1);
+
+    if (selectInputs.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+    else dt.setDate(dt.getDate() + 7);
 
     const dueDate =
       dt.getFullYear() +
@@ -161,7 +176,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
         Amount: billableHours.amt,
         SalesItemLineDetail: {
           ItemRef: {
-            value: "21"
+            value: "21",
+            name: "Billable hours"
           },
           Qty: billableHours.qty || 0,
           UnitPrice: billableHours.rate || 0
@@ -173,7 +189,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
         Amount: performance.amt,
         SalesItemLineDetail: {
           ItemRef: {
-            value: "21"
+            value: "21",
+            name: "Performance"
           },
           Qty: performance.qty || 0,
           UnitPrice: performance.rate || 0
@@ -185,7 +202,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
         Amount: did.amt,
         SalesItemLineDetail: {
           ItemRef: {
-            value: "21"
+            value: "21",
+            name: "DID"
           },
           Qty: did.qty || 0,
           UnitPrice: did.rate || 0
@@ -339,40 +357,42 @@ const NewInvoice = ({ open = false, handleClose }) => {
             New Manual Invoice
           </Typography>
           <Button
-            classes={{ root: classes.save }}
+            classes={{ root: classes.save, disabled: classes.save_disabled }}
             onClick={() => handleSave()}
             color="inherit"
-            variant="outlined"
-            disabled={
-              !total ||
-              !Boolean(selectInputs.company) ||
-              !Boolean(selectInputs.campaign.length)
-            }
           >
             save
           </Button>
           <Button
             classes={{ root: classes.more }}
-            variant="outlined"
             color="inherit"
             onClick={handleShowMore}
-            disabled={
-              !total ||
-              !Boolean(selectInputs.company) ||
-              !Boolean(selectInputs.campaign.length)
-            }
+            // disabled={
+            // !total ||
+            // !Boolean(selectInputs.company) ||
+            // !Boolean(selectInputs.campaign.length)
+            // }
           >
-            <KeyboardArrowDown />
+            <ArrowDropDown />
           </Button>
-          <Menu
+          <Popover
             anchorEl={state.anchorEl}
-            keepMounted
             open={Boolean(state.anchorEl)}
             onClose={handleCloseMore}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right"
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center"
+            }}
           >
-            <MenuItem style={{ padding: "15px 20px" }}>Send</MenuItem>
-            <MenuItem style={{ padding: "15px 20px" }}>Approve</MenuItem>
-          </Menu>
+            <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
+            <MenuItem style={{ padding: "15px 20px" }}>
+              Save and approve
+            </MenuItem>
+          </Popover>
         </Toolbar>
       </AppBar>
 
@@ -610,8 +630,6 @@ const NewInvoice = ({ open = false, handleClose }) => {
               inputProps={{
                 value: performance.amt
               }}
-              // onFocus={() => handleTotalAmount("2")}
-              // onBlur={() => handleTotalAmount("2")}
               onChange={(e) => handlePerformanceChange(e, "amt")}
               fullWidth
             />
@@ -654,8 +672,6 @@ const NewInvoice = ({ open = false, handleClose }) => {
               inputProps={{
                 value: did.amt
               }}
-              // onFocus={() => handleTotalAmount("3")}
-              // onBlur={() => handleTotalAmount("3")}
               onChange={(e) => handleDIDsChange(e, "amt")}
               fullWidth
             />
