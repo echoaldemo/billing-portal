@@ -172,12 +172,12 @@ const NewInvoice = ({ open = false, handleClose }) => {
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
       did.qty * did.rate;
-    if (total) return formatter.format(total);
+    if (total) return total;
     else return "0.00";
   };
   const getAddSubtotal = () => {
     const total = litigator.qty * litigator.rate + merchant;
-    if (total) return formatter.format(total);
+    if (total) return total;
     else return "0.00";
   };
 
@@ -188,7 +188,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
       did.qty * did.rate +
       litigator.qty * litigator.rate +
       merchant;
-    if (total) return formatter.format(total);
+    if (total) return total;
     else return "0.00";
   };
 
@@ -230,12 +230,8 @@ const NewInvoice = ({ open = false, handleClose }) => {
       .map(data => data.name)
       .join(", ");
 
-    const total =
-      billableHours.qty * billableHours.rate +
-      performance.qty * performance.rate +
-      did.qty * did.rate +
-      litigator.qty * litigator.rate +
-      merchant;
+    const total = getTotal();
+
     const data = {
       docNumber: "1070",
       invoiceType: "Automatic",
@@ -331,20 +327,40 @@ const NewInvoice = ({ open = false, handleClose }) => {
     setSelectInputs(defaultSelectInputs);
   };
 
+  const closeModal = () => {
+    resetState();
+    handleClose();
+  };
+
+  const buttonStatus = () => {
+    const { company, campaign, billingType } = selectInputs;
+    const total = getTotal();
+    if (
+      company !== " " &&
+      campaign.length !== 0 &&
+      billingType !== " " &&
+      total !== "0.00"
+    ) {
+      return false;
+    } else return true;
+  };
+
   return (
     <Dialog
       open={open}
       maxWidth="sm"
-      onClose={handleClose}
+      onClose={closeModal}
       classes={{ paperWidthSm: classes.dialog }}
       TransitionComponent={Transition}
+      disableBackdropClick
+      disableEscapeKeyDown
     >
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
-            onClick={handleClose}
+            onClick={closeModal}
             aria-label="close"
           >
             <Close />
@@ -352,7 +368,12 @@ const NewInvoice = ({ open = false, handleClose }) => {
           <Typography variant="h6" className={classes.title}>
             New Automatic Invoice
           </Typography>
-          <Button autoFocus color="inherit" onClick={createInvoice}>
+          <Button
+            disabled={buttonStatus()}
+            autoFocus
+            color="inherit"
+            onClick={createInvoice}
+          >
             save
           </Button>
         </Toolbar>
@@ -477,7 +498,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                   fontSize: 32
                 }}
               >
-                {getTotal()}
+                {formatter.format(getTotal())}
               </span>
             </div>
           </Grid>
@@ -667,7 +688,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
               fontSize: 20
             }}
           >
-            {getItemSubtotal()}
+            {formatter.format(getItemSubtotal())}
           </span>
         </div>
         <Divider />
@@ -794,7 +815,7 @@ const NewInvoice = ({ open = false, handleClose }) => {
                 fontSize: 20
               }}
             >
-              {getAddSubtotal()}
+              {formatter.format(getAddSubtotal())}
             </span>
           </div>
         </Collapse>
