@@ -4,7 +4,7 @@ import { Modal, TableLoader } from "common-components";
 import { TableStepper } from "common-components";
 import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
-
+import ManagePendingFooter from "./components/ManagePendingFooter";
 const EditButton = () => {
   const { state, dispatch } = React.useContext(StateContext);
   return (
@@ -49,23 +49,7 @@ export default function ManagePendingInvoice() {
           <Divider />
           <InvoiceDetails />
 
-          <Divider />
-          {console.log(state.editManageData, state.selectedData)}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}
-          >
-            <h4>Elit consequat ex ipsum tempor quis id sit ipsum voluptate.</h4>
-            <Button
-              variant="contained"
-              style={{ fontWeight: "bold", textDecoration: "none" }}
-            >
-              Complete Review
-            </Button>
-          </div>
+          <ManagePendingFooter />
         </React.Fragment>
       )}
     </Modal>
