@@ -1,6 +1,6 @@
 import React from "react";
 import { StateContext } from "context/StateContext";
-import { Modal, TableLoader } from "common-components";
+import { Modal, TableLoader, LoadingModal } from "common-components";
 import { TableStepper } from "common-components";
 import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
@@ -45,10 +45,19 @@ export default function ManagePendingInvoice() {
         <TableLoader />
       ) : (
         <React.Fragment>
-          <TableStepper activeStep={1} />
+          <TableStepper activeStep={state.selectedData.status + 1} />
           <Divider />
           <InvoiceDetails />
-
+          <LoadingModal
+            open={state.updateLoading}
+            text={`One moment. We're updating stage status…`}
+            cancelFn={() => {
+              dispatch({
+                type: "set-update-loading",
+                payload: { updateLoading: false }
+              });
+            }}
+          />
           <ManagePendingFooter />
         </React.Fragment>
       )}

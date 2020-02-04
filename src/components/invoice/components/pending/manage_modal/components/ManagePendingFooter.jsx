@@ -1,6 +1,35 @@
 import React from "react";
 import { Button } from "@material-ui/core";
+import { StateContext } from "context/StateContext";
+import { patch } from "utils/api";
 export default function ManagePendingFooter() {
+  const { state, dispatch, getPendingInvoicesData } = React.useContext(
+    StateContext
+  );
+
+  const updateStateStatus = () => {
+    dispatch({
+      type: "set-update-loading",
+      payload: { updateLoading: true }
+    });
+
+    patch(`/api/pending/edit/${state.selectedData.id}`, { status: 1 })
+      .then(res => {
+        console.log("Res", res[0]);
+        dispatch({
+          type: "set-update-loading",
+          payload: { updateLoading: false }
+        });
+        dispatch({
+          type: "set-selected-data",
+          payload: { selectedData: res.data[0] }
+        });
+      })
+      .then(() => {
+        getPendingInvoicesData();
+      });
+  };
+
   return (
     <div
       style={{
@@ -10,6 +39,7 @@ export default function ManagePendingFooter() {
         paddingTop: 15
       }}
     >
+      {console.log(state)}
       <div>
         <Button
           variant="contained"
@@ -39,6 +69,7 @@ export default function ManagePendingFooter() {
             backgroundColor: "#0f97fc",
             textDecoration: "none"
           }}
+          onClick={updateStateStatus}
         >
           Complete Review
         </Button>
