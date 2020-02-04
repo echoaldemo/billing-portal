@@ -34,7 +34,7 @@ const StateProvider = ({ children }) => {
     get("/api/pending/list")
       .then(res => {
         setLoading(false);
-        setData(res.data.reverse());
+        setData(res.data);
       })
       .catch(err => {
         console.log(err);
