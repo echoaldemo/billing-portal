@@ -1,10 +1,10 @@
 import React from "react";
 import { StateContext } from "context/StateContext";
-import { Modal, TableLoader } from "common-components";
+import { Modal, TableLoader, LoadingModal } from "common-components";
 import { TableStepper } from "common-components";
 import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
-
+import ManagePendingFooter from "./components/ManagePendingFooter";
 const EditButton = () => {
   const { state, dispatch } = React.useContext(StateContext);
   return (
@@ -45,27 +45,20 @@ export default function ManagePendingInvoice() {
         <TableLoader />
       ) : (
         <React.Fragment>
-          <TableStepper activeStep={1} />
+          <TableStepper activeStep={state.selectedData.status + 1} />
           <Divider />
           <InvoiceDetails />
-
-          <Divider />
-          {console.log(state.editManageData, state.selectedData)}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
+          <LoadingModal
+            open={state.updateLoading}
+            text={`One moment. We're updating stage status…`}
+            cancelFn={() => {
+              dispatch({
+                type: "set-update-loading",
+                payload: { updateLoading: false }
+              });
             }}
-          >
-            <h4>Elit consequat ex ipsum tempor quis id sit ipsum voluptate.</h4>
-            <Button
-              variant="contained"
-              style={{ fontWeight: "bold", textDecoration: "none" }}
-            >
-              Complete Review
-            </Button>
-          </div>
+          />
+          <ManagePendingFooter />
         </React.Fragment>
       )}
     </Modal>

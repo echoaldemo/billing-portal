@@ -47,8 +47,6 @@ export default function InvoiceDetails() {
       </Grid>
       <br />
       <ItemsTable formState={formState} setFormState={setFormState} />
-      <br />
-      <br />
     </div>
   );
 }

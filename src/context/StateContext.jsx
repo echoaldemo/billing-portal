@@ -1,5 +1,5 @@
 import React, { useReducer, useState } from "react";
-
+import { get } from "utils/api";
 const initialState = {
   active_tab: 0,
   loading: false,
@@ -7,7 +7,8 @@ const initialState = {
   openEdit: false,
   openManage: false,
   selectedData: {},
-  editManageData: false
+  editManageData: false,
+  updateLoading: false
 };
 
 const StateContext = React.createContext();
@@ -28,6 +29,19 @@ const StateProvider = ({ children }) => {
     dispatch({ type: "set-tab", payload: { active_tab: value } });
   };
 
+  const getPendingInvoicesData = () => {
+    setLoading(true);
+    get("/api/pending/list")
+      .then(res => {
+        setLoading(false);
+        setData(res.data.reverse());
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
+
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-tab":
@@ -45,6 +59,8 @@ const StateProvider = ({ children }) => {
         return { ...state, selectedData: action.payload.selectedData };
       case "set-edit-manage-data":
         return { ...state, editManageData: action.payload.editManageData };
+      case "set-update-loading":
+        return { ...state, updateLoading: action.payload.updateLoading };
       default:
         return null;
     }
@@ -60,7 +76,8 @@ const StateProvider = ({ children }) => {
         setEditModal,
         setTab,
         modalLoading,
-        setModalLoading
+        setModalLoading,
+        getPendingInvoicesData
       }}
     >
       {children}
