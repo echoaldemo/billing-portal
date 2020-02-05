@@ -102,6 +102,32 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     getItemsTotal()
     getExtraItemsTotal()
   })
+
+  useEffect(() => {
+    if (typeof duplicate !== 'undefined') {
+      let company = activeCompanies.find(
+        comp => comp.name === duplicate.company
+      )
+      if (typeof company !== 'undefined') {
+        getActiveCampaigns(company.uuid)
+        setSelectInputs({
+          ...defaultSelectInputs,
+          company: company.uuid
+        })
+      }
+    }
+  }, [activeCompanies])
+
+  useEffect(() => {
+    if (typeof duplicate !== 'undefined') {
+      // setSelectInputs({
+      //   ...defaultSelectInputs,
+      //   campaign: company.uuid
+      // })
+      console.log(activeCampaigns)
+    }
+  }, [activeCampaigns])
+
   useEffect(() => {
     getActiveCompainies()
     if (typeof duplicate !== 'undefined') {
