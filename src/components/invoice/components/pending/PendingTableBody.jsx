@@ -33,6 +33,20 @@ const statusToString = status => {
   }
 };
 
+const displayCampaigns = item => {
+  let campaignArr = item.campaigns.map(item => item.name);
+
+  if (campaignArr.length > 1) {
+    return truncate(
+      campaignArr.join(", "),
+      8,
+      `, +${campaignArr.length - 1} more`
+    );
+  } else {
+    return campaignArr.join(", ");
+  }
+};
+
 const PendingTableBody = ({ data }) => {
   return (
     <TableBody>
@@ -48,14 +62,9 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{item.invoiceType}</TableCell>
             <TableCell>{item.company.name}</TableCell>
             <TableCell className="hover-details">
-              {/* <a href="#" style={{ color: "#444851" }}>
-                {truncate(
-                  item.campaigns,
-                  8,
-                  `, +${item.campaigns.split(",").length} more`
-                )}
-              </a> */}
-              {item.campaigns.map(item => item.name).join(", ")}
+              <a href="#" style={{ color: "#444851" }}>
+                {displayCampaigns(item)}
+              </a>
             </TableCell>
             <TableCell>{moment(item.startDate).format("MMMM D, Y")}</TableCell>
             <TableCell>{moment(item.dueDate).format("MMMM D, Y")}</TableCell>
