@@ -7,7 +7,8 @@ export const mockCompanies = [
     name: "7 Summits Marketing",
     active: true,
     email: "",
-    website: ""
+    website: "",
+    qb_id: 61
   },
   {
     uuid: "7c7c87e0-290a-11e7-af8c-02420a00050b",
@@ -17,7 +18,8 @@ export const mockCompanies = [
     name: "Boomsourcing.com",
     active: true,
     email: null,
-    website: null
+    website: null,
+    qb_id: 62
   },
   {
     uuid: "8e640a3a-ef84-11e9-b07e-0242ac110009",
@@ -27,7 +29,8 @@ export const mockCompanies = [
     name: "A1 Medical",
     active: true,
     email: null,
-    website: null
+    website: null,
+    qb_id: 63
   }
 ];
 
