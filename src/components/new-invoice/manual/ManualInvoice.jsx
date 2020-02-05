@@ -1,7 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect } from "react";
 import {
-  Dialog,
   AppBar,
   IconButton,
   Button,
@@ -16,7 +15,6 @@ import {
   Collapse,
   Checkbox,
   ListItemText,
-  Menu,
   Popover
 } from "@material-ui/core";
 import {
@@ -25,17 +23,16 @@ import {
   KeyboardArrowUp,
   ArrowDropDown
 } from "@material-ui/icons";
-import { useStyles, MenuProps, Transition } from "./styles/ManualInvoice.style";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
+
 import { post, get } from "utils/api";
 import { StateContext } from "context/StateContext";
-import { mockCompanies, mockCampaigns } from "./mockdata";
-
-console.log(mockCompanies, mockCampaigns);
+import { mockCompanies, mockCampaigns } from "../mock";
+import { useStyles, MenuProps } from "../styles";
 
 const today = new Date();
 const date =
@@ -361,11 +358,6 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             classes={{ root: classes.more }}
             color="inherit"
             onClick={handleShowMore}
-            // disabled={
-            // !total ||
-            // !Boolean(selectInputs.company) ||
-            // !Boolean(selectInputs.campaign.length)
-            // }
           >
             <ArrowDropDown />
           </Button>
