@@ -94,12 +94,14 @@ export default function ManagePendingFooter() {
         </h5>
       </div>
       <div>
-        <Button
-          variant="contained"
-          style={{ fontWeight: "bold", textDecoration: "none" }}
-        >
-          Skip
-        </Button>
+        {state.selectedData.status > 0 && (
+          <Button
+            variant="contained"
+            style={{ fontWeight: "bold", textDecoration: "none" }}
+          >
+            Skip
+          </Button>
+        )}
         &emsp;
         {renderStageButton(state.selectedData.status)}
       </div>
