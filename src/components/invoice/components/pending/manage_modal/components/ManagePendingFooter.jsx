@@ -100,7 +100,7 @@ export default function ManagePendingFooter() {
         </h5>
       </div>
       <div>
-        {state.selectedData.status == 0 ? (
+        {state.selectedData.status === 0 ? (
           <Button
             variant="contained"
             style={{ fontWeight: "bold", textDecoration: "none" }}

@@ -15,6 +15,7 @@ const StateContext = React.createContext();
 
 const StateProvider = ({ children }) => {
   const [modalLoading, setModalLoading] = useState(false);
+  const [originalData, setOriginalData] = useState([]);
 
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
@@ -34,6 +35,8 @@ const StateProvider = ({ children }) => {
     get("/api/pending/list")
       .then(res => {
         setLoading(false);
+        setOriginalData(res.data);
+
         setData(res.data);
       })
       .catch(err => {
@@ -95,7 +98,8 @@ const StateProvider = ({ children }) => {
         modalLoading,
         setModalLoading,
         getPendingInvoicesData,
-        deletePendingStatus
+        deletePendingStatus,
+        originalData
       }}
     >
       {children}

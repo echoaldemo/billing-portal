@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from "react";
 import { StateContext } from "context/StateContext";
-import { TableLoader } from "common-components";
+import { TableLoader, NoResult } from "common-components";
 import { get } from "utils/api";
 import { InvoiceTableHeader, PendingTableBody, TableStepper } from "../index";
 import {
@@ -85,12 +85,16 @@ const PendingTable = () => {
         <TableLoader />
       ) : (
         <React.Fragment>
-          <TableContainer style={{ minHeight: 480 }}>
-            <Table>
-              <InvoiceTableHeader headCells={headCells} />
-              <PendingTableBody data={sortData(state.data)} />
-            </Table>
-          </TableContainer>
+          {state.data.length > 0 ? (
+            <TableContainer>
+              <Table>
+                <InvoiceTableHeader headCells={headCells} />
+                <PendingTableBody data={sortData(state.data)} />
+              </Table>
+            </TableContainer>
+          ) : (
+            <NoResult />
+          )}
           <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
