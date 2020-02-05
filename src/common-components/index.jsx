@@ -6,6 +6,7 @@ import TableStepper from "./stepper/TableStepper";
 import InputField from "./input-field";
 import LoadingModal from "./loading-modal";
 import LoadingNoDialog from "./loading-modal/LoadingNoDialog";
+import NoResult from "./no-result";
 export {
   InputField,
   PanelHeader,
@@ -14,5 +15,6 @@ export {
   Modal,
   TableStepper,
   LoadingModal,
-  LoadingNoDialog
+  LoadingNoDialog,
+  NoResult
 };

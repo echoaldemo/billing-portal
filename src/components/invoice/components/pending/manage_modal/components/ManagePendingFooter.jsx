@@ -3,9 +3,12 @@ import { Button } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
 import { patch } from "utils/api";
 export default function ManagePendingFooter() {
-  const { state, dispatch, getPendingInvoicesData } = React.useContext(
-    StateContext
-  );
+  const {
+    state,
+    dispatch,
+    getPendingInvoicesData,
+    deletePendingStatus
+  } = React.useContext(StateContext);
 
   const updateStateStatus = status => {
     dispatch({
@@ -85,6 +88,9 @@ export default function ManagePendingFooter() {
           variant="contained"
           color="secondary"
           style={{ fontWeight: "bold", textDecoration: "none" }}
+          onClick={() => {
+            deletePendingStatus(state.selectedData.id);
+          }}
         >
           Delete
         </Button>
@@ -94,12 +100,25 @@ export default function ManagePendingFooter() {
         </h5>
       </div>
       <div>
-        {state.selectedData.status > 0 && (
+        {state.selectedData.status === 0 ? (
           <Button
             variant="contained"
             style={{ fontWeight: "bold", textDecoration: "none" }}
+            onClick={() => {
+              updateStateStatus(2);
+            }}
           >
             Skip
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            style={{ fontWeight: "bold", textDecoration: "none" }}
+            onClick={() => {
+              updateStateStatus(state.selectedData.status - 1);
+            }}
+          >
+            Revert
           </Button>
         )}
         &emsp;

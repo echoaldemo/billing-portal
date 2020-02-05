@@ -1,41 +1,46 @@
-import React from 'react'
-import { IconButton, Typography, Popover } from '@material-ui/core'
-import { Settings } from '@material-ui/icons'
-import { StateContext } from 'context/StateContext'
+import React from "react";
+import { IconButton, Typography, Popover } from "@material-ui/core";
+import { Settings } from "@material-ui/icons";
+import { StateContext } from "context/StateContext";
 
 export default function SimplePopover({ item }) {
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const { dispatch, setModalLoading, state } = React.useContext(StateContext)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const {
+    dispatch,
+    setModalLoading,
+    deletePendingStatus,
+    state
+  } = React.useContext(StateContext);
   const handleClick = event => {
-    console.log(state.selectedData)
-    setAnchorEl(event.currentTarget)
-    dispatch({ type: 'set-selected-data', payload: { selectedData: item } })
-  }
+    console.log(state.selectedData);
+    setAnchorEl(event.currentTarget);
+    dispatch({ type: "set-selected-data", payload: { selectedData: item } });
+  };
 
   const handleClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const openManageModal = item => {
     dispatch({
-      type: 'set-manage-modal',
+      type: "set-manage-modal",
       payload: { openManage: true }
-    })
-    setModalLoading(true)
+    });
+    setModalLoading(true);
     setTimeout(() => {
-      setModalLoading(false)
-    }, 500)
-  }
+      setModalLoading(false);
+    }, 500);
+  };
 
-  const open = Boolean(anchorEl)
-  const id = open ? 'simple-popover' : undefined
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <div style={{ paddingLeft: 15 }}>
       <IconButton
         aria-describedby={id}
         onClick={handleClick}
-        style={{ padding: 0, color: '#444851' }}
+        style={{ padding: 0, color: "#444851" }}
       >
         <Settings />
       </IconButton>
@@ -45,12 +50,12 @@ export default function SimplePopover({ item }) {
         anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'center'
+          vertical: "center",
+          horizontal: "center"
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
+          vertical: "top",
+          horizontal: "left"
         }}
         style={{ marginLeft: 5 }}
         PaperProps={{
@@ -63,7 +68,8 @@ export default function SimplePopover({ item }) {
           <span
             className="menu-item"
             onClick={() => {
-              openManageModal()
+              openManageModal();
+              handleClose();
             }}
           >
             Manage
@@ -72,16 +78,24 @@ export default function SimplePopover({ item }) {
             className="menu-item"
             onClick={() =>
               dispatch({
-                type: 'set-duplicate-modal',
+                type: "set-duplicate-modal",
                 payload: { openDuplicate: true }
               })
             }
           >
             Duplicate
           </span>
-          <span className="menu-item delete-hover">Delete</span>
+          <span
+            className="menu-item delete-hover"
+            onClick={() => {
+              deletePendingStatus(state.selectedData.id);
+              handleClose();
+            }}
+          >
+            Delete
+          </span>
         </Typography>
       </Popover>
     </div>
-  )
+  );
 }

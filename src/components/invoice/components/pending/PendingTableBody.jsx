@@ -46,15 +46,16 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{statusToString(item.status)}</TableCell>
             <TableCell>{item.docNumber}</TableCell>
             <TableCell>{item.invoiceType}</TableCell>
-            <TableCell>{item.company}</TableCell>
+            <TableCell>{item.company.name}</TableCell>
             <TableCell className="hover-details">
-              <a href="#" style={{ color: "#444851" }}>
+              {/* <a href="#" style={{ color: "#444851" }}>
                 {truncate(
                   item.campaigns,
                   8,
                   `, +${item.campaigns.split(",").length} more`
                 )}
-              </a>
+              </a> */}
+              {item.campaigns.map(item => item.name).join(", ")}
             </TableCell>
             <TableCell>{moment(item.startDate).format("MMMM D, Y")}</TableCell>
             <TableCell>{moment(item.dueDate).format("MMMM D, Y")}</TableCell>
