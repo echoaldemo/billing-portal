@@ -14,9 +14,15 @@ import {
   Collapse,
   InputAdornment,
   Checkbox,
-  ListItemText
+  ListItemText,
+  Popover
 } from "@material-ui/core";
-import { Close, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import {
+  Close,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  ArrowDropDown
+} from "@material-ui/icons";
 
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -26,8 +32,8 @@ import {
 } from "@material-ui/pickers";
 
 import { StateContext } from "context/StateContext";
-import { useStyles, MenuProps } from "./styles";
-import { getMock, post, get } from "../../../utils/api";
+import { useStyles, MenuProps } from "../styles";
+import { getMock, post, get } from "utils/api";
 import { mockCompanies, mockCampaigns } from "../mock";
 
 const today = new Date();
@@ -80,6 +86,9 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
   const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
   const [activeCampaigns, setActiveCampaigns] = useState([]);
   const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
+  const [state, setState] = useState({
+    anchorEl: null
+  });
 
   useEffect(() => {
     getActiveCompainies();
@@ -199,122 +208,124 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
   };
 
   const createInvoice = () => {
-    setLoading(true);
-    renderLoading();
-    let dt = new Date(selectInputs.billingPeriod);
+    if (buttonStatus()) {
+      setLoading(true);
+      renderLoading();
+      let dt = new Date(selectInputs.billingPeriod);
 
-    let startDate =
-      dt.getFullYear() +
-      "-" +
-      appendLeadingZeroes(dt.getMonth() + 1) +
-      "-" +
-      appendLeadingZeroes(dt.getDate());
+      let startDate =
+        dt.getFullYear() +
+        "-" +
+        appendLeadingZeroes(dt.getMonth() + 1) +
+        "-" +
+        appendLeadingZeroes(dt.getDate());
 
-    if (selectInputs.billingType === "1") dt.setMonth(dt.getMonth() + 1);
-    else dt.setDate(dt.getDate() + 7);
+      if (selectInputs.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+      else dt.setDate(dt.getDate() + 7);
 
-    const dueDate =
-      dt.getFullYear() +
-      "-" +
-      appendLeadingZeroes(dt.getMonth() + 1) +
-      "-" +
-      appendLeadingZeroes(dt.getDate());
+      const dueDate =
+        dt.getFullYear() +
+        "-" +
+        appendLeadingZeroes(dt.getMonth() + 1) +
+        "-" +
+        appendLeadingZeroes(dt.getDate());
 
-    const company = activeCompanies.filter(
-      item => item.uuid === selectInputs.company
-    )[0].name;
+      const company = activeCompanies.filter(
+        item => item.uuid === selectInputs.company
+      )[0].name;
 
-    const campaigns = activeCampaigns
-      .filter(item => selectInputs.campaign.indexOf(item.uuid) !== -1)
-      .map(data => data.name)
-      .join(", ");
+      const campaigns = activeCampaigns
+        .filter(item => selectInputs.campaign.indexOf(item.uuid) !== -1)
+        .map(data => data.name)
+        .join(", ");
 
-    const total = getTotal();
+      const total = getTotal();
 
-    const data = {
-      docNumber: "1070",
-      invoiceType: "Automatic",
-      company,
-      campaigns,
-      startDate,
-      dueDate,
-      total,
-      Line: [
-        {
-          LineNum: 1,
-          Amount: billableHours.qty * billableHours.rate,
-          SalesItemLineDetail: {
-            TaxCodeRef: {
-              value: "NON"
+      const data = {
+        docNumber: "1070",
+        invoiceType: "Automatic",
+        company,
+        campaigns,
+        startDate,
+        dueDate,
+        total,
+        Line: [
+          {
+            LineNum: 1,
+            Amount: billableHours.qty * billableHours.rate,
+            SalesItemLineDetail: {
+              TaxCodeRef: {
+                value: "NON"
+              },
+              ItemRef: {
+                name: "Billable Hours",
+                value: "21"
+              },
+              Qty: billableHours.qty,
+              UnitPrice: billableHours.rate
             },
-            ItemRef: {
-              name: "Billable Hours",
-              value: "21"
-            },
-            Qty: billableHours.qty,
-            UnitPrice: billableHours.rate
+            Id: "1",
+            DetailType: "SalesItemLineDetail",
+            Description: "amount of services rendered in hours"
           },
-          Id: "1",
-          DetailType: "SalesItemLineDetail",
-          Description: "amount of services rendered in hours"
-        },
-        {
-          LineNum: 2,
-          Amount: performance.qty * performance.rate,
-          SalesItemLineDetail: {
-            TaxCodeRef: {
-              value: "NON"
+          {
+            LineNum: 2,
+            Amount: performance.qty * performance.rate,
+            SalesItemLineDetail: {
+              TaxCodeRef: {
+                value: "NON"
+              },
+              ItemRef: {
+                name: "Performance",
+                value: "22"
+              },
+              Qty: performance.qty,
+              UnitPrice: performance.rate
             },
-            ItemRef: {
-              name: "Performance",
-              value: "22"
-            },
-            Qty: performance.qty,
-            UnitPrice: performance.rate
+            Id: "2",
+            DetailType: "SalesItemLineDetail"
           },
-          Id: "2",
-          DetailType: "SalesItemLineDetail"
-        },
-        {
-          LineNum: 3,
-          Amount: did.qty * did.rate,
-          SalesItemLineDetail: {
-            TaxCodeRef: {
-              value: "NON"
+          {
+            LineNum: 3,
+            Amount: did.qty * did.rate,
+            SalesItemLineDetail: {
+              TaxCodeRef: {
+                value: "NON"
+              },
+              ItemRef: {
+                name: "DID",
+                value: "23"
+              },
+              Qty: did.qty,
+              UnitPrice: did.rate
             },
-            ItemRef: {
-              name: "DID",
-              value: "23"
-            },
-            Qty: did.qty,
-            UnitPrice: did.rate
+            Id: "3",
+            DetailType: "SalesItemLineDetail",
+            Description: "amount of DIDs used"
           },
-          Id: "3",
-          DetailType: "SalesItemLineDetail",
-          Description: "amount of DIDs used"
-        },
-        {
-          DetailType: "SubTotalLineDetail",
-          Amount: total,
-          SubTotalLineDetail: {}
-        }
-      ]
-    };
-    post("/api/create_pending", data)
-      .then(() => {
-        get("/api/pending/list")
-          .then(res => {
-            setLoading(false);
-            setData(res.data);
-            resetState();
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+          {
+            DetailType: "SubTotalLineDetail",
+            Amount: total,
+            SubTotalLineDetail: {}
+          }
+        ]
+      };
+      post("/api/create_pending", data)
+        .then(() => {
+          get("/api/pending/list")
+            .then(res => {
+              setLoading(false);
+              setData(res.data);
+              resetState();
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   };
 
   const resetState = () => {
@@ -331,6 +342,19 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
     handleClose();
   };
 
+  const handleShowMore = e => {
+    setState({
+      ...state,
+      anchorEl: e.currentTarget
+    });
+  };
+  const handleCloseMore = () => {
+    setState({
+      ...state,
+      anchorEl: null
+    });
+  };
+
   const buttonStatus = () => {
     const { company, campaign, billingType } = selectInputs;
     const total = getTotal();
@@ -340,8 +364,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
       billingType !== " " &&
       total !== "0.00"
     ) {
-      return false;
-    } else return true;
+      return true;
+    } else return false;
   };
 
   return (
@@ -360,13 +384,37 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             New Automatic Invoice
           </Typography>
           <Button
-            disabled={buttonStatus()}
-            autoFocus
+            classes={{ root: classes.save, disabled: classes.save_disabled }}
             color="inherit"
             onClick={createInvoice}
           >
             save
           </Button>
+          <Button
+            classes={{ root: classes.more }}
+            color="inherit"
+            onClick={handleShowMore}
+          >
+            <ArrowDropDown />
+          </Button>
+          <Popover
+            anchorEl={state.anchorEl}
+            open={Boolean(state.anchorEl)}
+            onClose={handleCloseMore}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right"
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "center"
+            }}
+          >
+            <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
+            <MenuItem style={{ padding: "15px 20px" }}>
+              Save and approve
+            </MenuItem>
+          </Popover>
         </Toolbar>
       </AppBar>
 
@@ -435,7 +483,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             </Select>
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <InputLabel id="label1">Billing Type</InputLabel>
             <Select
               labelId="label1"
@@ -451,7 +499,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             </Select>
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <InputLabel id="label1">Billing Period</InputLabel>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
@@ -466,7 +514,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             </MuiPickersUtilsProvider>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={2}>
             <div
               style={{
                 display: "flex",

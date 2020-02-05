@@ -13,6 +13,7 @@ import {
 
 import { mockData } from "../mockData";
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
+import DuplicateModal from "./duplicate-modal/DuplicateModal";
 
 const headCells = [
   { id: "status", label: "Status" },
@@ -108,6 +109,7 @@ const PendingTable = () => {
         </React.Fragment>
       )}
       <ManagePendingInvoice />
+      <DuplicateModal />
     </div>
   );
 };

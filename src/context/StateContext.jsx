@@ -6,6 +6,7 @@ const initialState = {
   data: [],
   openEdit: false,
   openManage: false,
+  openDuplicate: false,
   selectedData: {},
   editManageData: false,
   updateLoading: false
@@ -75,6 +76,8 @@ const StateProvider = ({ children }) => {
         return { ...state, openEdit: action.payload.openEdit };
       case "set-manage-modal":
         return { ...state, openManage: action.payload.openManage };
+      case "set-duplicate-modal":
+        return { ...state, openDuplicate: action.payload.openDuplicate };
       case "set-selected-data":
         return { ...state, selectedData: action.payload.selectedData };
       case "set-edit-manage-data":
