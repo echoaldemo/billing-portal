@@ -2,10 +2,17 @@ import React from "react";
 import { IconButton, Typography, Popover } from "@material-ui/core";
 import { Settings } from "@material-ui/icons";
 import { StateContext } from "context/StateContext";
+
 export default function SimplePopover({ item }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { dispatch, setModalLoading, state } = React.useContext(StateContext);
+  const {
+    dispatch,
+    setModalLoading,
+    deletePendingStatus,
+    state
+  } = React.useContext(StateContext);
   const handleClick = event => {
+    console.log(state.selectedData);
     setAnchorEl(event.currentTarget);
     dispatch({ type: "set-selected-data", payload: { selectedData: item } });
   };
@@ -62,12 +69,31 @@ export default function SimplePopover({ item }) {
             className="menu-item"
             onClick={() => {
               openManageModal();
+              handleClose();
             }}
           >
             Manage
           </span>
-          <span className="menu-item">Duplicate</span>
-          <span className="menu-item delete-hover">Delete</span>
+          <span
+            className="menu-item"
+            onClick={() =>
+              dispatch({
+                type: "set-duplicate-modal",
+                payload: { openDuplicate: true }
+              })
+            }
+          >
+            Duplicate
+          </span>
+          <span
+            className="menu-item delete-hover"
+            onClick={() => {
+              deletePendingStatus(state.selectedData.id);
+              handleClose();
+            }}
+          >
+            Delete
+          </span>
         </Typography>
       </Popover>
     </div>

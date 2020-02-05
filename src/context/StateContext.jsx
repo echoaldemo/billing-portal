@@ -1,11 +1,12 @@
 import React, { useReducer, useState } from "react";
-import { get } from "utils/api";
+import { get, remove } from "utils/api";
 const initialState = {
   active_tab: 0,
   loading: false,
   data: [],
   openEdit: false,
   openManage: false,
+  openDuplicate: false,
   selectedData: {},
   editManageData: false,
   updateLoading: false
@@ -15,6 +16,7 @@ const StateContext = React.createContext();
 
 const StateProvider = ({ children }) => {
   const [modalLoading, setModalLoading] = useState(false);
+  const [originalData, setOriginalData] = useState([]);
 
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
@@ -34,6 +36,8 @@ const StateProvider = ({ children }) => {
     get("/api/pending/list")
       .then(res => {
         setLoading(false);
+        setOriginalData(res.data);
+
         setData(res.data);
       })
       .catch(err => {
@@ -41,7 +45,24 @@ const StateProvider = ({ children }) => {
         setLoading(false);
       });
   };
+  const deletePendingStatus = id => {
+    dispatch({
+      type: "set-update-loading",
+      payload: { updateLoading: true }
+    });
 
+    remove(`/api/pending/delete/${id}`).then(() => {
+      dispatch({
+        type: "set-update-loading",
+        payload: { updateLoading: false }
+      });
+      dispatch({
+        type: "set-manage-modal",
+        payload: { selectedData: false }
+      });
+      getPendingInvoicesData();
+    });
+  };
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-tab":
@@ -55,6 +76,8 @@ const StateProvider = ({ children }) => {
         return { ...state, openEdit: action.payload.openEdit };
       case "set-manage-modal":
         return { ...state, openManage: action.payload.openManage };
+      case "set-duplicate-modal":
+        return { ...state, openDuplicate: action.payload.openDuplicate };
       case "set-selected-data":
         return { ...state, selectedData: action.payload.selectedData };
       case "set-edit-manage-data":
@@ -77,7 +100,9 @@ const StateProvider = ({ children }) => {
         setTab,
         modalLoading,
         setModalLoading,
-        getPendingInvoicesData
+        getPendingInvoicesData,
+        deletePendingStatus,
+        originalData
       }}
     >
       {children}

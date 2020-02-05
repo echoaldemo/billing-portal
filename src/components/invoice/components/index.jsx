@@ -6,7 +6,7 @@ import InvoiceTable from "./approved/InvoiceTable";
 import TableTabs from "./TableTabs";
 import PendingTable from "./pending/PendingTable";
 import PendingTableBody from "./pending/PendingTableBody";
-
+import FilterToolbar from "./filter-toolbar";
 export {
   TableTabs,
   InvoiceTableToolbar,
@@ -15,5 +15,6 @@ export {
   EditInvoice,
   InvoiceTable,
   PendingTable,
-  PendingTableBody
+  PendingTableBody,
+  FilterToolbar
 };
