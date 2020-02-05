@@ -11,7 +11,7 @@ import {
 import { Add } from "@material-ui/icons";
 import Manual from "../../new-invoice/manual/ManualInvoice";
 import Automatic from "../../new-invoice/automatic/AutomaticInvoice";
-import { useStyles, Transition } from "../../new-invoice/automatic/styles";
+import { useStyles, Transition } from "../../new-invoice/styles";
 
 import { LoadingNoDialog as Loading } from "common-components";
 
@@ -19,7 +19,7 @@ const InvoiceTableToolbar = props => {
   const classes = useStyles();
   const [state, setState] = React.useState({
     anchorEl: null,
-    type: ""
+    type: "automatic"
   });
 
   const handleClose = () => {
@@ -96,6 +96,7 @@ const InvoiceTableToolbar = props => {
       <Dialog
         open={state.type !== ""}
         maxWidth="sm"
+        fullScreen
         classes={
           state.type === "loading" ? {} : { paperWidthSm: classes.dialog }
         }

@@ -68,7 +68,8 @@ const defaultSelectInputs = {
   company: " ",
   campaign: [],
   billingType: " ",
-  billingPeriod: date
+  billingPeriod: date,
+  taxation: " "
 };
 
 const NewInvoice = ({ handleClose, renderLoading }) => {
@@ -87,7 +88,9 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
   const [activeCampaigns, setActiveCampaigns] = useState([]);
   const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
   const [state, setState] = useState({
-    anchorEl: null
+    anchorEl: null,
+    tax: false,
+    taxValue: ""
   });
 
   useEffect(() => {
@@ -190,13 +193,19 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
   };
 
   const getTotal = () => {
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round(
+            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
+          ) / 100
+        : 0;
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
       did.qty * did.rate +
       litigator.qty * litigator.rate +
       merchant;
-    if (total) return total;
+    if (total) return parseFloat(total) + tax;
     else return "0.00";
   };
 
@@ -355,6 +364,16 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
     });
   };
 
+  const handleTax = event => {
+    if (event.target.checked === false) {
+      setSelectInputs({ ...selectInputs, taxation: " " });
+    }
+    setState({
+      ...state,
+      tax: event.target.checked
+    });
+  };
+
   const buttonStatus = () => {
     const { company, campaign, billingType } = selectInputs;
     const total = getTotal();
@@ -368,6 +387,62 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
     } else return false;
   };
 
+  const renderTax = () => {
+    return (
+      <div
+        style={{
+          marginTop: 20,
+          display: "grid",
+          gridTemplateColumns: "30px 300px 200px",
+          justifyContent: "end",
+          gridGap: 15
+        }}
+      >
+        <Checkbox
+          checked={state.tax}
+          disableRipple
+          disableTouchRipple
+          disableFocusRipple
+          style={{ backgroundColor: "transparent" }}
+          onChange={handleTax}
+          value="secondary"
+        />
+        <div>
+          <TextField
+            select
+            disabled={!state.tax}
+            label="Taxable"
+            name="taxation"
+            variant="outlined"
+            value={selectInputs.taxation}
+            onChange={e => handleSelectChange(e)}
+            fullWidth
+          >
+            <MenuItem value=" ">Select taxation</MenuItem>
+            <MenuItem value="6.1">Utah (6.1%)</MenuItem>
+            <MenuItem value="8">California (8%)</MenuItem>
+            <MenuItem value="16">Mexico (16%)</MenuItem>
+          </TextField>
+        </div>
+        <TextField
+          disabled={!state.tax}
+          variant="outlined"
+          inputProps={{
+            value:
+              selectInputs.taxation !== " " && getTotal() !== 0
+                ? Math.round(
+                    (parseFloat(selectInputs.taxation) / 100) *
+                      (getItemSubtotal() + parseInt(getAddSubtotal())) *
+                      100
+                  ) / 100
+                : " ",
+            style: { textAlign: "right" }
+          }}
+          fullWidth
+        />
+      </div>
+    );
+  };
   return (
     <>
       <AppBar className={classes.appBar}>
@@ -730,8 +805,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             {formatter.format(getItemSubtotal())}
           </span>
         </div>
-        <Divider />
-
+        {!collapse ? renderTax() : <Divider />}
         <div
           style={{ padding: "30px 0", display: "flex", alignItems: "center" }}
         >
@@ -857,6 +931,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
               {formatter.format(getAddSubtotal())}
             </span>
           </div>
+          {collapse && renderTax()}
         </Collapse>
       </form>
     </>
