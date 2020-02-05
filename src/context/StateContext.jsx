@@ -1,5 +1,5 @@
 import React, { useReducer, useState } from "react";
-import { get } from "utils/api";
+import { get, remove } from "utils/api";
 const initialState = {
   active_tab: 0,
   loading: false,
@@ -41,7 +41,24 @@ const StateProvider = ({ children }) => {
         setLoading(false);
       });
   };
+  const deletePendingStatus = id => {
+    dispatch({
+      type: "set-update-loading",
+      payload: { updateLoading: true }
+    });
 
+    remove(`/api/pending/delete/${id}`).then(() => {
+      dispatch({
+        type: "set-update-loading",
+        payload: { updateLoading: false }
+      });
+      dispatch({
+        type: "set-manage-modal",
+        payload: { selectedData: false }
+      });
+      getPendingInvoicesData();
+    });
+  };
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-tab":
@@ -77,7 +94,8 @@ const StateProvider = ({ children }) => {
         setTab,
         modalLoading,
         setModalLoading,
-        getPendingInvoicesData
+        getPendingInvoicesData,
+        deletePendingStatus
       }}
     >
       {children}
