@@ -241,13 +241,11 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
 
       const company = activeCompanies.filter(
         item => item.uuid === selectInputs.company
-      )[0].name;
+      )[0];
 
-      const campaigns = activeCampaigns
-        .filter(item => selectInputs.campaign.indexOf(item.uuid) !== -1)
-        .map(data => data.name)
-        .join(", ");
-
+      const campaigns = activeCampaigns.filter(
+        item => selectInputs.campaign.indexOf(item.uuid) !== -1
+      );
       const total = getTotal();
 
       const data = {
