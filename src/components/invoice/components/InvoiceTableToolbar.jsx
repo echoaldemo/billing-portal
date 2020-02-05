@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   Button,
   Toolbar,
@@ -6,59 +6,59 @@ import {
   Menu,
   MenuItem,
   Dialog
-} from '@material-ui/core'
+} from "@material-ui/core";
 
-import { Add } from '@material-ui/icons'
-import Manual from '../../new-invoice/manual/ManualInvoice'
-import Automatic from '../../new-invoice/automatic/AutomaticInvoice'
-import { useStyles, Transition } from '../../new-invoice/styles'
+import { Add } from "@material-ui/icons";
+import Manual from "../../new-invoice/manual/ManualInvoice";
+import Automatic from "../../new-invoice/automatic/AutomaticInvoice";
+import { useStyles, Transition } from "../../new-invoice/styles";
 
-import { LoadingNoDialog as Loading } from 'common-components'
+import { LoadingNoDialog as Loading } from "common-components";
 
 const InvoiceTableToolbar = props => {
-  const classes = useStyles()
+  const classes = useStyles();
   const [state, setState] = React.useState({
     anchorEl: null,
-    type: ''
-  })
+    type: ""
+  });
 
   const handleClose = () => {
-    setState({ ...state, type: '' })
-  }
+    setState({ ...state, type: "" });
+  };
 
   const handleOpenMenu = event => {
-    setState({ ...state, anchorEl: event.currentTarget })
-  }
+    setState({ ...state, anchorEl: event.currentTarget });
+  };
 
   const handleCloseMenu = () => {
-    setState({ ...state, anchorEl: null })
-  }
+    setState({ ...state, anchorEl: null });
+  };
 
   const renderLoading = () => {
-    setState({ ...state, type: 'loading' })
+    setState({ ...state, type: "loading" });
     setTimeout(() => {
-      handleClose()
-    }, 2000)
-  }
+      handleClose();
+    }, 2000);
+  };
 
   const renderModal = () => {
-    if (state.type === 'manual')
+    if (state.type === "manual")
       return (
         <Manual
           renderLoading={renderLoading}
-          handleClose={() => handleClose('manual')}
+          handleClose={() => handleClose("manual")}
         />
-      )
-    else if (state.type === 'automatic')
+      );
+    else if (state.type === "automatic")
       return (
         <Automatic
           renderLoading={renderLoading}
-          handleClose={() => handleClose('automatic')}
+          handleClose={() => handleClose("automatic")}
         />
-      )
-    else if (state.type === 'loading')
-      return <Loading text="Saving invoice..." />
-  }
+      );
+    else if (state.type === "loading")
+      return <Loading text="Saving invoice..." />;
+  };
 
   return (
     <Toolbar>
@@ -75,11 +75,11 @@ const InvoiceTableToolbar = props => {
         onClose={handleCloseMenu}
       >
         <MenuItem
-          style={{ padding: '15px 20px' }}
+          style={{ padding: "15px 20px" }}
           onClick={() =>
             setState({
               ...state,
-              type: 'automatic',
+              type: "automatic",
               anchorEl: null
             })
           }
@@ -87,17 +87,18 @@ const InvoiceTableToolbar = props => {
           Automatic
         </MenuItem>
         <MenuItem
-          style={{ padding: '15px 20px' }}
-          onClick={() => setState({ ...state, type: 'manual', anchorEl: null })}
+          style={{ padding: "15px 20px" }}
+          onClick={() => setState({ ...state, type: "manual", anchorEl: null })}
         >
           Manual
         </MenuItem>
       </Menu>
       <Dialog
-        open={state.type !== ''}
+        open={state.type !== ""}
         maxWidth="sm"
+        fullScreen
         classes={
-          state.type === 'loading' ? {} : { paperWidthSm: classes.dialog }
+          state.type === "loading" ? {} : { paperWidthSm: classes.dialog }
         }
         disableBackdropClick
         disableEscapeKeyDown
@@ -106,7 +107,7 @@ const InvoiceTableToolbar = props => {
         {renderModal()}
       </Dialog>
     </Toolbar>
-  )
-}
+  );
+};
 
-export default InvoiceTableToolbar
+export default InvoiceTableToolbar;
