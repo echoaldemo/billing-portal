@@ -4,24 +4,23 @@ import { Settings } from "@material-ui/icons";
 import { StateContext } from "context/StateContext";
 export default function SimplePopover({ item }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { dispatch, setModalLoading } = React.useContext(StateContext);
+  const { dispatch, setModalLoading, state } = React.useContext(StateContext);
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
+    dispatch({ type: "set-selected-data", payload: { selectedData: item } });
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const passAllData = item => {
+  const openManageModal = item => {
     dispatch({
       type: "set-manage-modal",
       payload: { openManage: true }
     });
     setModalLoading(true);
-
     setTimeout(() => {
-      dispatch({ type: "set-selected-data", payload: { selectedData: item } });
       setModalLoading(false);
     }, 500);
   };
@@ -60,11 +59,10 @@ export default function SimplePopover({ item }) {
       >
         <Typography className="menu-button-container">
           <span
-            onClick={() => {
-              passAllData(item);
-              handleClose();
-            }}
             className="menu-item"
+            onClick={() => {
+              openManageModal();
+            }}
           >
             Manage
           </span>
