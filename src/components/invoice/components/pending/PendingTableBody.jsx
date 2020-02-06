@@ -47,7 +47,9 @@ const PendingTableBody = ({ data }) => {
             <TableCell>{statusToString(item.status)}</TableCell>
             <TableCell>{item.docNumber}</TableCell>
             <TableCell>{item.invoiceType}</TableCell>
-            <TableCell>{item.billingType}</TableCell>
+            <TableCell>
+              {item.billingType === "1" ? "Monthly" : "Weekly"}
+            </TableCell>
             <TableCell>{item.company.name}</TableCell>
             <TableCell>{moment(item.startDate).format("MMMM D, Y")}</TableCell>
             <TableCell>{moment(item.dueDate).format("MMMM D, Y")}</TableCell>
