@@ -2,7 +2,6 @@
 import React from "react";
 import { StateContext } from "context/StateContext";
 import { TableLoader, NoResult } from "common-components";
-import { get } from "utils/api";
 import { InvoiceTableHeader, PendingTableBody, TableStepper } from "../index";
 import {
   Table,
@@ -11,7 +10,6 @@ import {
   Divider
 } from "@material-ui/core";
 
-import { mockData } from "../mockData";
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
 import DuplicateModal from "./duplicate-modal/DuplicateModal";
 
@@ -19,8 +17,8 @@ const headCells = [
   { id: "status", label: "Status" },
   { id: "invoice", label: "Invoice" },
   { id: "invoice_type", label: "Type" },
+  { id: "billing_type", label: "Billing Type" },
   { id: "company", label: "Company" },
-  { id: "campaigns", label: "Campaigns" },
   { id: "start_date", label: "Start date" },
   { id: "due-date", label: "Due date" },
   { id: "total", label: "Total" },
