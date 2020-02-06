@@ -191,24 +191,27 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
     if (total) return total;
     else return "0.00";
   };
-
   const getTotal = () => {
-    const tax =
-      selectInputs.taxation !== " "
-        ? Math.round(
-            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
-          ) / 100
-        : 0;
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
       did.qty * did.rate +
       litigator.qty * litigator.rate +
       merchant;
+    if (total) return total;
+    else return "0.00";
+  };
+  const getBalanceDue = () => {
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round(
+            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
+          ) / 100
+        : 0;
+    const total = getTotal();
     if (total) return parseFloat(total) + tax;
     else return "0.00";
   };
-
   const appendLeadingZeroes = n => {
     if (n <= 9) {
       return "0" + n;
@@ -391,9 +394,9 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
         style={{
           marginTop: 20,
           display: "grid",
-          gridTemplateColumns: "30px 300px 200px",
+          gridTemplateColumns: "30px 300px 200px 235px",
           justifyContent: "end",
-          gridGap: 15
+          gridGap: 25
         }}
       >
         <Checkbox
@@ -427,17 +430,41 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
           variant="outlined"
           inputProps={{
             value:
-              selectInputs.taxation !== " " && getTotal() !== 0
+              selectInputs.taxation !== " " && getBalanceDue() !== 0
                 ? Math.round(
                     (parseFloat(selectInputs.taxation) / 100) *
                       (getItemSubtotal() + parseInt(getAddSubtotal())) *
                       100
                   ) / 100
                 : " ",
-            style: { textAlign: "right" }
+            style: { textAlign: "right" },
+            readOnly: true
           }}
           fullWidth
         />
+
+        <div>
+          <span
+            style={{
+              display: "grid",
+              gridTemplateColumns: "3fr 1fr",
+              marginTop: 15,
+              gridGap: 24,
+              alignItems: "center",
+              justifyItems: "end"
+            }}
+          >
+            BALANCE DUE
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              {formatter.format(getBalanceDue())}
+            </span>
+          </span>
+        </div>
       </div>
     );
   };
@@ -602,7 +629,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                   fontSize: 28
                 }}
               >
-                TOTAL
+                BALANCE DUE
               </span>
               <span
                 style={{
@@ -610,7 +637,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                   fontSize: 32
                 }}
               >
-                {formatter.format(getTotal())}
+                {formatter.format(getBalanceDue())}
               </span>
             </div>
           </Grid>
@@ -618,7 +645,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
 
         <Divider />
 
-        <div style={{ padding: "30px 0" }}>
+        <div style={{ padding: "15px 0" }}>
           <Typography variant="h5">Items</Typography>
         </div>
 
@@ -631,13 +658,13 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
           <Grid item xs={6} className={classes.head}>
             Name
           </Grid>
-          <Grid item xs={2} className={classes.head}>
+          <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Quantity
           </Grid>
-          <Grid item xs={2} className={classes.head}>
+          <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Rate
           </Grid>
-          <Grid item xs={2} className={classes.head}>
+          <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Amount
           </Grid>
         </Grid>
@@ -659,7 +686,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             <TextField
               placeholder="number of hours"
               inputProps={{
-                value: billableHours.qty
+                value: billableHours.qty,
+                style: { textAlign: "right" }
               }}
               onChange={e => handleBillableHoursChange(e, "qty")}
               fullWidth
@@ -669,7 +697,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             <TextField
               placeholder="cost per hour"
               inputProps={{
-                value: billableHours.rate
+                value: billableHours.rate,
+                style: { textAlign: "right" }
               }}
               onChange={e => handleBillableHoursChange(e, "rate")}
               fullWidth
@@ -683,7 +712,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                   billableHours.qty !== "" && billableHours.rate !== ""
                     ? formatter.format(billableHours.qty * billableHours.rate)
                     : "",
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               onChange={e => handleBillableHoursChange(e, "amt")}
               fullWidth
@@ -708,7 +738,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
               placeholder="number of interactions"
               inputProps={{
                 value: performance.qty,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               onChange={e => handlePerformanceChange(e, "qty")}
               fullWidth
@@ -719,7 +750,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
               placeholder="cost per interactions"
               inputProps={{
                 value: performance.rate,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               onChange={e => handlePerformanceChange(e, "rate")}
               fullWidth
@@ -733,7 +765,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                   performance.qty !== "" && performance.rate !== ""
                     ? formatter.format(performance.qty * performance.rate)
                     : "",
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               fullWidth
             />
@@ -753,7 +786,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
               placeholder="total DID"
               inputProps={{
                 value: did.qty,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               onChange={e => handleDIDsChange(e, "qty")}
               fullWidth
@@ -764,7 +798,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
               placeholder="cost per DID"
               inputProps={{
                 value: did.rate,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               onChange={e => handleDIDsChange(e, "rate")}
               fullWidth
@@ -778,7 +813,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                   did.qty !== "" && did.rate !== ""
                     ? formatter.format(did.qty * did.rate)
                     : "",
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               fullWidth
             />
@@ -805,7 +841,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
         </div>
         {!collapse ? renderTax() : <Divider />}
         <div
-          style={{ padding: "30px 0", display: "flex", alignItems: "center" }}
+          style={{ padding: "15px 0", display: "flex", alignItems: "center" }}
         >
           <Typography variant="h5">Additional fees</Typography>
           {collapse ? (
@@ -824,13 +860,25 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
             <Grid item xs={6} className={classes.head}>
               Name
             </Grid>
-            <Grid item xs={2} className={classes.head}>
+            <Grid
+              item
+              xs={2}
+              className={`${classes.head} ${classes.alignRight}`}
+            >
               Quantity
             </Grid>
-            <Grid item xs={2} className={classes.head}>
+            <Grid
+              item
+              xs={2}
+              className={`${classes.head} ${classes.alignRight}`}
+            >
               Rate
             </Grid>
-            <Grid item xs={2} className={classes.head}>
+            <Grid
+              item
+              xs={2}
+              className={`${classes.head} ${classes.alignRight}`}
+            >
               Amount
             </Grid>
           </Grid>
@@ -850,7 +898,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                 onChange={e => handleLitigator(e, "qty")}
                 fullWidth
                 inputProps={{
-                  value: litigator.qty
+                  value: litigator.qty,
+                  style: { textAlign: "right" }
                 }}
               />
             </Grid>
@@ -860,7 +909,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                 onChange={e => handleLitigator(e, "rate")}
                 fullWidth
                 inputProps={{
-                  value: litigator.rate
+                  value: litigator.rate,
+                  style: { textAlign: "right" }
                 }}
               />
             </Grid>
@@ -872,7 +922,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                     litigator.qty !== "" && litigator.rate !== ""
                       ? formatter.format(litigator.qty * litigator.rate)
                       : "",
-                  readOnly: true
+                  readOnly: true,
+                  style: { textAlign: "right" }
                 }}
                 fullWidth
               />
@@ -900,7 +951,8 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
                   value: merchant
                     ? (Math.round(merchant * 100) / 100).toFixed(2)
                     : "",
-                  align: "right"
+                  align: "right",
+                  style: { textAlign: "right" }
                 }}
                 InputProps={{
                   startAdornment: (
@@ -927,6 +979,27 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
               }}
             >
               {formatter.format(getAddSubtotal())}
+            </span>
+            <Divider />
+            <span
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                marginTop: 15,
+                gridGap: 25,
+                alignItems: "center",
+                justifyItems: "end"
+              }}
+            >
+              TOTAL
+              <span
+                style={{
+                  fontWeight: 600,
+                  fontSize: 20
+                }}
+              >
+                {formatter.format(getTotal())}
+              </span>
             </span>
           </div>
           {collapse && renderTax()}
