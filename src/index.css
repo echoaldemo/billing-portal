@@ -200,3 +200,6 @@ body {
 .approve-color {
   color: #2ca01d;
 }
+.MuiSelect-select:focus {
+  background-color: transparent !important;
+}

@@ -5,6 +5,7 @@ export default function NoResult() {
     <div
       style={{
         minHeight: 400,
+        width: "100%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
