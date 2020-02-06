@@ -68,6 +68,9 @@ export const useStyles = makeStyles(theme => ({
   actions: {
     backgroundColor: "#5F7D98",
     color: "#fff"
+  },
+  alignRight: {
+    textAlign: "right"
   }
 }));
 
