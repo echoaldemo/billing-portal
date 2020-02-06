@@ -200,3 +200,21 @@ body {
 .approve-color {
   color: #2ca01d;
 }
+
+@media screen and (min-device-width: 1440px) and (max-device-width: 1600px) {
+  .tab-panel-container {
+    width: 70% !important;
+  }
+}
+
+@media screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  .tab-panel-container {
+    width: 90% !important;
+  }
+}
+
+@media screen and (max-device-width: 425px) {
+  .tab-panel-container {
+    width: 200% !important;
+  }
+}
