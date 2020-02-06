@@ -37,7 +37,11 @@ const DuplicateModal = () => {
             renderLoading={renderLoading}
           />
         ) : state.selectedData.invoiceType.match(/auto/i) ? (
-          <Automatic handleClose={handleClose} renderLoading={renderLoading} />
+          <Automatic
+            handleClose={handleClose}
+            duplicate={state.selectedData}
+            renderLoading={renderLoading}
+          />
         ) : null}
       </div>
     </Dialog>
