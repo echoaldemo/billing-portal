@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useContext } from 'react'
 import {
   Table,
   TableFooter,
@@ -8,25 +7,28 @@ import {
   TableCell,
   TableHead,
   TableRow
-} from "@material-ui/core";
-
+} from '@material-ui/core'
+import { StateContext } from 'context/StateContext'
 export default function ItemsTable({ formState, setFormState }) {
+  const { state } = useContext(StateContext)
   const getTotalQty = () => {
-    let totalQty = 0;
-    formState.Line.map(item => {
+    let totalQty = 0
+    formState.Line.forEach(item => {
       if (item.SalesItemLineDetail) {
-        totalQty += item.SalesItemLineDetail.Qty;
+        totalQty += item.SalesItemLineDetail.Qty
       }
-    });
+    })
 
-    return totalQty;
-  };
+    return totalQty
+  }
 
-  const totalObj = formState.Line[formState.Line.length - 1];
+  const totalObj = formState.Line
+    ? formState.Line[formState.Line.length - 1]
+    : {}
 
   return (
     <React.Fragment>
-      <TableContainer style={{ border: "solid 1px #F1f1f1" }}>
+      <TableContainer style={{ border: 'solid 1px #F1f1f1' }}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -42,7 +44,7 @@ export default function ItemsTable({ formState, setFormState }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {formState.Line.map(row => {
+            {formState.Line.forEach(row => {
               if (row.SalesItemLineDetail)
                 return (
                   <TableRow key={row.name}>
@@ -56,7 +58,7 @@ export default function ItemsTable({ formState, setFormState }) {
                       {formatter.format(row.SalesItemLineDetail.UnitPrice)}
                     </TableCell>
                   </TableRow>
-                );
+                )
             })}
           </TableBody>
           <TableFooter>
@@ -78,11 +80,11 @@ export default function ItemsTable({ formState, setFormState }) {
         </Table>
       </TableContainer>
     </React.Fragment>
-  );
+  )
 }
 
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
   minimumFractionDigits: 2
-});
+})

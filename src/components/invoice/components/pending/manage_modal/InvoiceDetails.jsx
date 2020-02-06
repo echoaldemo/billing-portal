@@ -1,21 +1,19 @@
-import React from "react";
-import { InputField } from "common-components";
-import { Grid } from "@material-ui/core";
-import ItemsTable from "./components/ItemsTable";
-import { StateContext } from "context/StateContext";
-import { truncate } from "utils/func";
+import React from 'react'
+import { InputField } from 'common-components'
+import { Grid } from '@material-ui/core'
+import ItemsTable from './components/ItemsTable'
+import { StateContext } from 'context/StateContext'
+import { truncate } from 'utils/func'
 export default function InvoiceDetails() {
-  const { state } = React.useContext(StateContext);
-
-  const [formState, setFormState] = React.useState(state.selectedData);
-
+  const { state } = React.useContext(StateContext)
+  const [formState, setFormState] = React.useState(state.selectedData)
   return (
     <div className="modal-details-container">
       <Grid container spacing={3}>
         <Grid item lg={3} xs={3} md={3}>
           <InputField
             label="Company"
-            value={formState.company}
+            value={formState.company ? formState.company.name : ''}
             disabled={!state.editManageData}
           />
         </Grid>
@@ -24,8 +22,12 @@ export default function InvoiceDetails() {
             label="Campaigns"
             value={
               formState.campaigns
-                ? truncate(formState.campaigns, 22, "...")
-                : ""
+                ? truncate(
+                    formState.campaigns.map(camp => camp.name),
+                    22,
+                    '...'
+                  )
+                : ''
             }
             disabled={!state.editManageData}
           />
@@ -48,5 +50,5 @@ export default function InvoiceDetails() {
       <br />
       <ItemsTable formState={formState} setFormState={setFormState} />
     </div>
-  );
+  )
 }
