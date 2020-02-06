@@ -1,13 +1,13 @@
-import React from 'react'
-import { StateContext } from 'context/StateContext'
-import { Modal, TableLoader, LoadingModal } from 'common-components'
-import { TableStepper } from 'common-components'
-import { Divider, Button } from '@material-ui/core'
-import InvoiceDetails from './InvoiceDetails'
-import ManagePendingFooter from './components/ManagePendingFooter'
+import React from "react";
+import { StateContext } from "context/StateContext";
+import { Modal, TableLoader, LoadingModal } from "common-components";
+import { TableStepper } from "common-components";
+import { Divider, Button } from "@material-ui/core";
+import InvoiceDetails from "./InvoiceDetails";
+import ManagePendingFooter from "./components/ManagePendingFooter";
 
 export default function ManagePendingInvoice() {
-  const { state, dispatch, modalLoading } = React.useContext(StateContext)
+  const { state, dispatch, modalLoading } = React.useContext(StateContext);
 
   const EditButton = () => {
     return (
@@ -15,15 +15,15 @@ export default function ManagePendingInvoice() {
         {state.editManageData ? (
           <Button
             style={{
-              textTransform: 'none',
-              fontWeight: 'bold',
-              color: '#FFF'
+              textTransform: "none",
+              fontWeight: "bold",
+              color: "#FFF"
             }}
             onClick={() => {
               dispatch({
-                type: 'set-edit-manage-data',
+                type: "set-edit-manage-data",
                 payload: { editManageData: !state.editManageData }
-              })
+              });
             }}
           >
             Cancel
@@ -32,22 +32,22 @@ export default function ManagePendingInvoice() {
 
         <Button
           style={{
-            textTransform: 'none',
-            fontWeight: 'bold',
-            color: '#FFF'
+            textTransform: "none",
+            fontWeight: "bold",
+            color: "#FFF"
           }}
           onClick={() => {
             dispatch({
-              type: 'set-edit-manage-data',
+              type: "set-edit-manage-data",
               payload: { editManageData: !state.editManageData }
-            })
+            });
           }}
         >
-          {state.editManageData ? 'Save' : 'Edit'}
+          {state.editManageData ? "Save" : "Edit"}
         </Button>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <Modal
@@ -55,7 +55,7 @@ export default function ManagePendingInvoice() {
       open={state.openManage}
       // open={true}
       onClose={() => {
-        dispatch({ type: 'set-manage-modal', payload: { openManage: false } })
+        dispatch({ type: "set-manage-modal", payload: { openManage: false } });
       }}
       title={<b>Manage Pending Invoice</b>}
       width={930}
@@ -73,14 +73,14 @@ export default function ManagePendingInvoice() {
             text={`One moment. We're updating stage status…`}
             cancelFn={() => {
               dispatch({
-                type: 'set-update-loading',
+                type: "set-update-loading",
                 payload: { updateLoading: false }
-              })
+              });
             }}
           />
           <ManagePendingFooter />
         </React.Fragment>
       )}
     </Modal>
-  )
+  );
 }
