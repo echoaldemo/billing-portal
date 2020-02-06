@@ -31,9 +31,9 @@ const FilterMenu = () => {
       <Grid
         item
         xs={4}
+        md={4}
         lg={3}
         style={{
-          display: "flex",
           justifyContent: "flex-end"
         }}
       >
@@ -58,6 +58,7 @@ const FilterMenu = () => {
       <Grid
         item
         xs={4}
+        md={4}
         lg={3}
         style={{
           display: "flex",
