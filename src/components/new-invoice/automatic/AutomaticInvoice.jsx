@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   IconButton,
@@ -16,293 +16,303 @@ import {
   Checkbox,
   ListItemText,
   Popover
-} from '@material-ui/core'
+} from "@material-ui/core";
 import {
   Close,
   KeyboardArrowDown,
   KeyboardArrowUp,
   ArrowDropDown
-} from '@material-ui/icons'
+} from "@material-ui/icons";
 
-import 'date-fns'
-import DateFnsUtils from '@date-io/date-fns'
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
-} from '@material-ui/pickers'
+} from "@material-ui/pickers";
 
-import { StateContext } from 'context/StateContext'
-import { useStyles, MenuProps } from '../styles'
-import { getMock, post, get } from 'utils/api'
-import { mockCompanies, mockCampaigns } from '../mock'
+import { StateContext } from "context/StateContext";
+import { useStyles, MenuProps } from "../styles";
+import { getMock, post, get } from "utils/api";
+import { mockCompanies, mockCampaigns } from "../mock";
 
-const today = new Date()
+const today = new Date();
 const date =
-  today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
 const defaultBillableHours = {
-  name: 'Billable hours',
-  qty: '',
-  rate: '',
-  amt: ''
-}
+  name: "Billable hours",
+  qty: "",
+  rate: "",
+  amt: ""
+};
 const defaultPerformance = {
-  name: 'Performance',
-  qty: '',
-  rate: '',
-  amt: ''
-}
+  name: "Performance",
+  qty: "",
+  rate: "",
+  amt: ""
+};
 const defaultDID = {
-  name: 'DID',
-  qty: '',
-  rate: '',
-  amt: ''
-}
+  name: "DID",
+  qty: "",
+  rate: "",
+  amt: ""
+};
 const defaultLS = {
-  name: 'Litigator Scrubbing',
-  qty: '',
-  rate: '',
-  amt: ''
-}
+  name: "Litigator Scrubbing",
+  qty: "",
+  rate: "",
+  amt: ""
+};
 const defaultSelectInputs = {
-  company: ' ',
+  company: " ",
   campaign: [],
-  billingType: ' ',
+  billingType: " ",
   billingPeriod: date,
-  taxation: ' '
-}
+  taxation: " "
+};
 
 const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
-  const { setLoading, setData } = React.useContext(StateContext)
-  const classes = useStyles()
+  const { setLoading, setData } = React.useContext(StateContext);
+  const classes = useStyles();
 
-  const [selectInputs, setSelectInputs] = useState(defaultSelectInputs)
-  const [billableHours, setBillableHours] = useState(defaultBillableHours)
-  const [performance, setPerformance] = useState(defaultPerformance)
-  const [did, setDID] = useState(defaultDID)
-  const [litigator, setLitigator] = useState(defaultLS)
-  const [merchant, setMerchant] = useState('')
-  const [collapse, setCollapse] = useState(false)
-  const [activeCompanies, setActiveCompanies] = useState([])
-  const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true)
-  const [activeCampaigns, setActiveCampaigns] = useState([])
-  const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true)
+  const [selectInputs, setSelectInputs] = useState(defaultSelectInputs);
+  const [billableHours, setBillableHours] = useState(defaultBillableHours);
+  const [performance, setPerformance] = useState(defaultPerformance);
+  const [did, setDID] = useState(defaultDID);
+  const [litigator, setLitigator] = useState(defaultLS);
+  const [merchant, setMerchant] = useState("");
+  const [collapse, setCollapse] = useState(false);
+  const [activeCompanies, setActiveCompanies] = useState([]);
+  const [activeCompaniesLoading, setActiveCompaniesLoading] = useState(true);
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
   const [state, setState] = useState({
     anchorEl: null,
     tax: false,
-    taxValue: ''
-  })
+    taxValue: ""
+  });
 
   useEffect(() => {
-    getActiveCompainies()
-  }, [])
+    getActiveCompainies();
+  }, []);
 
   useEffect(() => {
-    if (typeof duplicate !== 'undefined') {
-      getActiveCampaigns(duplicate.company.uuid)
+    if (typeof duplicate !== "undefined") {
+      getActiveCampaigns(duplicate.company.uuid);
       if (
-        typeof duplicate.Line[0] !== 'undefined' &&
-        typeof duplicate.Line[0].SubTotalLineDetail === 'undefined'
+        typeof duplicate.Line[0] !== "undefined" &&
+        typeof duplicate.Line[0].SubTotalLineDetail === "undefined"
       ) {
         setBillableHours({
           ...defaultBillableHours,
           qty: duplicate.Line[0].SalesItemLineDetail.Qty,
           rate: duplicate.Line[0].SalesItemLineDetail.ItemRef.value,
           amt: duplicate.Line[0].Amount
-        })
+        });
       }
       if (
-        typeof duplicate.Line[1] !== 'undefined' &&
-        typeof duplicate.Line[1].SubTotalLineDetail === 'undefined'
+        typeof duplicate.Line[1] !== "undefined" &&
+        typeof duplicate.Line[1].SubTotalLineDetail === "undefined"
       ) {
         setPerformance({
           ...defaultPerformance,
           qty: duplicate.Line[1].SalesItemLineDetail.Qty,
           rate: duplicate.Line[1].SalesItemLineDetail.ItemRef.value,
           amt: duplicate.Line[1].Amount
-        })
+        });
       }
       if (
-        typeof duplicate.Line[2] !== 'undefined' &&
-        typeof duplicate.Line[2].SubTotalLineDetail === 'undefined'
+        typeof duplicate.Line[2] !== "undefined" &&
+        typeof duplicate.Line[2].SubTotalLineDetail === "undefined"
       ) {
         setDID({
           ...defaultDID,
           qty: duplicate.Line[2].SalesItemLineDetail.Qty,
           rate: duplicate.Line[2].SalesItemLineDetail.ItemRef.value,
           amt: duplicate.Line[2].Amount
-        })
+        });
       }
     }
     // eslint-disable-next-line
-  }, [activeCompanies])
+  }, [activeCompanies]);
 
   useEffect(() => {
-    if (typeof duplicate !== 'undefined') {
+    if (typeof duplicate !== "undefined") {
       setSelectInputs({
         ...defaultSelectInputs,
         company: duplicate.company.uuid,
         billingType: duplicate.billingType,
         campaign: duplicate.campaigns.map(camp => camp.uuid)
-      })
+      });
     }
     // eslint-disable-next-line
-  }, [activeCampaigns])
+  }, [activeCampaigns]);
 
   const getActiveCompainies = () => {
     setTimeout(() => {
-      setActiveCompanies(mockCompanies)
-      setActiveCompaniesLoading(false)
-    }, 1000)
-  }
+      setActiveCompanies(mockCompanies);
+      setActiveCompaniesLoading(false);
+    }, 1000);
+  };
   const getActiveCampaigns = uuid => {
-    if (uuid === '') {
-      setActiveCampaignsLoading(true)
-      setSelectInputs({ ...selectInputs, company: uuid, campaign: [] })
-      return
+    if (uuid === "") {
+      setActiveCampaignsLoading(true);
+      setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
+      return;
     }
     setTimeout(() => {
-      const campaigns = mockCampaigns.filter(c => c.company === uuid)
-      console.log(campaigns)
+      const campaigns = mockCampaigns.filter(c => c.company === uuid);
+      console.log(campaigns);
       setSelectInputs({
         ...selectInputs,
         campaign: campaigns.map(d => d.uuid),
         company: uuid
-      })
-      setActiveCampaigns(campaigns)
-      setActiveCampaignsLoading(false)
-    }, 1000)
-  }
+      });
+      setActiveCampaigns(campaigns);
+      setActiveCampaignsLoading(false);
+    }, 1000);
+  };
 
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 2
-  })
+  });
 
   const handleSelectChange = event => {
-    if (event.target.name === 'company') {
-      getActiveCampaigns(event.target.value)
+    if (event.target.name === "company") {
+      getActiveCampaigns(event.target.value);
     } else {
       setSelectInputs({
         ...selectInputs,
         [event.target.name]: event.target.value
-      })
+      });
     }
-  }
+  };
   const handleBillableHoursChange = (e, label) => {
-    setBillableHours({ ...billableHours, [label]: e.target.value })
-  }
+    setBillableHours({ ...billableHours, [label]: e.target.value });
+  };
   const handlePerformanceChange = (e, label) => {
-    setPerformance({ ...performance, [label]: e.target.value })
-  }
+    setPerformance({ ...performance, [label]: e.target.value });
+  };
   const handleDIDsChange = (e, label) => {
-    setDID({ ...did, [label]: e.target.value })
-  }
+    setDID({ ...did, [label]: e.target.value });
+  };
   const handleLitigator = (e, label) => {
-    setLitigator({ ...litigator, [label]: e.target.value })
-  }
+    setLitigator({ ...litigator, [label]: e.target.value });
+  };
   const handleDateChange = date => {
-    setSelectInputs({ ...selectInputs, billingPeriod: date })
-  }
+    setSelectInputs({ ...selectInputs, billingPeriod: date });
+  };
 
   const handleBillingChange = event => {
     setSelectInputs({
       ...selectInputs,
       [event.target.name]: event.target.value
-    })
-    getMock('/company1', {}).then(res => {
-      const mock = res.data[Math.floor(Math.random() * 10)]
+    });
+    getMock("/company1", {}).then(res => {
+      const mock = res.data[Math.floor(Math.random() * 10)];
       setBillableHours({
         ...billableHours,
         qty: mock.billable_hours,
         rate: mock.bill_rate
-      })
+      });
       setPerformance({
         ...performance,
         qty: mock.performance,
         rate: mock.performance_rate
-      })
+      });
       setDID({
         ...did,
         qty: mock.did,
         rate: mock.did_rate
-      })
-    })
-  }
+      });
+    });
+  };
   const getItemSubtotal = () => {
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
-      did.qty * did.rate
-    if (total) return total
-    else return '0.00'
-  }
+      did.qty * did.rate;
+    if (total) return total;
+    else return "0.00";
+  };
   const getAddSubtotal = () => {
-    const total = litigator.qty * litigator.rate + merchant
-    if (total) return total
-    else return '0.00'
-  }
+    const total = litigator.qty * litigator.rate + merchant;
+    if (total) return total;
+    else return "0.00";
+  };
 
   const getTotal = () => {
     const tax =
-      selectInputs.taxation !== ' '
+      selectInputs.taxation !== " "
         ? Math.round(
             (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
           ) / 100
-        : 0
+        : 0;
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
       did.qty * did.rate +
       litigator.qty * litigator.rate +
-      merchant
-    if (total) return parseFloat(total) + tax
-    else return '0.00'
-  }
-
+      merchant;
+    if (total) return total;
+    else return "0.00";
+  };
+  const getBalanceDue = () => {
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round(
+            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
+          ) / 100
+        : 0;
+    const total = getTotal();
+    if (total) return parseFloat(total) + tax;
+    else return "0.00";
+  };
   const appendLeadingZeroes = n => {
     if (n <= 9) {
-      return '0' + n
+      return "0" + n;
     }
-    return n
-  }
+    return n;
+  };
 
   const createInvoice = () => {
     if (buttonStatus()) {
-      setLoading(true)
-      renderLoading()
-      let dt = new Date(selectInputs.billingPeriod)
+      setLoading(true);
+      renderLoading();
+      let dt = new Date(selectInputs.billingPeriod);
 
       let startDate =
         dt.getFullYear() +
-        '-' +
+        "-" +
         appendLeadingZeroes(dt.getMonth() + 1) +
-        '-' +
-        appendLeadingZeroes(dt.getDate())
+        "-" +
+        appendLeadingZeroes(dt.getDate());
 
-      if (selectInputs.billingType === '1') dt.setMonth(dt.getMonth() + 1)
-      else dt.setDate(dt.getDate() + 7)
+      if (selectInputs.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+      else dt.setDate(dt.getDate() + 7);
 
       const dueDate =
         dt.getFullYear() +
-        '-' +
+        "-" +
         appendLeadingZeroes(dt.getMonth() + 1) +
-        '-' +
-        appendLeadingZeroes(dt.getDate())
+        "-" +
+        appendLeadingZeroes(dt.getDate());
 
       const company = activeCompanies.filter(
         item => item.uuid === selectInputs.company
-      )[0]
+      )[0];
 
       const campaigns = activeCampaigns.filter(
         item => selectInputs.campaign.indexOf(item.uuid) !== -1
-      )
-      const total = getTotal()
+      );
+      const total = getTotal();
 
       const data = {
-        docNumber: '1070',
-        invoiceType: 'Automatic',
+        docNumber: "1070",
+        invoiceType: "Automatic",
         company,
         campaigns,
         startDate,
@@ -315,138 +325,138 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             Amount: billableHours.qty * billableHours.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: 'NON'
+                value: "NON"
               },
               ItemRef: {
-                name: 'Billable Hours',
-                value: '21'
+                name: "Billable Hours",
+                value: "21"
               },
               Qty: billableHours.qty,
               UnitPrice: billableHours.rate
             },
-            Id: '1',
-            DetailType: 'SalesItemLineDetail',
-            Description: 'amount of services rendered in hours'
+            Id: "1",
+            DetailType: "SalesItemLineDetail",
+            Description: "amount of services rendered in hours"
           },
           {
             LineNum: 2,
             Amount: performance.qty * performance.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: 'NON'
+                value: "NON"
               },
               ItemRef: {
-                name: 'Performance',
-                value: '22'
+                name: "Performance",
+                value: "22"
               },
               Qty: performance.qty,
               UnitPrice: performance.rate
             },
-            Id: '2',
-            DetailType: 'SalesItemLineDetail'
+            Id: "2",
+            DetailType: "SalesItemLineDetail"
           },
           {
             LineNum: 3,
             Amount: did.qty * did.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: 'NON'
+                value: "NON"
               },
               ItemRef: {
-                name: 'DID',
-                value: '23'
+                name: "DID",
+                value: "23"
               },
               Qty: did.qty,
               UnitPrice: did.rate
             },
-            Id: '3',
-            DetailType: 'SalesItemLineDetail',
-            Description: 'amount of DIDs used'
+            Id: "3",
+            DetailType: "SalesItemLineDetail",
+            Description: "amount of DIDs used"
           },
           {
-            DetailType: 'SubTotalLineDetail',
+            DetailType: "SubTotalLineDetail",
             Amount: total,
             SubTotalLineDetail: {}
           }
         ]
-      }
-      post('/api/create_pending', data)
+      };
+      post("/api/create_pending", data)
         .then(() => {
-          get('/api/pending/list')
+          get("/api/pending/list")
             .then(res => {
-              setLoading(false)
-              setData(res.data)
-              resetState()
+              setLoading(false);
+              setData(res.data);
+              resetState();
             })
             .catch(err => {
-              console.log(err)
-            })
+              console.log(err);
+            });
         })
         .catch(err => {
-          console.log(err)
-        })
+          console.log(err);
+        });
     }
-  }
+  };
 
   const resetState = () => {
-    setBillableHours(defaultBillableHours)
-    setPerformance(defaultPerformance)
-    setDID(defaultDID)
-    setLitigator(defaultLS)
-    setMerchant(' ')
-    setSelectInputs(defaultSelectInputs)
-  }
+    setBillableHours(defaultBillableHours);
+    setPerformance(defaultPerformance);
+    setDID(defaultDID);
+    setLitigator(defaultLS);
+    setMerchant(" ");
+    setSelectInputs(defaultSelectInputs);
+  };
 
   const closeModal = () => {
-    resetState()
-    handleClose()
-  }
+    resetState();
+    handleClose();
+  };
 
   const handleShowMore = e => {
     setState({
       ...state,
       anchorEl: e.currentTarget
-    })
-  }
+    });
+  };
   const handleCloseMore = () => {
     setState({
       ...state,
       anchorEl: null
-    })
-  }
+    });
+  };
 
   const handleTax = event => {
     if (event.target.checked === false) {
-      setSelectInputs({ ...selectInputs, taxation: ' ' })
+      setSelectInputs({ ...selectInputs, taxation: " " });
     }
     setState({
       ...state,
       tax: event.target.checked
-    })
-  }
+    });
+  };
 
   const buttonStatus = () => {
-    const { company, campaign, billingType } = selectInputs
-    const total = getTotal()
+    const { company, campaign, billingType } = selectInputs;
+    const total = getTotal();
     if (
-      company !== ' ' &&
+      company !== " " &&
       campaign.length !== 0 &&
-      billingType !== ' ' &&
-      total !== '0.00'
+      billingType !== " " &&
+      total !== "0.00"
     ) {
-      return true
-    } else return false
-  }
+      return true;
+    } else return false;
+  };
 
   const renderTax = () => {
     return (
       <div
         style={{
           marginTop: 20,
-          display: 'grid',
-          gridTemplateColumns: '30px 300px 200px',
-          justifyContent: 'end',
-          gridGap: 15
+          display: "grid",
+          gridTemplateColumns: "30px 300px 200px 235px",
+          justifyContent: "end",
+          gridGap: 25
         }}
       >
         <Checkbox
@@ -454,7 +464,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           disableRipple
           disableTouchRipple
           disableFocusRipple
-          style={{ backgroundColor: 'transparent' }}
+          style={{ backgroundColor: "transparent" }}
           onChange={handleTax}
           value="secondary"
         />
@@ -480,20 +490,44 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           variant="outlined"
           inputProps={{
             value:
-              selectInputs.taxation !== ' ' && getTotal() !== 0
+              selectInputs.taxation !== " " && getBalanceDue() !== 0
                 ? Math.round(
                     (parseFloat(selectInputs.taxation) / 100) *
                       (getItemSubtotal() + parseInt(getAddSubtotal())) *
                       100
                   ) / 100
-                : ' ',
-            style: { textAlign: 'right' }
+                : " ",
+            style: { textAlign: "right" },
+            readOnly: true
           }}
           fullWidth
         />
+
+        <div>
+          <span
+            style={{
+              display: "grid",
+              gridTemplateColumns: "3fr 1fr",
+              marginTop: 15,
+              gridGap: 24,
+              alignItems: "center",
+              justifyItems: "end"
+            }}
+          >
+            BALANCE DUE
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              {formatter.format(getBalanceDue())}
+            </span>
+          </span>
+        </div>
       </div>
-    )
-  }
+    );
+  };
   return (
     <>
       <AppBar className={classes.appBar}>
@@ -528,16 +562,16 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             open={Boolean(state.anchorEl)}
             onClose={handleCloseMore}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
+              vertical: "bottom",
+              horizontal: "right"
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center'
+              vertical: "top",
+              horizontal: "center"
             }}
           >
-            <MenuItem style={{ padding: '15px 20px' }}>Save and send</MenuItem>
-            <MenuItem style={{ padding: '15px 20px' }}>
+            <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
+            <MenuItem style={{ padding: "15px 20px" }}>
               Save and approve
             </MenuItem>
           </Popover>
@@ -578,20 +612,20 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               multiple
               value={selectInputs.campaign}
               onChange={e => {
-                handleSelectChange(e)
+                handleSelectChange(e);
               }}
               renderValue={selected =>
                 selected.length === 0
-                  ? 'Select campaign'
+                  ? "Select campaign"
                   : selected.length === activeCampaigns.length
-                  ? 'All'
+                  ? "All"
                   : selected
                       .map(s =>
                         activeCampaigns
                           .filter(a => a.uuid === s)
                           .map(data => data.name)
                       )
-                      .join(', ')
+                      .join(", ")
               }
               disabled={activeCampaignsLoading}
               displayEmpty
@@ -643,10 +677,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <Grid item xs={2}>
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                justifyContent: 'center'
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                justifyContent: "center"
               }}
             >
               <span
@@ -655,7 +689,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
                   fontSize: 28
                 }}
               >
-                TOTAL
+                BALANCE DUE
               </span>
               <span
                 style={{
@@ -663,7 +697,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
                   fontSize: 32
                 }}
               >
-                {formatter.format(getTotal())}
+                {formatter.format(getBalanceDue())}
               </span>
             </div>
           </Grid>
@@ -671,7 +705,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
 
         <Divider />
 
-        <div style={{ padding: '30px 0' }}>
+        <div style={{ padding: "15px 0" }}>
           <Typography variant="h5">Items</Typography>
         </div>
 
@@ -679,18 +713,18 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           container
           spacing={1}
           xs={12}
-          style={{ marginBottom: 30, boxSizing: 'border-box' }}
+          style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
           <Grid item xs={6} className={classes.head}>
             Name
           </Grid>
-          <Grid item xs={2} className={classes.head}>
+          <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Quantity
           </Grid>
-          <Grid item xs={2} className={classes.head}>
+          <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Rate
           </Grid>
-          <Grid item xs={2} className={classes.head}>
+          <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Amount
           </Grid>
         </Grid>
@@ -699,7 +733,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           container
           spacing={1}
           xs={12}
-          style={{ marginBottom: 30, boxSizing: 'border-box' }}
+          style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
           <Grid item xs={6}>
             <TextField
@@ -712,9 +746,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="number of hours"
               inputProps={{
-                value: billableHours.qty
+                value: billableHours.qty,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handleBillableHoursChange(e, 'qty')}
+              onChange={e => handleBillableHoursChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -722,9 +757,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="cost per hour"
               inputProps={{
-                value: billableHours.rate
+                value: billableHours.rate,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handleBillableHoursChange(e, 'rate')}
+              onChange={e => handleBillableHoursChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -733,12 +769,13 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="Amount"
               inputProps={{
                 value:
-                  billableHours.qty !== '' && billableHours.rate !== ''
+                  billableHours.qty !== "" && billableHours.rate !== ""
                     ? formatter.format(billableHours.qty * billableHours.rate)
-                    : '',
-                readOnly: true
+                    : "",
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handleBillableHoursChange(e, 'amt')}
+              onChange={e => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -747,7 +784,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           container
           spacing={1}
           xs={12}
-          style={{ marginBottom: 30, boxSizing: 'border-box' }}
+          style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
           <Grid item xs={6}>
             <TextField
@@ -761,9 +798,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="number of interactions"
               inputProps={{
                 value: performance.qty,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handlePerformanceChange(e, 'qty')}
+              onChange={e => handlePerformanceChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -772,9 +810,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="cost per interactions"
               inputProps={{
                 value: performance.rate,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handlePerformanceChange(e, 'rate')}
+              onChange={e => handlePerformanceChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -783,10 +822,11 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="Amount"
               inputProps={{
                 value:
-                  performance.qty !== '' && performance.rate !== ''
+                  performance.qty !== "" && performance.rate !== ""
                     ? formatter.format(performance.qty * performance.rate)
-                    : '',
-                readOnly: true
+                    : "",
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               fullWidth
             />
@@ -796,7 +836,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           container
           spacing={1}
           xs={12}
-          style={{ marginBottom: 30, boxSizing: 'border-box' }}
+          style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
           <Grid item xs={6}>
             <TextField placeholder="Item name" value={did.name} fullWidth />
@@ -806,9 +846,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="total DID"
               inputProps={{
                 value: did.qty,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handleDIDsChange(e, 'qty')}
+              onChange={e => handleDIDsChange(e, "qty")}
               fullWidth
             />
           </Grid>
@@ -817,9 +858,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="cost per DID"
               inputProps={{
                 value: did.rate,
-                readOnly: true
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={e => handleDIDsChange(e, 'rate')}
+              onChange={e => handleDIDsChange(e, "rate")}
               fullWidth
             />
           </Grid>
@@ -828,10 +870,11 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               placeholder="Amount"
               inputProps={{
                 value:
-                  did.qty !== '' && did.rate !== ''
+                  did.qty !== "" && did.rate !== ""
                     ? formatter.format(did.qty * did.rate)
-                    : '',
-                readOnly: true
+                    : "",
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
               fullWidth
             />
@@ -841,9 +884,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         <Divider />
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end'
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
           }}
         >
           <span>SUBTOTAL</span>
@@ -858,7 +901,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         </div>
         {!collapse ? renderTax() : <Divider />}
         <div
-          style={{ padding: '30px 0', display: 'flex', alignItems: 'center' }}
+          style={{ padding: "15px 0", display: "flex", alignItems: "center" }}
         >
           <Typography variant="h5">Additional fees</Typography>
           {collapse ? (
@@ -872,18 +915,30 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             container
             spacing={1}
             xs={12}
-            style={{ marginBottom: 30, boxSizing: 'border-box' }}
+            style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6} className={classes.head}>
               Name
             </Grid>
-            <Grid item xs={2} className={classes.head}>
+            <Grid
+              item
+              xs={2}
+              className={`${classes.head} ${classes.alignRight}`}
+            >
               Quantity
             </Grid>
-            <Grid item xs={2} className={classes.head}>
+            <Grid
+              item
+              xs={2}
+              className={`${classes.head} ${classes.alignRight}`}
+            >
               Rate
             </Grid>
-            <Grid item xs={2} className={classes.head}>
+            <Grid
+              item
+              xs={2}
+              className={`${classes.head} ${classes.alignRight}`}
+            >
               Amount
             </Grid>
           </Grid>
@@ -892,7 +947,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             container
             spacing={1}
             xs={12}
-            style={{ marginBottom: 30, boxSizing: 'border-box' }}
+            style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6}>
               <TextField value={litigator.name} fullWidth />
@@ -900,20 +955,22 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <Grid item xs={2}>
               <TextField
                 placeholder="number of hours"
-                onChange={e => handleLitigator(e, 'qty')}
+                onChange={e => handleLitigator(e, "qty")}
                 fullWidth
                 inputProps={{
-                  value: litigator.qty
+                  value: litigator.qty,
+                  style: { textAlign: "right" }
                 }}
               />
             </Grid>
             <Grid item xs={2}>
               <TextField
                 placeholder="cost per hour"
-                onChange={e => handleLitigator(e, 'rate')}
+                onChange={e => handleLitigator(e, "rate")}
                 fullWidth
                 inputProps={{
-                  value: litigator.rate
+                  value: litigator.rate,
+                  style: { textAlign: "right" }
                 }}
               />
             </Grid>
@@ -922,10 +979,11 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
                 placeholder="Amount"
                 inputProps={{
                   value:
-                    litigator.qty !== '' && litigator.rate !== ''
+                    litigator.qty !== "" && litigator.rate !== ""
                       ? formatter.format(litigator.qty * litigator.rate)
-                      : '',
-                  readOnly: true
+                      : "",
+                  readOnly: true,
+                  style: { textAlign: "right" }
                 }}
                 fullWidth
               />
@@ -935,7 +993,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             container
             spacing={1}
             xs={12}
-            style={{ marginBottom: 30, boxSizing: 'border-box' }}
+            style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6}>
               <TextField
@@ -952,8 +1010,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
                 inputProps={{
                   value: merchant
                     ? (Math.round(merchant * 100) / 100).toFixed(2)
-                    : '',
-                  align: 'right'
+                    : "",
+                  align: "right",
+                  style: { textAlign: "right" }
                 }}
                 InputProps={{
                   startAdornment: (
@@ -967,9 +1026,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <Divider />
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-end'
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end"
             }}
           >
             <span>SUBTOTAL</span>
@@ -981,12 +1040,33 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             >
               {formatter.format(getAddSubtotal())}
             </span>
+            <Divider />
+            <span
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                marginTop: 15,
+                gridGap: 25,
+                alignItems: "center",
+                justifyItems: "end"
+              }}
+            >
+              TOTAL
+              <span
+                style={{
+                  fontWeight: 600,
+                  fontSize: 20
+                }}
+              >
+                {formatter.format(getTotal())}
+              </span>
+            </span>
           </div>
           {collapse && renderTax()}
         </Collapse>
       </form>
     </>
-  )
-}
+  );
+};
 
-export default NewInvoice
+export default NewInvoice;
