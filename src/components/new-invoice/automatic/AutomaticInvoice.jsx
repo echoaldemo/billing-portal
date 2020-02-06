@@ -72,7 +72,7 @@ const defaultSelectInputs = {
   taxation: " "
 };
 
-const NewInvoice = ({ handleClose, renderLoading }) => {
+const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const { setLoading, setData } = React.useContext(StateContext);
   const classes = useStyles();
 
@@ -96,6 +96,58 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
   useEffect(() => {
     getActiveCompainies();
   }, []);
+
+  useEffect(() => {
+    if (typeof duplicate !== "undefined") {
+      getActiveCampaigns(duplicate.company.uuid);
+      if (
+        typeof duplicate.Line[0] !== "undefined" &&
+        typeof duplicate.Line[0].SubTotalLineDetail === "undefined"
+      ) {
+        setBillableHours({
+          ...defaultBillableHours,
+          qty: duplicate.Line[0].SalesItemLineDetail.Qty,
+          rate: duplicate.Line[0].SalesItemLineDetail.ItemRef.value,
+          amt: duplicate.Line[0].Amount
+        });
+      }
+      if (
+        typeof duplicate.Line[1] !== "undefined" &&
+        typeof duplicate.Line[1].SubTotalLineDetail === "undefined"
+      ) {
+        setPerformance({
+          ...defaultPerformance,
+          qty: duplicate.Line[1].SalesItemLineDetail.Qty,
+          rate: duplicate.Line[1].SalesItemLineDetail.ItemRef.value,
+          amt: duplicate.Line[1].Amount
+        });
+      }
+      if (
+        typeof duplicate.Line[2] !== "undefined" &&
+        typeof duplicate.Line[2].SubTotalLineDetail === "undefined"
+      ) {
+        setDID({
+          ...defaultDID,
+          qty: duplicate.Line[2].SalesItemLineDetail.Qty,
+          rate: duplicate.Line[2].SalesItemLineDetail.ItemRef.value,
+          amt: duplicate.Line[2].Amount
+        });
+      }
+    }
+    // eslint-disable-next-line
+  }, [activeCompanies]);
+
+  useEffect(() => {
+    if (typeof duplicate !== "undefined") {
+      setSelectInputs({
+        ...defaultSelectInputs,
+        company: duplicate.company.uuid,
+        billingType: duplicate.billingType,
+        campaign: duplicate.campaigns.map(camp => camp.uuid)
+      });
+    }
+    // eslint-disable-next-line
+  }, [activeCampaigns]);
 
   const getActiveCompainies = () => {
     setTimeout(() => {
@@ -191,7 +243,14 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
     if (total) return total;
     else return "0.00";
   };
+
   const getTotal = () => {
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round(
+            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
+          ) / 100
+        : 0;
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
@@ -259,6 +318,7 @@ const NewInvoice = ({ handleClose, renderLoading }) => {
         startDate,
         dueDate,
         total,
+        billingType: selectInputs.billingType,
         Line: [
           {
             LineNum: 1,
