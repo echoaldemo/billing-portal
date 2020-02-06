@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import Manual from 'components/new-invoice/manual/ManualInvoice'
 import Automatic from 'components/new-invoice/automatic/AutomaticInvoice'
-import { Dialog } from '@material-ui/core'
+import { Dialog, Slide } from '@material-ui/core'
 import { StateContext } from 'context/StateContext'
 
 const DuplicateModal = () => {
@@ -21,7 +21,13 @@ const DuplicateModal = () => {
     })
   }
   return (
-    <Dialog open={state.openDuplicate} maxWidth={false}>
+    <Dialog
+      open={state.openDuplicate}
+      fullScreen
+      disableBackdropClick
+      disableEscapeKeyDown
+      TransitionComponent={Transition}
+    >
       <div style={{ minWidth: '80vw' }}>
         {typeof state.selectedData.invoiceType ===
         'undefined' ? null : state.selectedData.invoiceType.match(/manual/i) ? (
@@ -37,5 +43,9 @@ const DuplicateModal = () => {
     </Dialog>
   )
 }
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
 export default DuplicateModal
