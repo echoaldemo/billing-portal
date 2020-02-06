@@ -17,7 +17,7 @@ const StateContext = React.createContext();
 const StateProvider = ({ children }) => {
   const [modalLoading, setModalLoading] = useState(false);
   const [originalData, setOriginalData] = useState([]);
-
+  const [formState, setFormState] = useState({});
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
@@ -102,7 +102,9 @@ const StateProvider = ({ children }) => {
         setModalLoading,
         getPendingInvoicesData,
         deletePendingStatus,
-        originalData
+        originalData,
+        formState,
+        setFormState
       }}
     >
       {children}

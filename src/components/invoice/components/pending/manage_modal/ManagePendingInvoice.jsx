@@ -5,29 +5,49 @@ import { TableStepper } from "common-components";
 import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
 import ManagePendingFooter from "./components/ManagePendingFooter";
-const EditButton = () => {
-  const { state, dispatch } = React.useContext(StateContext);
-  return (
-    <Button
-      style={{
-        textTransform: "none",
-        fontWeight: "bold",
-        color: "#FFF"
-      }}
-      onClick={() => {
-        dispatch({
-          type: "set-edit-manage-data",
-          payload: { editManageData: !state.editManageData }
-        });
-      }}
-    >
-      {state.editManageData ? "Save" : "Edit"}
-    </Button>
-  );
-};
 
 export default function ManagePendingInvoice() {
   const { state, dispatch, modalLoading } = React.useContext(StateContext);
+
+  const EditButton = () => {
+    return (
+      <>
+        {state.editManageData ? (
+          <Button
+            style={{
+              textTransform: "none",
+              fontWeight: "bold",
+              color: "#FFF"
+            }}
+            onClick={() => {
+              dispatch({
+                type: "set-edit-manage-data",
+                payload: { editManageData: !state.editManageData }
+              });
+            }}
+          >
+            Cancel
+          </Button>
+        ) : null}
+
+        <Button
+          style={{
+            textTransform: "none",
+            fontWeight: "bold",
+            color: "#FFF"
+          }}
+          onClick={() => {
+            dispatch({
+              type: "set-edit-manage-data",
+              payload: { editManageData: !state.editManageData }
+            });
+          }}
+        >
+          {state.editManageData ? "Save" : "Edit"}
+        </Button>
+      </>
+    );
+  };
 
   return (
     <Modal

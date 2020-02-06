@@ -7,36 +7,34 @@ import {
   PendingTable,
   FilterToolbar
 } from "./components";
-import { Grid, Typography, Box, Paper } from "@material-ui/core";
+import { Typography, Box, Paper } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
 const Invoice = () => {
   const { state } = React.useContext(StateContext);
 
   return (
-    <Grid container>
-      <Grid item lg={12}>
-        <PanelHeader
-          title="Invoices"
-          subTitle="Manage all pending and approved invoices from quickbooks site."
-        />
+    <React.Fragment>
+      <PanelHeader
+        title="Invoices"
+        subTitle="Manage all pending and approved invoices from quickbooks site."
+      />
 
-        <FilterToolbar />
-        <Paper className="mt-normal" square={true}>
-          <TableTabs />
+      <FilterToolbar />
+      <Paper className="mt-normal" square={true}>
+        <TableTabs />
 
-          {/* Pending */}
-          <TabPanel value={state.active_tab} index={0}>
-            <PendingTable />
-          </TabPanel>
-          {/* Approved */}
-          <TabPanel value={state.active_tab} index={1}>
-            <InvoiceTable />
-          </TabPanel>
-        </Paper>
+        {/* Pending */}
+        <TabPanel value={state.active_tab} index={0}>
+          <PendingTable />
+        </TabPanel>
+        {/* Approved */}
+        <TabPanel value={state.active_tab} index={1}>
+          <InvoiceTable />
+        </TabPanel>
+      </Paper>
 
-        <EditInvoice />
-      </Grid>
-    </Grid>
+      <EditInvoice />
+    </React.Fragment>
   );
 };
 
