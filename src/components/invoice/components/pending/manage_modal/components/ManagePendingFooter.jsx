@@ -1,36 +1,36 @@
-import React from "react";
-import { Button } from "@material-ui/core";
-import { StateContext } from "context/StateContext";
-import { patch } from "utils/api";
+import React from 'react'
+import { Button } from '@material-ui/core'
+import { StateContext } from 'context/StateContext'
+import { patch } from 'utils/api'
 export default function ManagePendingFooter() {
   const {
     state,
     dispatch,
     getPendingInvoicesData,
     deletePendingStatus
-  } = React.useContext(StateContext);
+  } = React.useContext(StateContext)
 
   const updateStateStatus = status => {
     dispatch({
-      type: "set-update-loading",
+      type: 'set-update-loading',
       payload: { updateLoading: true }
-    });
+    })
 
     patch(`/api/pending/edit/${state.selectedData.id}`, { status: status })
       .then(res => {
         dispatch({
-          type: "set-update-loading",
+          type: 'set-update-loading',
           payload: { updateLoading: false }
-        });
+        })
         dispatch({
-          type: "set-selected-data",
+          type: 'set-selected-data',
           payload: { selectedData: res.data }
-        });
+        })
       })
       .then(() => {
-        getPendingInvoicesData();
-      });
-  };
+        getPendingInvoicesData()
+      })
+  }
 
   const renderStageButton = item => {
     switch (item) {
@@ -40,62 +40,61 @@ export default function ManagePendingFooter() {
             variant="contained"
             color="primary"
             style={{
-              fontWeight: "bold",
-              backgroundColor: "#f89222",
-              textDecoration: "none"
+              fontWeight: 'bold',
+              backgroundColor: '#f89222',
+              textDecoration: 'none'
             }}
             onClick={() => {
-              updateStateStatus(1);
+              updateStateStatus(1)
             }}
           >
             Complete Review
           </Button>
-        );
+        )
       case 1:
         return (
           <Button
             variant="contained"
             color="primary"
             style={{
-              fontWeight: "bold",
-              backgroundColor: "#2ca01d",
-              textDecoration: "none"
+              fontWeight: 'bold',
+              backgroundColor: '#2ca01d',
+              textDecoration: 'none'
             }}
             onClick={() => {
-              updateStateStatus(2);
+              updateStateStatus(2)
             }}
           >
             Approve Invoice
           </Button>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         paddingTop: 15
       }}
     >
-      {console.log(state)}
       <div>
         <Button
           variant="contained"
           color="secondary"
-          style={{ fontWeight: "bold", textDecoration: "none" }}
+          style={{ fontWeight: 'bold', textDecoration: 'none' }}
           onClick={() => {
-            deletePendingStatus(state.selectedData.id);
+            deletePendingStatus(state.selectedData.id)
           }}
         >
           Delete
         </Button>
         &emsp;
-        <h5 style={{ display: "inline-block", color: "#444851" }}>
+        <h5 style={{ display: 'inline-block', color: '#444851' }}>
           Enim nostrud ipsum cupidatat ad elit officia velit deserunt laboris.
         </h5>
       </div>
@@ -103,9 +102,9 @@ export default function ManagePendingFooter() {
         {state.selectedData.status === 0 ? (
           <Button
             variant="contained"
-            style={{ fontWeight: "bold", textDecoration: "none" }}
+            style={{ fontWeight: 'bold', textDecoration: 'none' }}
             onClick={() => {
-              updateStateStatus(2);
+              updateStateStatus(2)
             }}
           >
             Skip
@@ -113,9 +112,9 @@ export default function ManagePendingFooter() {
         ) : (
           <Button
             variant="contained"
-            style={{ fontWeight: "bold", textDecoration: "none" }}
+            style={{ fontWeight: 'bold', textDecoration: 'none' }}
             onClick={() => {
-              updateStateStatus(state.selectedData.status - 1);
+              updateStateStatus(state.selectedData.status - 1)
             }}
           >
             Revert
@@ -125,5 +124,5 @@ export default function ManagePendingFooter() {
         {renderStageButton(state.selectedData.status)}
       </div>
     </div>
-  );
+  )
 }
