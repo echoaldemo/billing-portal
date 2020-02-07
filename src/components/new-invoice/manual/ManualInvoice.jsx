@@ -42,19 +42,22 @@ const defaultBillableHours = {
   name: "Billable hours",
   qty: "",
   rate: "",
-  amt: ""
+  amt: "",
+  show: true
 };
 const defaultPerformance = {
   name: "Performance",
   qty: "",
   rate: "",
-  amt: ""
+  amt: "",
+  show: true
 };
 const defaultDID = {
   name: "DID",
   qty: "",
   rate: "",
-  amt: ""
+  amt: "",
+  show: true
 };
 const defaultLS = {
   name: "Litigator Scrubbing",
@@ -74,8 +77,14 @@ const defaultSelectInputs = {
   company: "",
   campaign: [],
   billingType: " ",
-  billingPeriod: date
+  billingPeriod: date,
+  taxation: " "
 };
+const mockTaxation = [
+  { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
+  { code: "6", taxrate: "8", name: "California", percentage: 8 },
+  { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
+];
 
 const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const classes = useStyles();
@@ -95,7 +104,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const [activeCampaigns, setActiveCampaigns] = useState([]);
   const [activeCampaignsLoading, setActiveCampaignsLoading] = useState(true);
   const [state, setState] = useState({
-    anchorEl: null
+    anchorEl: null,
+    tax: false,
+    taxValue: ""
   });
 
   useEffect(() => {
@@ -183,6 +194,92 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       setActiveCampaignsLoading(false);
     }, 1000);
   };
+  const handleSelectChange = (event) => {
+    if (event.target.name === "company") {
+      getActiveCampaigns(event.target.value);
+    } else {
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
+      });
+    }
+  };
+  const handleDateChange = (date) => {
+    setSelectInputs({ ...selectInputs, billingPeriod: date });
+  };
+  const handleBillableHoursChange = (e, label) => {
+    setBillableHours({
+      ...billableHours,
+      [label]: e.target.value,
+      qty: billableHours.qty || 1
+    });
+  };
+  const handlePerformanceChange = (e, label) => {
+    setPerformance({
+      ...performance,
+      [label]: e.target.value,
+      qty: performance.qty || 1
+    });
+  };
+  const handleDIDsChange = (e, label) => {
+    setDID({ ...did, [label]: e.target.value, qty: did.qty || 1 });
+  };
+  const handleLSChange = (e, label) => {
+    setLS({ ...ls, [label]: e.target.value, qty: ls.qty || 1 });
+  };
+  const handleMerchantFees = (e, label) => {
+    setMerchantFees({ ...merchantFees, [label]: e.target.value });
+  };
+
+  const getItemsTotal = () => {
+    let arr = [];
+    arr.push((billableHours.qty || 1) * (billableHours.rate || 0));
+    arr.push((performance.qty || 1) * (performance.rate || 0));
+    arr.push((did.qty || 1) * (did.rate || 0));
+    const it = arr.reduce((total, value) => total + value);
+    const total1 = parseFloat(it) + parseFloat(extraItemsTotal);
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round((parseFloat(selectInputs.taxation) / 100) * total * 100) /
+          100
+        : 0;
+    setTotal(total1 + tax);
+    setItemsTotal(it);
+  };
+  const getExtraItemsTotal = () => {
+    let arr = [];
+    arr.push((ls.qty || 1) * (ls.rate || 0));
+    arr.push(merchantFees.amt ? parseFloat(merchantFees.amt) : 0);
+    const et = arr.reduce((total, value) => total + value);
+    const total2 = parseFloat(et) + parseFloat(itemsTotal);
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round((parseFloat(selectInputs.taxation) / 100) * total * 100) /
+          100
+        : 0;
+    setTotal(total2 + tax);
+    setExtraItemsTotal(et);
+  };
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  });
+  const formatter2 = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2
+  });
+  const handleShowMore = (e) => {
+    setState({
+      ...state,
+      anchorEl: e.currentTarget
+    });
+  };
+  const handleCloseMore = () => {
+    setState({
+      ...state,
+      anchorEl: null
+    });
+  };
 
   const appendLeadingZeroes = (n) => {
     if (n <= 9) {
@@ -221,43 +318,82 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       "-" +
       appendLeadingZeroes(dt.getDate());
 
-    billableHours.amt &&
+    (billableHours.qty || 1) * (billableHours.rate || 0) &&
       line.push({
         DetailType: "SalesItemLineDetail",
-        Amount: billableHours.amt,
+        Amount: (billableHours.qty || 1) * (billableHours.rate || 0),
         SalesItemLineDetail: {
           ItemRef: {
             value: "21",
             name: "Billable hours"
           },
-          Qty: billableHours.qty || 0,
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: billableHours.qty || 1,
           UnitPrice: billableHours.rate || 0
         }
       });
-    performance.amt &&
+    (performance.qty || 1) * (performance.rate || 0) &&
       line.push({
         DetailType: "SalesItemLineDetail",
-        Amount: performance.amt,
+        Amount: (performance.qty || 1) * (performance.rate || 0),
         SalesItemLineDetail: {
           ItemRef: {
             value: "22",
             name: "Performance"
           },
-          Qty: performance.qty || 0,
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: performance.qty || 1,
           UnitPrice: performance.rate || 0
         }
       });
-    did.amt &&
+    (did.qty || 1) * (did.rate || 0) &&
       line.push({
         DetailType: "SalesItemLineDetail",
-        Amount: did.amt,
+        Amount: (did.qty || 1) * (did.rate || 0),
         SalesItemLineDetail: {
           ItemRef: {
             value: "23",
             name: "DID"
           },
-          Qty: did.qty || 0,
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: did.qty || 1,
           UnitPrice: did.rate || 0
+        }
+      });
+    (ls.qty || 1) * (ls.rate || 0) &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: (ls.qty || 1) * (ls.rate || 0),
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "24",
+            name: "Litigator scrubbing"
+          },
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: ls.qty || 1,
+          UnitPrice: ls.rate || 0
+        }
+      });
+    (merchantFees.amt || 0) &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: merchantFees.amt || 0,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "25",
+            name: "Merchant fees"
+          },
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          }
         }
       });
     line.push({
@@ -272,7 +408,17 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       const campaigns = activeCampaigns.filter(
         (item) => selectInputs.campaign.indexOf(item.uuid) !== -1
       );
-      post(`/api/create_pending`, {
+      const taxPercent = parseFloat(selectInputs.taxation);
+      const tax =
+        selectInputs.taxation !== " "
+          ? Math.round(
+              (parseFloat(selectInputs.taxation) / 100) * total * 100
+            ) / 100
+          : 0;
+      const taxType = mockTaxation.filter(
+        (item) => item.percentage === taxPercent
+      )[0];
+      let data = {
         docNumber: Math.floor(Math.random() * 9999),
         Line: line,
         total,
@@ -282,24 +428,54 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         billingType: selectInputs.billingType,
         startDate,
         dueDate,
-        total
-      }).then((res) => {
-        get("/api/pending/list")
-          .then((res) => {
-            setLoading(false);
-            setData(res.data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        setBillableHours(defaultBillableHours);
-        setPerformance(defaultPerformance);
-        setDID(defaultDID);
-        setLS(defaultLS);
-        setMerchantFees(defaultMerchantFees);
-        setSelectInputs(defaultSelectInputs);
-      });
+        total,
+        CustomerMemo: {
+          value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
+        }
+      };
+      if (state.tax) {
+        data["TxnTaxDetail"] = {
+          TxnTaxCodeRef: {
+            value: taxType.code
+          },
+          TotalTax: tax,
+          TaxLine: [
+            {
+              DetailType: "TaxLineDetail",
+              Amount: tax,
+              TaxLineDetail: {
+                NetAmountTaxable:
+                  parseFloat(itemsTotal) + parseFloat(extraItemsTotal),
+                TaxPercent: taxType.percentage,
+                TaxRateRef: {
+                  value: taxType.taxrate
+                },
+                PercentBased: true
+              }
+            }
+          ]
+        };
+      }
+      saveReq(data);
     }
+  };
+  const saveReq = (data) => {
+    post(`/api/create_pending`, data).then((res) => {
+      get("/api/pending/list")
+        .then((res) => {
+          setLoading(false);
+          setData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setBillableHours(defaultBillableHours);
+      setPerformance(defaultPerformance);
+      setDID(defaultDID);
+      setLS(defaultLS);
+      setMerchantFees(defaultMerchantFees);
+      setSelectInputs(defaultSelectInputs);
+    });
   };
   const handleSaveAndApprove = () => {
     if (
@@ -312,43 +488,82 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     renderLoading();
     let line = [];
 
-    billableHours.amt &&
+    (billableHours.qty || 1) * (billableHours.rate || 0) &&
       line.push({
         DetailType: "SalesItemLineDetail",
-        Amount: billableHours.amt,
+        Amount: (billableHours.qty || 1) * (billableHours.rate || 0),
         SalesItemLineDetail: {
           ItemRef: {
             value: "21",
             name: "Billable hours"
           },
-          Qty: billableHours.qty || 0,
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: billableHours.qty || 1,
           UnitPrice: billableHours.rate || 0
         }
       });
-    performance.amt &&
+    (performance.qty || 1) * (performance.rate || 0) &&
       line.push({
         DetailType: "SalesItemLineDetail",
-        Amount: performance.amt,
+        Amount: (performance.qty || 1) * (performance.rate || 0),
         SalesItemLineDetail: {
           ItemRef: {
             value: "22",
             name: "Performance"
           },
-          Qty: performance.qty || 0,
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: performance.qty || 1,
           UnitPrice: performance.rate || 0
         }
       });
-    did.amt &&
+    (did.qty || 1) * (did.rate || 0) &&
       line.push({
         DetailType: "SalesItemLineDetail",
-        Amount: did.amt,
+        Amount: (did.qty || 1) * (did.rate || 0),
         SalesItemLineDetail: {
           ItemRef: {
             value: "23",
             name: "DID"
           },
-          Qty: did.qty || 0,
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: did.qty || 1,
           UnitPrice: did.rate || 0
+        }
+      });
+    (ls.qty || 1) * (ls.rate || 0) &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: (ls.qty || 1) * (ls.rate || 0),
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "24",
+            name: "Litigator scrubbing"
+          },
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          },
+          Qty: ls.qty || 1,
+          UnitPrice: ls.rate || 0
+        }
+      });
+    (merchantFees.amt || 0) &&
+      line.push({
+        DetailType: "SalesItemLineDetail",
+        Amount: merchantFees.amt || 0,
+        SalesItemLineDetail: {
+          ItemRef: {
+            value: "25",
+            name: "Merchant fees"
+          },
+          TaxCodeRef: {
+            value: state.tax ? "TAX" : "NON"
+          }
         }
       });
     line.push({
@@ -360,102 +575,159 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       const company = activeCompanies.filter(
         (i) => i.uuid === selectInputs.company
       );
-      post(`/api/invoice`, {
+      const taxPercent = parseFloat(selectInputs.taxation);
+      const tax =
+        selectInputs.taxation !== " "
+          ? Math.round(
+              (parseFloat(selectInputs.taxation) / 100) * total * 100
+            ) / 100
+          : 0;
+      const taxType = mockTaxation.filter(
+        (item) => item.percentage === taxPercent
+      )[0];
+      let data = {
         Line: line,
         CustomerRef: {
           value: company[0].qb_id
+        },
+        CustomerMemo: {
+          value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
         }
-      }).then((res) => {
-        setBillableHours(defaultBillableHours);
-        setPerformance(defaultPerformance);
-        setDID(defaultDID);
-        setLS(defaultLS);
-        setMerchantFees(defaultMerchantFees);
-        setSelectInputs(defaultSelectInputs);
-      });
+      };
+      if (state.tax) {
+        data["TxnTaxDetail"] = {
+          TxnTaxCodeRef: {
+            value: taxType.code
+          },
+          TotalTax: tax,
+          TaxLine: [
+            {
+              DetailType: "TaxLineDetail",
+              Amount: tax,
+              TaxLineDetail: {
+                NetAmountTaxable:
+                  parseFloat(itemsTotal) + parseFloat(extraItemsTotal),
+                TaxPercent: taxType.percentage,
+                TaxRateRef: {
+                  value: taxType.taxrate
+                },
+                PercentBased: true
+              }
+            }
+          ]
+        };
+      }
+      saveAndApproveReq(data);
     }
   };
-
-  const handleSelectChange = (event) => {
-    if (event.target.name === "company") {
-      getActiveCampaigns(event.target.value);
-    } else {
-      setSelectInputs({
-        ...selectInputs,
-        [event.target.name]: event.target.value
-      });
-    }
-  };
-  const handleDateChange = (date) => {
-    setSelectInputs({ ...selectInputs, billingPeriod: date });
-  };
-  const handleBillableHoursChange = (e, label) => {
-    setBillableHours({ ...billableHours, [label]: e.target.value });
-  };
-  const handlePerformanceChange = (e, label) => {
-    setPerformance({ ...performance, [label]: e.target.value });
-  };
-  const handleDIDsChange = (e, label) => {
-    setDID({ ...did, [label]: e.target.value });
-  };
-  const handleLSChange = (e, label) => {
-    setLS({ ...ls, [label]: e.target.value });
-  };
-  const handleMerchantFees = (e, label) => {
-    setMerchantFees({ ...merchantFees, [label]: e.target.value });
-  };
-  const handleTotalAmount = (key) => {
-    if (key === "1") {
-      let amt = (billableHours.qty || 0) * (billableHours.rate || 0);
-      setBillableHours({ ...billableHours, amt });
-    } else if (key === "2") {
-      let amt = (performance.qty || 0) * (performance.rate || 0);
-      setPerformance({ ...performance, amt });
-    } else if (key === "3") {
-      let amt = (did.qty || 0) * (did.rate || 0);
-      setDID({ ...did, amt });
-    } else if (key === "4") {
-      let amt = (ls.qty || 0) * (ls.rate || 0);
-      setLS({ ...ls, amt });
-    }
-  };
-
-  const getItemsTotal = () => {
-    let arr = [];
-    arr.push(billableHours.amt ? parseInt(billableHours.amt) : 0);
-    arr.push(performance.amt ? parseInt(performance.amt) : 0);
-    arr.push(did.amt ? parseInt(did.amt) : 0);
-    const it = arr.reduce((total, value) => total + value);
-    setTotal(parseInt(it) + parseInt(extraItemsTotal));
-    setItemsTotal(it);
-  };
-  const getExtraItemsTotal = () => {
-    let arr = [];
-    arr.push(ls.amt ? parseInt(ls.amt) : 0);
-    arr.push(merchantFees.amt ? parseInt(merchantFees.amt) : 0);
-    const et = arr.reduce((total, value) => total + value);
-    setTotal(parseInt(et) + parseInt(itemsTotal));
-    setExtraItemsTotal(et);
-  };
-  const formatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2
-  });
-  const formatter2 = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2
-  });
-  const handleShowMore = (e) => {
-    setState({
-      ...state,
-      anchorEl: e.currentTarget
+  const saveAndApproveReq = (data) => {
+    post(`/api/invoice`, data).then((res) => {
+      setBillableHours(defaultBillableHours);
+      setPerformance(defaultPerformance);
+      setDID(defaultDID);
+      setLS(defaultLS);
+      setMerchantFees(defaultMerchantFees);
+      setSelectInputs(defaultSelectInputs);
     });
   };
-  const handleCloseMore = () => {
+
+  const handleTax = (event) => {
+    if (event.target.checked === false) {
+      setSelectInputs({ ...selectInputs, taxation: " " });
+    }
     setState({
       ...state,
-      anchorEl: null
+      tax: event.target.checked
     });
+  };
+
+  const getBalanceDue = () => {
+    const tax =
+      selectInputs.taxation !== " "
+        ? Math.round((parseFloat(selectInputs.taxation) / 100) * total * 100) /
+          100
+        : 0;
+    if (total) return parseFloat(total) + tax;
+    else return "0.00";
+  };
+
+  const renderTax = () => {
+    return (
+      <div
+        style={{
+          marginTop: 20,
+          display: "grid",
+          gridTemplateColumns: "30px 300px 200px 235px",
+          justifyContent: "end",
+          gridGap: 25
+        }}
+      >
+        <Checkbox
+          checked={state.tax}
+          disableRipple
+          disableTouchRipple
+          disableFocusRipple
+          style={{ backgroundColor: "transparent" }}
+          onChange={handleTax}
+          value="secondary"
+        />
+        <div>
+          <TextField
+            select
+            disabled={!state.tax}
+            label="Taxable"
+            name="taxation"
+            variant="outlined"
+            value={selectInputs.taxation}
+            onChange={(e) => handleSelectChange(e)}
+            fullWidth
+          >
+            <MenuItem value=" ">Select taxation</MenuItem>
+            <MenuItem value="6.1">Utah (6.1%)</MenuItem>
+            <MenuItem value="8">California (8%)</MenuItem>
+            <MenuItem value="16">Mexico (16%)</MenuItem>
+          </TextField>
+        </div>
+        <TextField
+          disabled={!state.tax}
+          variant="outlined"
+          inputProps={{
+            value:
+              selectInputs.taxation !== " " && getBalanceDue() !== 0
+                ? Math.round(
+                    (parseFloat(selectInputs.taxation) / 100) * total * 100
+                  ) / 100
+                : " ",
+            style: { textAlign: "right" },
+            readOnly: true
+          }}
+          fullWidth
+        />
+
+        <div>
+          <span
+            style={{
+              display: "grid",
+              gridTemplateColumns: "3fr 1fr",
+              marginTop: 15,
+              gridGap: 24,
+              alignItems: "center",
+              justifyItems: "end"
+            }}
+          >
+            BALANCE DUE
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              {formatter.format(total)}
+            </span>
+          </span>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -622,7 +894,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
                   fontSize: 28
                 }}
               >
-                TOTAL
+                BALANCE DUE
               </span>
               <span
                 style={{
@@ -630,7 +902,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
                   fontSize: 32
                 }}
               >
-                {formatter.format(total)}
+                {formatter.format(parseFloat(total))}
               </span>
             </div>
           </Grid>
@@ -667,6 +939,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="Item name"
               value={billableHours.name}
+              inputProps={{
+                readOnly: true
+              }}
               fullWidth
             />
           </Grid>
@@ -674,9 +949,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="number of hours"
               inputProps={{
-                value: billableHours.qty
+                value: billableHours.qty,
+                style: { textAlign: "right" }
               }}
-              onBlur={() => handleTotalAmount("1")}
               onChange={(e) => handleBillableHoursChange(e, "qty")}
               fullWidth
             />
@@ -685,9 +960,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="cost per hour"
               inputProps={{
-                value: billableHours.rate
+                value: billableHours.rate,
+                style: { textAlign: "right" }
               }}
-              onBlur={() => handleTotalAmount("1")}
               onChange={(e) => handleBillableHoursChange(e, "rate")}
               fullWidth
             />
@@ -696,9 +971,14 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: billableHours.amt
+                value: formatter2.format(
+                  parseFloat(
+                    (billableHours.qty || 1) * (billableHours.rate || 0)
+                  ).toFixed(2)
+                ),
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={(e) => handleBillableHoursChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -713,6 +993,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="Item name"
               value={performance.name}
+              inputProps={{
+                readOnly: true
+              }}
               fullWidth
             />
           </Grid>
@@ -720,9 +1003,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="number of interactions"
               inputProps={{
-                value: performance.qty
+                value: performance.qty,
+                style: { textAlign: "right" }
               }}
-              onBlur={() => handleTotalAmount("2")}
               onChange={(e) => handlePerformanceChange(e, "qty")}
               fullWidth
             />
@@ -731,9 +1014,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="cost per interactions"
               inputProps={{
-                value: performance.rate
+                value: performance.rate,
+                style: { textAlign: "right" }
               }}
-              onBlur={() => handleTotalAmount("2")}
               onChange={(e) => handlePerformanceChange(e, "rate")}
               fullWidth
             />
@@ -742,9 +1025,14 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: performance.amt
+                value: formatter2.format(
+                  parseFloat(
+                    (performance.qty || 1) * (performance.rate || 0)
+                  ).toFixed(2)
+                ),
+                style: { textAlign: "right" },
+                readOnly: true
               }}
-              onChange={(e) => handlePerformanceChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -756,15 +1044,22 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
           <Grid item xs={6}>
-            <TextField placeholder="Item name" value={did.name} fullWidth />
+            <TextField
+              placeholder="Item name"
+              inputProps={{
+                readOnly: true
+              }}
+              value={did.name}
+              fullWidth
+            />
           </Grid>
           <Grid item xs={2}>
             <TextField
               placeholder="total DID"
               inputProps={{
-                value: did.qty
+                value: did.qty,
+                style: { textAlign: "right" }
               }}
-              onBlur={() => handleTotalAmount("3")}
               onChange={(e) => handleDIDsChange(e, "qty")}
               fullWidth
             />
@@ -773,9 +1068,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="cost per DID"
               inputProps={{
-                value: did.rate
+                value: did.rate,
+                style: { textAlign: "right" }
               }}
-              onBlur={() => handleTotalAmount("3")}
               onChange={(e) => handleDIDsChange(e, "rate")}
               fullWidth
             />
@@ -784,9 +1079,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <TextField
               placeholder="Amount"
               inputProps={{
-                value: did.amt
+                value: formatter2.format(
+                  parseFloat((did.qty || 1) * (did.rate || 0)).toFixed(2)
+                ),
+                readOnly: true,
+                style: { textAlign: "right" }
               }}
-              onChange={(e) => handleDIDsChange(e, "amt")}
               fullWidth
             />
           </Grid>
@@ -809,7 +1107,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             {formatter.format(itemsTotal)}
           </span>
         </div>
-        <Divider />
+        {!collapse ? renderTax() : <Divider />}
         <div
           style={{ padding: "30px 0", display: "flex", alignItems: "center" }}
         >
@@ -857,9 +1155,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <Grid item xs={2}>
               <TextField
                 placeholder="number of hours"
-                onBlur={() => handleTotalAmount("4")}
                 inputProps={{
-                  value: ls.qty
+                  value: ls.qty,
+                  style: { textAlign: "right" }
                 }}
                 onChange={(e) => handleLSChange(e, "qty")}
                 fullWidth
@@ -868,9 +1166,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <Grid item xs={2}>
               <TextField
                 placeholder="cost per hour"
-                onBlur={() => handleTotalAmount("4")}
                 inputProps={{
-                  value: ls.rate
+                  value: ls.rate,
+                  style: { textAlign: "right" }
                 }}
                 onChange={(e) => handleLSChange(e, "rate")}
                 fullWidth
@@ -879,11 +1177,13 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             <Grid item xs={2}>
               <TextField
                 placeholder="Amount"
-                onFocus={() => handleTotalAmount("4")}
                 inputProps={{
-                  value: ls.amt
+                  value: formatter2.format(
+                    parseFloat((ls.qty || 1) * (ls.rate || 0)).toFixed(2)
+                  ),
+                  readOnly: true,
+                  style: { textAlign: "right" }
                 }}
-                // onBlur={() => handleTotalAmount("4")}
                 onChange={(e) => handleLSChange(e, "amt")}
                 fullWidth
               />
@@ -908,7 +1208,8 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               <TextField
                 placeholder="Amount"
                 inputProps={{
-                  value: merchantFees.amt
+                  value: merchantFees.amt,
+                  style: { textAlign: "right" }
                 }}
                 onChange={(e) => handleMerchantFees(e, "amt")}
                 fullWidth
@@ -934,6 +1235,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             </span>
           </div>
         </Collapse>
+        {collapse && renderTax()}
       </form>
     </>
   );

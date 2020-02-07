@@ -1,25 +1,40 @@
 import React from "react";
-import {
-  Button,
-  IconButton,
-  Tooltip,
-  Divider,
-  Dialog
-} from "@material-ui/core";
+import { Button, IconButton, Tooltip } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
-import { Modal, LoadingModal } from "common-components";
+import DeleteModal from "./DeleteModal";
+import ApproveModal from "./ApproveModal";
+import DuplicateItems from "./DuplicateItems";
 import { StateContext } from "context/StateContext";
-import { remove } from "utils/api";
-
+import { post } from "utils/api";
 export default function PendingCheckboxToolbar() {
-  const initialState = {
-    approved: false,
-    delete: false
-  };
-  const [confirmModal, setConfirmModal] = React.useState(initialState);
+  const {
+    confirmModal,
+    setConfirmModal,
+    selectedItems,
+    getPendingInvoicesData,
+    state,
+    setSelectedItems
+  } = React.useContext(StateContext);
+  const [duplicateLoading, setDuplicateLoading] = React.useState(false);
+  const [duplicateCount, setDuplicateCount] = React.useState(0);
 
+  const duplicateSelectedItems = async () => {
+    setDuplicateLoading(true);
+    for (let i = 0; i < selectedItems.length; i++) {
+      let { id, ...rest } = selectedItems;
+      console.log(rest, "REST");
+      await post(`/api/create_pending`, rest).then(() => {
+        setDuplicateCount(i + 1);
+      });
+    }
+
+    setDuplicateLoading(false);
+    getPendingInvoicesData();
+    setSelectedItems([]);
+  };
   return (
     <div className="display-space-between p-normal">
+      {console.log(state.data)}
       <div>
         <Button
           style={{
@@ -29,6 +44,9 @@ export default function PendingCheckboxToolbar() {
             paddingRight: 10
           }}
           color="default"
+          onClick={() => {
+            setConfirmModal({ ...confirmModal, approve: true });
+          }}
         >
           <b>Mark as Approved</b>
         </Button>
@@ -41,6 +59,9 @@ export default function PendingCheckboxToolbar() {
             paddingRight: 10
           }}
           color="default"
+          onClick={() => {
+            duplicateSelectedItems();
+          }}
         >
           <b>Duplicate Items</b>
         </Button>
@@ -56,89 +77,13 @@ export default function PendingCheckboxToolbar() {
         </IconButton>
       </Tooltip>
 
-      <DeleteModal
-        confirmModal={confirmModal}
-        setConfirmModal={setConfirmModal}
+      <DeleteModal />
+      <ApproveModal />
+      <DuplicateItems
+        duplicateLoading={duplicateLoading}
+        setDuplicateLoading={setDuplicateLoading}
+        duplicateCount={duplicateCount}
       />
     </div>
   );
 }
-
-const DeleteModal = ({ confirmModal, setConfirmModal }) => {
-  const {
-    selectedItems,
-    getPendingInvoicesData,
-    setSelectedItems
-  } = React.useContext(StateContext);
-
-  const [loading, setLoading] = React.useState(false);
-  const [deleteCount, setDeleteCount] = React.useState(0);
-  const handleModalClose = () => {
-    setConfirmModal({ ...confirmModal, delete: false });
-  };
-
-  const deleteSelectedInvoices = async () => {
-    handleModalClose();
-    setLoading(true);
-    for (const selectedItem of selectedItems) {
-      await remove(`/api/pending/delete/${selectedItem.id}`).then(() => {
-        setDeleteCount(deleteCount + 1);
-      });
-    }
-
-    setTimeout(() => {
-      setLoading(false);
-      getPendingInvoicesData();
-      setSelectedItems([]);
-    }, 500);
-  };
-
-  return (
-    <React.Fragment>
-      <Modal
-        title={<b>Confirmation</b>}
-        open={confirmModal.delete}
-        onClose={handleModalClose}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "column",
-          alignItems: "center"
-        }}
-        renderEditButton={false}
-      >
-        <div>
-          <h4>
-            Are you sure want to delete this <b> {selectedItems.length} </b>
-            {selectedItems.length > 1 ? "Invoices" : "Invoice"}?
-          </h4>
-          <Divider />
-          <br />
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={deleteSelectedInvoices}
-          >
-            YES
-          </Button>
-          &emsp;
-          <Button
-            color="default"
-            variant="contained"
-            onClick={handleModalClose}
-          >
-            NO
-          </Button>
-        </div>
-      </Modal>
-
-      <LoadingModal
-        open={loading}
-        text={`Deleting ${deleteCount} of ${selectedItems.length}`}
-        cancelFn={() => {
-          setLoading(false);
-        }}
-      />
-    </React.Fragment>
-  );
-};

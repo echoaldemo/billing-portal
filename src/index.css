@@ -189,6 +189,10 @@ body {
   display: flex;
   align-items: center;
 }
+
+.custom-btn {
+  text-transform: none !important;
+}
 .draft-color {
   color: #666;
 }

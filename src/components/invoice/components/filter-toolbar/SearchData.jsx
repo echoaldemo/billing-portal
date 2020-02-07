@@ -6,7 +6,7 @@ import { StateContext } from "context/StateContext";
 const matchThis = (item, searchValue) => {
   return (
     item.company.name.match(new RegExp(searchValue, "ig")) ||
-    item.docNumber.match(new RegExp(searchValue), "ig")
+    item.id.toString().match(new RegExp(searchValue.toString()), "ig")
   );
 };
 
