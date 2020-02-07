@@ -169,7 +169,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     }
     setTimeout(() => {
       const campaigns = mockCampaigns.filter(c => c.company === uuid);
-      console.log(campaigns);
       setSelectInputs({
         ...selectInputs,
         campaign: campaigns.map(d => d.uuid),
@@ -333,6 +332,8 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         CustomerRef: {
           value: company.qb_id
         },
+        TxnDate: startDate,
+        DueDate: dueDate,
         Line: [
           {
             LineNum: 1,
