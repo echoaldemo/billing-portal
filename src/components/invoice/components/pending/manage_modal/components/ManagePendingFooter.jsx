@@ -7,7 +7,8 @@ export default function ManagePendingFooter() {
     state,
     dispatch,
     getPendingInvoicesData,
-    deletePendingStatus
+    deletePendingStatus,
+    formState
   } = React.useContext(StateContext)
 
   const updateStateStatus = status => {
@@ -16,7 +17,7 @@ export default function ManagePendingFooter() {
       payload: { updateLoading: true }
     })
 
-    patch(`/api/pending/edit/${state.selectedData.id}`, { status: status })
+    patch(`/api/pending/edit/${formState.id}`, { status: status })
       .then(res => {
         dispatch({
           type: 'set-update-loading',
