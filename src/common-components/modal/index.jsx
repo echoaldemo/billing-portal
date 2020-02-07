@@ -68,7 +68,7 @@ const Modal = ({
             {renderEditButton ? (
               <React.Fragment> {renderEditButton()} </React.Fragment>
             ) : (
-              <React.Fragment>&nbsp;</React.Fragment>
+              <div style={{ width: 35 }}>&nbsp;</div>
             )}
           </div>
         </div>

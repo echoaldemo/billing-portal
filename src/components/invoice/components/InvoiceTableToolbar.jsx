@@ -15,7 +15,7 @@ import { useStyles, Transition } from "../../new-invoice/styles";
 
 import { LoadingNoDialog as Loading } from "common-components";
 
-const InvoiceTableToolbar = (props) => {
+const InvoiceTableToolbar = props => {
   const classes = useStyles();
   const [state, setState] = React.useState({
     anchorEl: null,
@@ -26,7 +26,7 @@ const InvoiceTableToolbar = (props) => {
     setState({ ...state, type: "" });
   };
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = event => {
     setState({ ...state, anchorEl: event.currentTarget });
   };
 
@@ -104,7 +104,7 @@ const InvoiceTableToolbar = (props) => {
         disableEscapeKeyDown
         TransitionComponent={Transition}
       >
-        {renderModal()}
+        <div>{renderModal()}</div>
       </Dialog>
     </Toolbar>
   );

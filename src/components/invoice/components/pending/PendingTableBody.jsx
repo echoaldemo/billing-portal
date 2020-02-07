@@ -1,10 +1,9 @@
 import React from "react";
 import { TableBody, TableCell, Checkbox, TableRow } from "@material-ui/core";
-import { getRandomInt } from "utils/func";
-import { truncate } from "utils/func";
 import MenuButton from "./MenuButton";
 import { Drafts, Visibility, ThumbUp } from "@material-ui/icons";
 import moment from "moment";
+import { StateContext } from "context/StateContext";
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -34,15 +33,40 @@ const statusToString = status => {
 };
 
 const PendingTableBody = ({ data }) => {
+  const { selectedItems, setSelectedItems } = React.useContext(StateContext);
+
+  const isSelected = item => {
+    const getItem = selectedItems.filter(el => el.id === item.id);
+    return getItem.length > 0 ? true : false;
+  };
+
+  const removeItem = item => {
+    const removedItems = selectedItems.filter(el => el.id !== item.id);
+    setSelectedItems(removedItems);
+  };
   return (
     <TableBody>
-      {console.log(data)}
       {data.map((item, i) => {
-        // let campaigns = item.campaigns.split(",");
         return (
-          <TableRow hover aria-checked={false} key={i}>
+          <TableRow
+            hover
+            aria-checked={false}
+            key={i}
+            style={{
+              backgroundColor: isSelected(item) ? "#C2DEF3" : null
+            }}
+          >
             <TableCell padding="checkbox">
-              <Checkbox />
+              <Checkbox
+                onClick={e => {
+                  if (e.target.checked) {
+                    setSelectedItems([...selectedItems, { ...item }]);
+                  } else {
+                    removeItem(item);
+                  }
+                }}
+                checked={isSelected(item)}
+              />
             </TableCell>
             <TableCell>{statusToString(item.status)}</TableCell>
             <TableCell>{item.docNumber}</TableCell>
