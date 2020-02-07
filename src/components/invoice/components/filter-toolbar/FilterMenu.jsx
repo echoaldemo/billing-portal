@@ -19,11 +19,26 @@ const FilterMenu = () => {
   ];
 
   const filterInvoiceType = e => {
+    const billingValue = billingType === "monthly" ? "1" : null;
     setInvoiceType(e.target.value);
     const filteredWithInvoiceType = originalData.filter(item => {
-      return !e.target.value ? state.data : item.invoiceType === e.target.value;
+      return !e.target.value || !billingType
+        ? state.data
+        : item.invoiceType === e.target.value &&
+            item.billingType === billingValue;
     });
     setData(filteredWithInvoiceType);
+  };
+
+  const filterBillingType = e => {
+    setBillingType(e.target.value);
+    const value = e.target.value === "monthly" ? "1" : null;
+    const filteredWithBillingType = originalData.filter(item => {
+      return !e.target.value || !invoiceType
+        ? state.data
+        : item.billingType === value && item.invoiceType === invoiceType;
+    });
+    setData(filteredWithBillingType);
   };
 
   return (
@@ -67,9 +82,7 @@ const FilterMenu = () => {
       >
         <InputField
           onChange={e => {
-            e.preventDefault();
-            setBillingType(e.target.value);
-            alert("Working in progress");
+            filterBillingType(e);
           }}
           fullWidth
           value={billingType}
