@@ -83,7 +83,6 @@ body {
 }
 .add-btn {
   display: flex !important;
-  width: 150px !important;
   justify-content: space-evenly !important;
   text-transform: none !important;
   border: solid 1px #eeeeee !important;
@@ -112,6 +111,8 @@ body {
 .display-space-between {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 .h-500 {
   height: 500px;
@@ -142,9 +143,6 @@ body {
 
 .Mui-checked {
   color: #0f97fc !important;
-}
-.MuiTypography-body1 {
-  font-weight: bold !important;
 }
 
 .section-title-text {
@@ -208,16 +206,25 @@ body {
   .tab-panel-container {
     width: 70% !important;
   }
+  .header-text-container {
+    flex-direction: column;
+  }
 }
 
 @media screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .tab-panel-container {
     width: 90% !important;
   }
+  .header-text-container {
+    flex-direction: column;
+  }
 }
 
 @media screen and (max-device-width: 425px) {
   .tab-panel-container {
     width: 200% !important;
+  }
+  .header-text-container {
+    flex-direction: column;
   }
 }

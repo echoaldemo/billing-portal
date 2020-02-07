@@ -1,11 +1,22 @@
-import React from 'react'
-import { TableCell, TableHead, TableRow, TableSortLabel, Checkbox, } from '@material-ui/core'
+import React from "react";
+import {
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  Checkbox
+} from "@material-ui/core";
 
-
-
-const InvoiceTableHeader = (props) => {
-
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells } = props;
+const InvoiceTableHeader = props => {
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    onRequestSort,
+    headCells,
+    check
+  } = props;
 
   const createSortHandler = property => event => {
     onRequestSort(event, property);
@@ -15,10 +26,9 @@ const InvoiceTableHeader = (props) => {
       <TableRow>
         <TableCell padding="checkbox">
           <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all desserts' }}
+            checked={check}
+            inputProps={{ "aria-label": "select all desserts" }}
           />
         </TableCell>
         {headCells.map(headCell => (
@@ -29,16 +39,15 @@ const InvoiceTableHeader = (props) => {
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               <b>{headCell.label}</b>
-
             </TableSortLabel>
           </TableCell>
         ))}
       </TableRow>
     </TableHead>
-  )
-}
-export default InvoiceTableHeader
+  );
+};
+export default InvoiceTableHeader;

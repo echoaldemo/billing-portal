@@ -14,7 +14,7 @@ export default function NoResult() {
       }}
     >
       <img src={NoDataImg} width={150} />
-      <h4>No Data Found</h4>
+      <h4>No available data</h4>
     </div>
   );
 }

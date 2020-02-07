@@ -5,17 +5,17 @@ import { StateContext } from "context/StateContext";
 
 const matchThis = (item, searchValue) => {
   return (
-    item.company.name.match(new RegExp(searchValue, "i")) ||
-    item.docNumber.match(new RegExp(searchValue), "i")
+    item.company.name.match(new RegExp(searchValue, "ig")) ||
+    item.docNumber.match(new RegExp(searchValue), "ig")
   );
 };
 
 export default function SearchData() {
-  const { state, originalData, setData } = React.useContext(StateContext);
+  const { originalData, setData } = React.useContext(StateContext);
   const [search, setSearch] = useState("");
   const searchFunc = searchValue => {
     setSearch(searchValue);
-    var filteredData = state.data.filter(item => {
+    var filteredData = originalData.filter(item => {
       if (matchThis(item, searchValue)) {
         return item;
       }
@@ -28,7 +28,7 @@ export default function SearchData() {
     <React.Fragment>
       <InputField
         fullWidth
-        label="Search for invoice"
+        label="Search by Invoice number or Company name"
         InputProps={{
           endAdornment: <Search style={{ color: "#CCC" }} />
         }}

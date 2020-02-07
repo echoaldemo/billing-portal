@@ -2,7 +2,7 @@
 import React from "react";
 import { StateContext } from "context/StateContext";
 import { TableLoader, NoResult } from "common-components";
-import { InvoiceTableHeader, PendingTableBody, TableStepper } from "../index";
+import { InvoiceTableHeader, PendingTableBody } from "../index";
 import {
   Table,
   TableContainer,
@@ -26,7 +26,12 @@ const headCells = [
 ];
 
 const PendingTable = () => {
-  const { state, getPendingInvoicesData } = React.useContext(StateContext);
+  const {
+    state,
+    getPendingInvoicesData,
+    setSelectedItems,
+    selectedItems
+  } = React.useContext(StateContext);
 
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -78,6 +83,9 @@ const PendingTable = () => {
       page * rowsPerPage + rowsPerPage
     );
   }
+  const checked = () => {
+    return selectedItems.length > 0;
+  };
   return (
     <div>
       {state.loading ? (
@@ -87,7 +95,17 @@ const PendingTable = () => {
           {state.data.length > 0 ? (
             <TableContainer>
               <Table>
-                <InvoiceTableHeader headCells={headCells} />
+                <InvoiceTableHeader
+                  headCells={headCells}
+                  onSelectAllClick={e => {
+                    if (e.target.checked) {
+                      setSelectedItems(state.data);
+                    } else {
+                      setSelectedItems([]);
+                    }
+                  }}
+                  check={checked()}
+                />
                 <PendingTableBody data={sortData(state.data)} />
               </Table>
             </TableContainer>
