@@ -72,6 +72,12 @@ const defaultSelectInputs = {
   taxation: " "
 };
 
+const mockTaxation = [
+  { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
+  { code: "6", taxrate: "8", name: "California", percentage: 8 },
+  { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
+];
+
 const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const { setLoading, setData } = React.useContext(StateContext);
   const classes = useStyles();
@@ -245,12 +251,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const getTotal = () => {
-    const tax =
-      selectInputs.taxation !== " "
-        ? Math.round(
-            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
-          ) / 100
-        : 0;
     const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
@@ -260,13 +260,19 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     if (total) return total;
     else return "0.00";
   };
-  const getBalanceDue = () => {
+
+  const getTax = () => {
     const tax =
       selectInputs.taxation !== " "
         ? Math.round(
             (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
           ) / 100
         : 0;
+    return tax;
+  };
+
+  const getBalanceDue = () => {
+    const tax = getTax();
     const total = getTotal();
     if (total) return parseFloat(total) + tax;
     else return "0.00";
@@ -278,7 +284,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     return n;
   };
 
-  const createInvoice = () => {
+  const createInvoice = type => {
     if (buttonStatus()) {
       setLoading(true);
       renderLoading();
@@ -308,24 +314,32 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       const campaigns = activeCampaigns.filter(
         item => selectInputs.campaign.indexOf(item.uuid) !== -1
       );
-      const total = getTotal();
+      const total = getBalanceDue();
 
-      const data = {
-        docNumber: "1070",
-        invoiceType: "Automatic",
-        company,
-        campaigns,
-        startDate,
-        dueDate,
-        total,
-        billingType: selectInputs.billingType,
+      const taxableAmt = parseFloat(getTotal());
+      const taxPercent = parseFloat(selectInputs.taxation);
+      const tax = getTax();
+      const taxType = mockTaxation.filter(
+        item => item.percentage === taxPercent
+      )[0];
+
+      const finalLine = {
+        DetailType: "SubTotalLineDetail",
+        Amount: total,
+        SubTotalLineDetail: {}
+      };
+
+      let data = {
+        CustomerRef: {
+          value: company.qb_id
+        },
         Line: [
           {
             LineNum: 1,
             Amount: billableHours.qty * billableHours.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: "NON"
+                value: tax ? "TAX" : "NON"
               },
               ItemRef: {
                 name: "Billable Hours",
@@ -336,14 +350,15 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             },
             Id: "1",
             DetailType: "SalesItemLineDetail",
-            Description: "amount of services rendered in hours"
+            Description:
+              campaigns[Math.floor(Math.random() * campaigns.length)].name
           },
           {
             LineNum: 2,
             Amount: performance.qty * performance.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: "NON"
+                value: tax ? "TAX" : "NON"
               },
               ItemRef: {
                 name: "Performance",
@@ -353,6 +368,8 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               UnitPrice: performance.rate
             },
             Id: "2",
+            Description:
+              campaigns[Math.floor(Math.random() * campaigns.length)].name,
             DetailType: "SalesItemLineDetail"
           },
           {
@@ -360,7 +377,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             Amount: did.qty * did.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
-                value: "NON"
+                value: tax ? "TAX" : "NON"
               },
               ItemRef: {
                 name: "DID",
@@ -371,30 +388,127 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             },
             Id: "3",
             DetailType: "SalesItemLineDetail",
-            Description: "amount of DIDs used"
-          },
-          {
-            DetailType: "SubTotalLineDetail",
-            Amount: total,
-            SubTotalLineDetail: {}
+            Description:
+              campaigns[Math.floor(Math.random() * campaigns.length)].name
           }
-        ]
+        ],
+        CustomerMemo: {
+          value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
+        }
       };
-      post("/api/create_pending", data)
-        .then(() => {
-          get("/api/pending/list")
-            .then(res => {
-              setLoading(false);
-              setData(res.data);
-              resetState();
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        })
-        .catch(err => {
-          console.log(err);
-        });
+
+      if (tax !== 0) {
+        const taxObject = {
+          TxnTaxCodeRef: {
+            value: taxType.code
+          },
+          TotalTax: tax,
+          TaxLine: [
+            {
+              DetailType: "TaxLineDetail",
+              Amount: tax,
+              TaxLineDetail: {
+                NetAmountTaxable: taxableAmt,
+                TaxPercent: taxType.percentage,
+                TaxRateRef: {
+                  value: taxType.taxrate
+                },
+                PercentBased: true
+              }
+            }
+          ]
+        };
+        data = { ...data, TxnTaxDetail: taxObject };
+      }
+
+      if (litigator.qty !== "" && litigator.rate !== "") {
+        const litigatorObj = {
+          LineNum: 4,
+          Amount: litigator.qty * litigator.rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: tax ? "TAX" : "NON"
+            },
+            ItemRef: {
+              name: "Litigator Scrubbing",
+              value: "24"
+            },
+            Qty: parseFloat(litigator.qty),
+            UnitPrice: parseFloat(litigator.rate)
+          },
+          Id: "4",
+          DetailType: "SalesItemLineDetail"
+        };
+        data.Line.push(litigatorObj);
+      }
+
+      if (merchant !== "") {
+        const merchantObj = {
+          LineNum: 5,
+          Amount: merchant,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: tax ? "TAX" : "NON"
+            },
+            ItemRef: {
+              name: "Merchant Fees",
+              value: "25"
+            },
+            Qty: 1,
+            UnitPrice: merchant
+          },
+          Id: "5",
+          DetailType: "SalesItemLineDetail"
+        };
+        data.Line.push(merchantObj);
+      }
+
+      data.Line.push(finalLine);
+
+      if (type === "approve") {
+        post("/api/invoice", data)
+          .then(() => {
+            get("/api/pending/list")
+              .then(res => {
+                setLoading(false);
+                setData(res.data);
+                resetState();
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      } else {
+        data = {
+          ...data,
+          invoiceType: "Automatic",
+          company,
+          campaigns,
+          startDate,
+          dueDate,
+          total,
+          billingType: selectInputs.billingType,
+          docNumber: Math.floor(Math.random() * 9999)
+        };
+        post("/api/create_pending", data)
+          .then(() => {
+            get("/api/pending/list")
+              .then(res => {
+                setLoading(false);
+                setData(res.data);
+                resetState();
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
     }
   };
 
@@ -571,7 +685,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             }}
           >
             <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
-            <MenuItem style={{ padding: "15px 20px" }}>
+            <MenuItem
+              onClick={() => createInvoice("approve")}
+              style={{ padding: "15px 20px" }}
+            >
               Save and approve
             </MenuItem>
           </Popover>
