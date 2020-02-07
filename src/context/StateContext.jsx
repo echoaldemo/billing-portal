@@ -11,6 +11,10 @@ const initialState = {
   editManageData: false,
   updateLoading: false
 };
+const confirmModalInitial = {
+  approve: false,
+  delete: false
+};
 
 const StateContext = React.createContext();
 
@@ -19,6 +23,7 @@ const StateProvider = ({ children }) => {
   const [originalData, setOriginalData] = useState([]);
   const [formState, setFormState] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
+  const [confirmModal, setConfirmModal] = React.useState(confirmModalInitial);
 
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
@@ -105,10 +110,13 @@ const StateProvider = ({ children }) => {
         getPendingInvoicesData,
         deletePendingStatus,
         originalData,
+        setOriginalData,
         formState,
         setFormState,
         selectedItems,
-        setSelectedItems
+        setSelectedItems,
+        confirmModal,
+        setConfirmModal
       }}
     >
       {children}
