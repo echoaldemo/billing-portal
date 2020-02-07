@@ -103,6 +103,17 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     getActiveCompainies();
   }, []);
 
+  const handleServiceChange = (event, i, label) => {
+    let temp = activeCampaigns;
+    temp.map((item, index) => {
+      if (i === index) {
+        item[label] = event.target.value;
+      }
+    });
+    setActiveCampaigns(temp);
+    setSelectInputs({ ...selectInputs });
+  };
+
   const renderItems = () => {
     const campaigns = activeCampaigns.filter(
       item => selectInputs.campaign.indexOf(item.uuid) !== -1
@@ -112,7 +123,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       { label: "Performance", value: 2 },
       { label: "DID", value: 3 }
     ];
-    return campaigns.map(campaign => (
+    return campaigns.map((campaign, i) => (
       <Grid
         container
         spacing={1}
@@ -123,7 +134,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <TextField value={campaign.name} fullWidth />
         </Grid>
         <Grid item xs={3}>
-          <TextField select value={1} fullWidth>
+          <TextField
+            select
+            value={campaign.service}
+            fullWidth
+            onChange={e => handleServiceChange(e, i, "service")}
+          >
             {options.map(option => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
@@ -135,10 +151,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <TextField
             placeholder="number of hours"
             inputProps={{
-              value: billableHours.qty,
+              value: campaign.qty ? campaign.qty : " ",
               style: { textAlign: "right" }
             }}
-            onChange={e => handleBillableHoursChange(e, "qty")}
+            onChange={e => handleServiceChange(e, i, "qty")}
             fullWidth
           />
         </Grid>
@@ -146,10 +162,10 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <TextField
             placeholder="cost per hour"
             inputProps={{
-              value: billableHours.rate,
+              value: campaign.rate ? campaign.rate : " ",
               style: { textAlign: "right" }
             }}
-            onChange={e => handleBillableHoursChange(e, "rate")}
+            onChange={e => handleServiceChange(e, i, "rate")}
             fullWidth
           />
         </Grid>
@@ -158,13 +174,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             placeholder="Amount"
             inputProps={{
               value:
-                billableHours.qty !== "" && billableHours.rate !== ""
-                  ? formatter.format(billableHours.qty * billableHours.rate)
+                campaign.qty && campaign.rate
+                  ? formatter.format(campaign.qty * campaign.rate)
                   : "",
               readOnly: true,
               style: { textAlign: "right" }
             }}
-            onChange={e => handleBillableHoursChange(e, "amt")}
             fullWidth
           />
         </Grid>
@@ -185,7 +200,8 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       return;
     }
     setTimeout(() => {
-      const campaigns = mockCampaigns.filter(c => c.company === uuid);
+      let temp = mockCampaigns.filter(c => c.company === uuid);
+      const campaigns = temp.map(item => (item = { ...item, service: 1 }));
       setSelectInputs({
         ...selectInputs,
         campaign: campaigns.map(d => d.uuid),
@@ -867,7 +883,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           </Grid>
         </Grid>
 
-        {activeCampaigns.length ? renderItems() : null}
+        {renderItems()}
 
         <Divider />
         <div
