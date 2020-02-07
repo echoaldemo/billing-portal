@@ -60,7 +60,11 @@ export default function InvoiceDetails() {
                 campaigns: []
               })
               setCompanyId(e.target.value)
-              setSelectedCampaigns([])
+              setSelectedCampaigns(
+                mockCampaigns
+                  .filter(camp => camp.company === e.target.value)
+                  .map(camp => camp.uuid)
+              )
             }}
           >
             {companies.map((comp, i) => (

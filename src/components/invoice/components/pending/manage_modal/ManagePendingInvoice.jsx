@@ -5,14 +5,17 @@ import { TableStepper } from 'common-components'
 import { Divider, Button } from '@material-ui/core'
 import InvoiceDetails from './InvoiceDetails'
 import ManagePendingFooter from './components/ManagePendingFooter'
+import { patch } from 'utils/api'
 
 export default function ManagePendingInvoice() {
   const {
     state,
     dispatch,
+    formState,
     modalLoading,
     setModalLoading,
-    setFormState
+    setFormState,
+    getPendingInvoicesData
   } = React.useContext(StateContext)
 
   const EditButton = () => {
@@ -40,22 +43,58 @@ export default function ManagePendingInvoice() {
             Cancel
           </Button>
         ) : null}
-
-        <Button
-          style={{
-            textTransform: 'none',
-            fontWeight: 'bold',
-            color: '#FFF'
-          }}
-          onClick={() => {
-            dispatch({
-              type: 'set-edit-manage-data',
-              payload: { editManageData: !state.editManageData }
-            })
-          }}
-        >
-          {state.editManageData ? 'Save' : 'Edit'}
-        </Button>
+        {state.editManageData ? (
+          <Button
+            style={{
+              textTransform: 'none',
+              fontWeight: 'bold',
+              color: '#FFF'
+            }}
+            onClick={() => {
+              dispatch({
+                type: 'set-edit-manage-data',
+                payload: { editManageData: !state.editManageData }
+              })
+              dispatch({
+                type: 'set-update-loading',
+                payload: { updateLoading: true }
+              })
+              const { id, ...rest } = formState
+              patch(`/api/pending/edit/${id}`, rest)
+                .then(res => {
+                  dispatch({
+                    type: 'set-update-loading',
+                    payload: { updateLoading: false }
+                  })
+                  dispatch({
+                    type: 'set-selected-data',
+                    payload: { selectedData: res.data }
+                  })
+                })
+                .then(() => {
+                  getPendingInvoicesData()
+                })
+            }}
+          >
+            Save
+          </Button>
+        ) : (
+          <Button
+            style={{
+              textTransform: 'none',
+              fontWeight: 'bold',
+              color: '#FFF'
+            }}
+            onClick={() => {
+              dispatch({
+                type: 'set-edit-manage-data',
+                payload: { editManageData: !state.editManageData }
+              })
+            }}
+          >
+            Edit
+          </Button>
+        )}
       </>
     )
   }
