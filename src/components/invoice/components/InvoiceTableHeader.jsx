@@ -12,7 +12,6 @@ const InvoiceTableHeader = props => {
     onSelectAllClick,
     order,
     orderBy,
-    numSelected,
     onRequestSort,
     headCells,
     check

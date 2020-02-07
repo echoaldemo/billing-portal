@@ -84,7 +84,7 @@ const PendingTable = () => {
     );
   }
   const checked = () => {
-    return selectedItems.length > 0;
+    return selectedItems.length === state.data.length;
   };
   return (
     <div>
