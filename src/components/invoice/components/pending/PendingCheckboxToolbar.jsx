@@ -21,8 +21,7 @@ export default function PendingCheckboxToolbar() {
   const duplicateSelectedItems = async () => {
     setDuplicateLoading(true);
     for (let i = 0; i < selectedItems.length; i++) {
-      let { id, ...rest } = selectedItems;
-      console.log(rest, "REST");
+      let { id, ...rest } = selectedItems[i];
       await post(`/api/create_pending`, rest).then(() => {
         setDuplicateCount(i + 1);
       });
