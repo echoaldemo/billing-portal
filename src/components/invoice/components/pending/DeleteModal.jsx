@@ -28,11 +28,9 @@ const DeleteModal = () => {
       });
     }
 
-    setTimeout(() => {
-      setLoading(false);
-      setSelectedItems([]);
-      getPendingInvoicesData();
-    }, 500);
+    setLoading(false);
+    setSelectedItems([]);
+    getPendingInvoicesData();
   };
   return (
     <React.Fragment>

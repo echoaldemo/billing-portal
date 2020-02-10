@@ -10,44 +10,30 @@ import {
 } from '@material-ui/core'
 import { InputField } from 'common-components'
 import { StateContext } from 'context/StateContext'
+
+const defaultBillable = {
+  amt: 0,
+  qty: 0,
+  rate: ''
+}
+const defaultPerformance = {
+  amt: 0,
+  qty: '',
+  rate: ''
+}
+const defaultDid = {
+  amt: 0,
+  qty: '',
+  rate: ''
+}
 export default function ItemsTable({ formState }) {
-  const { state } = useContext(StateContext)
-  const [billable, setBillable] = useState({
-    DetailType: 'SalesItemLineDetail',
-    Amount: '',
-    SalesItemLineDetail: {
-      ItemRef: {
-        value: '21',
-        name: 'Billable hours'
-      },
-      Qty: '',
-      UnitPrice: ''
-    }
-  })
-  const [performance, setPerformance] = useState({
-    DetailType: 'SalesItemLineDetail',
-    Amount: '',
-    SalesItemLineDetail: {
-      ItemRef: {
-        value: '22',
-        name: 'Performance'
-      },
-      Qty: '',
-      UnitPrice: ''
-    }
-  })
-  const [did, setDid] = useState({
-    DetailType: 'SalesItemLineDetail',
-    Amount: '',
-    SalesItemLineDetail: {
-      ItemRef: {
-        value: '23',
-        name: 'DID'
-      },
-      Qty: '',
-      UnitPrice: ''
-    }
-  })
+  const { state, dispatch } = useContext(StateContext)
+  const [billable, setBillable] = useState(defaultBillable)
+  const [performance, setPerformance] = useState(defaultPerformance)
+  const [did, setDid] = useState(defaultDid)
+  const [total, setTotal] = useState(0)
+  const [qty, setQty] = useState(0)
+
   const getTotalQty = () => {
     let totalQty = 0
     formState.Line.forEach(item => {
@@ -55,39 +41,63 @@ export default function ItemsTable({ formState }) {
         totalQty += item.SalesItemLineDetail.Qty
       }
     })
-
     return totalQty
   }
 
   useEffect(() => {
     if (Object.keys(formState).length > 0) {
+      setTotal(formState.Line[formState.Line.length - 1].Amount)
       try {
-        setBillable(
-          formState.Line.find(
-            line => line.SalesItemLineDetail.ItemRef.value === '21'
-          )
+        let temp = formState.Line.find(
+          line => line.SalesItemLineDetail.ItemRef.value === '21'
         )
-      } catch {}
+        setBillable({
+          amt: temp.Amount,
+          qty: temp.SalesItemLineDetail.Qty,
+          rate: temp.SalesItemLineDetail.UnitPrice
+        })
+      } catch {
+        setBillable(defaultBillable)
+      }
       try {
-        setPerformance(
-          formState.Line.find(
-            line => line.SalesItemLineDetail.ItemRef.value === '22'
-          )
+        let temp = formState.Line.find(
+          line => line.SalesItemLineDetail.ItemRef.value === '22'
         )
-      } catch {}
+        setPerformance({
+          amt: temp.Amount,
+          qty: temp.SalesItemLineDetail.Qty,
+          rate: temp.SalesItemLineDetail.UnitPrice
+        })
+      } catch {
+        setPerformance(defaultPerformance)
+      }
       try {
-        setDid(
-          formState.Line.find(
-            line => line.SalesItemLineDetail.ItemRef.value === '23'
-          )
+        let temp = formState.Line.find(
+          line => line.SalesItemLineDetail.ItemRef.value === '23'
         )
-      } catch {}
+        setDid({
+          amt: temp.Amount,
+          qty: temp.SalesItemLineDetail.Qty,
+          rate: temp.SalesItemLineDetail.UnitPrice
+        })
+      } catch {
+        setDid(defaultDid)
+      }
     }
   }, [formState])
 
-  const totalObj = formState.Line
-    ? formState.Line[formState.Line.length - 1]
-    : {}
+  useEffect(() => {
+    setTotal(billable.amt + performance.amt + did.amt)
+    dispatch({
+      type: 'set-item-table',
+      payload: { itemTable: { billable, performance, did } }
+    })
+    let billQty = billable.qty ? parseInt(billable.qty) : 0
+    let perQty = performance.qty ? parseInt(performance.qty) : 0
+    let didQty = did.qty ? parseInt(did.qty) : 0
+    setQty(billQty + perQty + didQty)
+    // eslint-disable-next-line
+  }, [billable, performance, did])
 
   return (
     <React.Fragment>
@@ -111,7 +121,6 @@ export default function ItemsTable({ formState }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {console.log(formState)}
               <TableRow>
                 <TableCell component="th" scope="row" style={{ width: '50%' }}>
                   Billable hours
@@ -119,31 +128,35 @@ export default function ItemsTable({ formState }) {
                 <TableCell component="th" scope="row">
                   <InputField
                     fullWidth
+                    type="number"
                     disabled={!state.editManageData}
-                    value={
-                      billable.SalesItemLineDetail
-                        ? billable.SalesItemLineDetail.Qty
-                        : ''
+                    value={billable.qty}
+                    onChange={e =>
+                      setBillable({
+                        ...billable,
+                        qty: e.target.value,
+                        amt: e.target.value * billable.rate
+                      })
                     }
                   />
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <InputField
                     fullWidth
+                    type="number"
                     disabled={!state.editManageData}
-                    value={
-                      billable.SalesItemLineDetail
-                        ? billable.SalesItemLineDetail.UnitPrice
-                        : ''
+                    value={billable.rate}
+                    onChange={e =>
+                      setBillable({
+                        ...billable,
+                        rate: e.target.value,
+                        amt: e.target.value * billable.qty
+                      })
                     }
                   />
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <InputField
-                    fullWidth
-                    disabled={!state.editManageData}
-                    value={formatter.format(billable.Amount)}
-                  />
+                  {formatter.format(billable.amt)}
                 </TableCell>
               </TableRow>
 
@@ -154,31 +167,35 @@ export default function ItemsTable({ formState }) {
                 <TableCell component="th" scope="row">
                   <InputField
                     fullWidth
+                    type="number"
                     disabled={!state.editManageData}
-                    value={
-                      performance.SalesItemLineDetail
-                        ? performance.SalesItemLineDetail.Qty
-                        : ''
+                    value={performance.qty}
+                    onChange={e =>
+                      setPerformance({
+                        ...performance,
+                        qty: e.target.value,
+                        amt: e.target.value * performance.rate
+                      })
                     }
                   />
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <InputField
                     fullWidth
+                    type="number"
                     disabled={!state.editManageData}
-                    value={
-                      performance.SalesItemLineDetail
-                        ? performance.SalesItemLineDetail.UnitPrice
-                        : ''
+                    value={performance.rate}
+                    onChange={e =>
+                      setPerformance({
+                        ...performance,
+                        rate: e.target.value,
+                        amt: e.target.value * performance.qty
+                      })
                     }
                   />
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <InputField
-                    fullWidth
-                    disabled={!state.editManageData}
-                    value={formatter.format(performance.Amount)}
-                  />
+                  {formatter.format(performance.amt)}
                 </TableCell>
               </TableRow>
 
@@ -189,29 +206,35 @@ export default function ItemsTable({ formState }) {
                 <TableCell component="th" scope="row">
                   <InputField
                     fullWidth
+                    type="number"
                     disabled={!state.editManageData}
-                    value={
-                      did.SalesItemLineDetail ? did.SalesItemLineDetail.Qty : ''
+                    value={did.qty}
+                    onChange={e =>
+                      setDid({
+                        ...did,
+                        qty: e.target.value,
+                        amt: e.target.value * did.rate
+                      })
                     }
                   />
                 </TableCell>
                 <TableCell component="th" scope="row">
                   <InputField
                     fullWidth
+                    type="number"
                     disabled={!state.editManageData}
-                    value={
-                      did.SalesItemLineDetail
-                        ? did.SalesItemLineDetail.UnitPrice
-                        : ''
+                    value={did.rate}
+                    onChange={e =>
+                      setDid({
+                        ...did,
+                        rate: e.target.value,
+                        amt: e.target.value * did.qty
+                      })
                     }
                   />
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  <InputField
-                    fullWidth
-                    disabled={!state.editManageData}
-                    value={formatter.format(did.Amount)}
-                  />
+                  {formatter.format(did.amt)}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -222,13 +245,11 @@ export default function ItemsTable({ formState }) {
                 </TableCell>
 
                 <TableCell component="th" scope="row">
-                  <b style={{ fontSize: 15 }}>{getTotalQty()}</b>
+                  <b style={{ fontSize: 15 }}>{qty}</b>
                 </TableCell>
                 <TableCell component="th" scope="row"></TableCell>
                 <TableCell component="th" scope="row">
-                  <b style={{ fontSize: 15 }}>
-                    {formatter.format(totalObj.Amount)}
-                  </b>
+                  <b style={{ fontSize: 15 }}>{formatter.format(total)}</b>
                 </TableCell>
               </TableRow>
             </TableFooter>

@@ -8,6 +8,11 @@ const initialState = {
   openManage: false,
   openDuplicate: false,
   selectedData: {},
+  itemTable: {
+    billable: {},
+    performance: {},
+    did: {}
+  },
   editManageData: false,
   updateLoading: false
 };
@@ -87,6 +92,8 @@ const StateProvider = ({ children }) => {
         return { ...state, openDuplicate: action.payload.openDuplicate };
       case "set-selected-data":
         return { ...state, selectedData: action.payload.selectedData };
+      case "set-item-table":
+        return { ...state, itemTable: action.payload.itemTable };
       case "set-edit-manage-data":
         return { ...state, editManageData: action.payload.editManageData };
       case "set-update-loading":
