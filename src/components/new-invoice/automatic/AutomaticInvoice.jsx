@@ -79,13 +79,9 @@ const mockTaxation = [
 ];
 
 const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
-  const { setLoading, setData } = React.useContext(StateContext);
   const classes = useStyles();
-
+  const { setLoading, setData } = React.useContext(StateContext);
   const [selectInputs, setSelectInputs] = useState(defaultSelectInputs);
-  const [billableHours, setBillableHours] = useState(defaultBillableHours);
-  const [performance, setPerformance] = useState(defaultPerformance);
-  const [did, setDID] = useState(defaultDID);
   const [litigator, setLitigator] = useState(defaultLS);
   const [merchant, setMerchant] = useState("");
   const [collapse, setCollapse] = useState(false);
@@ -147,44 +143,124 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={2}>
-          <TextField
-            placeholder="number of hours"
-            inputProps={{
-              value: campaign.qty ? campaign.qty : " ",
-              style: { textAlign: "right" }
-            }}
-            onChange={e => handleServiceChange(e, i, "qty")}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            placeholder="cost per hour"
-            inputProps={{
-              value: campaign.rate ? campaign.rate : " ",
-              style: { textAlign: "right" }
-            }}
-            onChange={e => handleServiceChange(e, i, "rate")}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            placeholder="Amount"
-            inputProps={{
-              value:
-                campaign.qty && campaign.rate
-                  ? formatter.format(campaign.qty * campaign.rate)
-                  : "",
-              readOnly: true,
-              style: { textAlign: "right" }
-            }}
-            fullWidth
-          />
-        </Grid>
+        {renderFields(campaign, i)}
       </Grid>
     ));
+  };
+
+  const handleField = (e, index, type) => {
+    let temp = activeCampaigns;
+    temp.map((item, i) => {
+      if (i === index) {
+        item.content[type] = e.target.value;
+      }
+    });
+    setActiveCampaigns(temp);
+    setSelectInputs({ ...selectInputs });
+  };
+
+  const renderFields = (campaign, i) => {
+    let quantityProps, rateProps, amountProps;
+    if (campaign.service === 1) {
+      quantityProps = {
+        placeholder: "number of hours",
+        inputProps: {
+          value: campaign.content ? campaign.content.billable_hours : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "billable_hours")
+      };
+      rateProps = {
+        placeholder: "cost per hour",
+        inputProps: {
+          value: campaign.content ? campaign.content.bill_rate : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "bill_rate")
+      };
+      amountProps = {
+        placeholder: "amount",
+        inputProps: {
+          value: campaign.content
+            ? formatter.format(
+                campaign.content.billable_hours * campaign.content.bill_rate
+              )
+            : "",
+          readOnly: true,
+          style: { textAlign: "right" }
+        }
+      };
+    } else if (campaign.service === 2) {
+      quantityProps = {
+        placeholder: "number of hours",
+        inputProps: {
+          value: campaign.content ? campaign.content.performance : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "performance")
+      };
+      rateProps = {
+        placeholder: "cost per hour",
+        inputProps: {
+          value: campaign.content ? campaign.content.performance_rate : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "performance_rate")
+      };
+      amountProps = {
+        placeholder: "amount",
+        inputProps: {
+          value: campaign.content
+            ? formatter.format(
+                campaign.content.performance * campaign.content.performance_rate
+              )
+            : "",
+          readOnly: true,
+          style: { textAlign: "right" }
+        }
+      };
+    } else {
+      quantityProps = {
+        placeholder: "number of hours",
+        inputProps: {
+          value: campaign.content ? campaign.content.did : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "did")
+      };
+      rateProps = {
+        placeholder: "cost per hour",
+        inputProps: {
+          value: campaign.content ? campaign.content.did_rate : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "did_rate")
+      };
+      amountProps = {
+        placeholder: "amount",
+        inputProps: {
+          value: campaign.content
+            ? formatter.format(campaign.content.did * campaign.content.did_rate)
+            : "",
+          readOnly: true,
+          style: { textAlign: "right" }
+        }
+      };
+    }
+
+    return (
+      <>
+        <Grid item xs={2}>
+          <TextField {...quantityProps} fullWidth />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField {...rateProps} fullWidth />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField {...amountProps} fullWidth />
+        </Grid>
+      </>
+    );
   };
 
   const getActiveCompainies = () => {
@@ -196,7 +272,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const getActiveCampaigns = uuid => {
     if (uuid === "") {
       setActiveCampaignsLoading(true);
-      setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
+      setSelectInputs({
+        ...selectInputs,
+        company: uuid,
+        campaign: [],
+        billingType: " "
+      });
       return;
     }
     setTimeout(() => {
@@ -205,7 +286,8 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       setSelectInputs({
         ...selectInputs,
         campaign: campaigns.map(d => d.uuid),
-        company: uuid
+        company: uuid,
+        billingType: " "
       });
       setActiveCampaigns(campaigns);
       setActiveCampaignsLoading(false);
@@ -228,15 +310,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       });
     }
   };
-  const handleBillableHoursChange = (e, label) => {
-    setBillableHours({ ...billableHours, [label]: e.target.value });
-  };
-  const handlePerformanceChange = (e, label) => {
-    setPerformance({ ...performance, [label]: e.target.value });
-  };
-  const handleDIDsChange = (e, label) => {
-    setDID({ ...did, [label]: e.target.value });
-  };
+
   const handleLitigator = (e, label) => {
     setLitigator({ ...litigator, [label]: e.target.value });
   };
@@ -245,26 +319,18 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const handleBillingChange = event => {
-    setSelectInputs({
-      ...selectInputs,
-      [event.target.name]: event.target.value
-    });
     getMock("/company1", {}).then(res => {
-      const mock = res.data[Math.floor(Math.random() * 10)];
-      setBillableHours({
-        ...billableHours,
-        qty: mock.billable_hours,
-        rate: mock.bill_rate
+      const mock = res.data;
+      console.log(mock);
+      let temp = activeCampaigns;
+      temp.forEach(item => {
+        let data = res.data[Math.floor(Math.random() * 10)];
+        item["content"] = data;
       });
-      setPerformance({
-        ...performance,
-        qty: mock.performance,
-        rate: mock.performance_rate
-      });
-      setDID({
-        ...did,
-        qty: mock.did,
-        rate: mock.did_rate
+      setActiveCampaigns(temp);
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
       });
     });
   };
@@ -274,12 +340,15 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     );
     let total = 0;
     campaigns.forEach(item => {
-      total += item.qty * item.rate;
+      if (item.content) {
+        total +=
+          item.service === 1
+            ? item.content.billable_hours * item.content.bill_rate
+            : item.service === 2
+            ? item.content.performance * item.content.performance_rate
+            : item.content.did * item.content.did_rate;
+      }
     });
-    /* const total =
-      billableHours.qty * billableHours.rate +
-      performance.qty * performance.rate +
-      did.qty * did.rate;*/
     if (total) return total;
     else return "0.00";
   };
@@ -290,19 +359,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const getTotal = () => {
-    const campaigns = activeCampaigns.filter(
-      item => selectInputs.campaign.indexOf(item.uuid) !== -1
-    );
-    let total = 0;
-    campaigns.forEach(item => {
-      total += item.qty * item.rate;
-    });
-    /* const total =
-      billableHours.qty * billableHours.rate +
-      performance.qty * performance.rate +
-      did.qty * did.rate +
-      litigator.qty * litigator.rate +
-      merchant; */
+    const total = parseFloat(getItemSubtotal()) + parseFloat(getAddSubtotal());
     if (total) return total;
     else return "0.00";
   };
@@ -311,7 +368,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     const tax =
       selectInputs.taxation !== " "
         ? Math.round(
-            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
+            (parseFloat(selectInputs.taxation) / 100) * getTotal() * 100
           ) / 100
         : 0;
     return tax;
@@ -384,7 +441,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         Line: [
           {
             LineNum: 1,
-            Amount: billableHours.qty * billableHours.rate,
+            //Amount: billableHours.qty * billableHours.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
                 value: tax ? "TAX" : "NON"
@@ -392,9 +449,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               ItemRef: {
                 name: "Billable Hours",
                 value: "21"
-              },
-              Qty: billableHours.qty,
-              UnitPrice: billableHours.rate
+              }
+              //Qty: billableHours.qty,
+              //UnitPrice: billableHours.rate
             },
             Id: "1",
             DetailType: "SalesItemLineDetail",
@@ -422,7 +479,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           },
           {
             LineNum: 3,
-            Amount: did.qty * did.rate,
+            //Amount: did.qty * did.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
                 value: tax ? "TAX" : "NON"
@@ -430,9 +487,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               ItemRef: {
                 name: "DID",
                 value: "23"
-              },
-              Qty: did.qty,
-              UnitPrice: did.rate
+              }
+              //Qty: did.qty,
+              //UnitPrice: did.rate
             },
             Id: "3",
             DetailType: "SalesItemLineDetail",
@@ -561,9 +618,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const resetState = () => {
-    setBillableHours(defaultBillableHours);
-    setPerformance(defaultPerformance);
-    setDID(defaultDID);
     setLitigator(defaultLS);
     setMerchant(" ");
     setSelectInputs(defaultSelectInputs);
