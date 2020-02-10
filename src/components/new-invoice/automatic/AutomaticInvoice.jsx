@@ -79,13 +79,9 @@ const mockTaxation = [
 ];
 
 const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
-  const { setLoading, setData } = React.useContext(StateContext);
   const classes = useStyles();
-
+  const { setLoading, setData } = React.useContext(StateContext);
   const [selectInputs, setSelectInputs] = useState(defaultSelectInputs);
-  const [billableHours, setBillableHours] = useState(defaultBillableHours);
-  const [performance, setPerformance] = useState(defaultPerformance);
-  const [did, setDID] = useState(defaultDID);
   const [litigator, setLitigator] = useState(defaultLS);
   const [merchant, setMerchant] = useState("");
   const [collapse, setCollapse] = useState(false);
@@ -103,57 +99,169 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     getActiveCompainies();
   }, []);
 
-  useEffect(() => {
-    if (typeof duplicate !== "undefined") {
-      getActiveCampaigns(duplicate.company.uuid);
-      if (
-        typeof duplicate.Line[0] !== "undefined" &&
-        typeof duplicate.Line[0].SubTotalLineDetail === "undefined"
-      ) {
-        setBillableHours({
-          ...defaultBillableHours,
-          qty: duplicate.Line[0].SalesItemLineDetail.Qty,
-          rate: duplicate.Line[0].SalesItemLineDetail.ItemRef.value,
-          amt: duplicate.Line[0].Amount
-        });
+  const handleServiceChange = (event, i, label) => {
+    let temp = activeCampaigns;
+    temp.map((item, index) => {
+      if (i === index) {
+        item[label] = event.target.value;
       }
-      if (
-        typeof duplicate.Line[1] !== "undefined" &&
-        typeof duplicate.Line[1].SubTotalLineDetail === "undefined"
-      ) {
-        setPerformance({
-          ...defaultPerformance,
-          qty: duplicate.Line[1].SalesItemLineDetail.Qty,
-          rate: duplicate.Line[1].SalesItemLineDetail.ItemRef.value,
-          amt: duplicate.Line[1].Amount
-        });
-      }
-      if (
-        typeof duplicate.Line[2] !== "undefined" &&
-        typeof duplicate.Line[2].SubTotalLineDetail === "undefined"
-      ) {
-        setDID({
-          ...defaultDID,
-          qty: duplicate.Line[2].SalesItemLineDetail.Qty,
-          rate: duplicate.Line[2].SalesItemLineDetail.ItemRef.value,
-          amt: duplicate.Line[2].Amount
-        });
-      }
-    }
-    // eslint-disable-next-line
-  }, [activeCompanies]);
+    });
+    setActiveCampaigns(temp);
+    setSelectInputs({ ...selectInputs });
+  };
 
-  useEffect(() => {
-    if (typeof duplicate !== "undefined") {
-      setSelectInputs({
-        ...defaultSelectInputs,
-        company: duplicate.company.uuid,
-        billingType: duplicate.billingType,
-        campaign: duplicate.campaigns.map(camp => camp.uuid)
-      });
+  const renderItems = () => {
+    const campaigns = activeCampaigns.filter(
+      item => selectInputs.campaign.indexOf(item.uuid) !== -1
+    );
+    const options = [
+      { label: "Billable Hours", value: 1 },
+      { label: "Performance", value: 2 },
+      { label: "DID", value: 3 }
+    ];
+    return campaigns.map((campaign, i) => (
+      <Grid
+        container
+        spacing={1}
+        xs={12}
+        style={{ marginBottom: 30, boxSizing: "border-box" }}
+      >
+        <Grid item xs={3}>
+          <TextField value={campaign.name} fullWidth />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            select
+            value={campaign.service}
+            fullWidth
+            onChange={e => handleServiceChange(e, i, "service")}
+          >
+            {options.map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        {renderFields(campaign, i)}
+      </Grid>
+    ));
+  };
+
+  const handleField = (e, index, type) => {
+    let temp = activeCampaigns;
+    temp.map((item, i) => {
+      if (i === index) {
+        item.content[type] = e.target.value;
+      }
+    });
+    setActiveCampaigns(temp);
+    setSelectInputs({ ...selectInputs });
+  };
+
+  const renderFields = (campaign, i) => {
+    let quantityProps, rateProps, amountProps;
+    if (campaign.service === 1) {
+      quantityProps = {
+        placeholder: "number of hours",
+        inputProps: {
+          value: campaign.content ? campaign.content.billable_hours : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "billable_hours")
+      };
+      rateProps = {
+        placeholder: "cost per hour",
+        inputProps: {
+          value: campaign.content ? campaign.content.bill_rate : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "bill_rate")
+      };
+      amountProps = {
+        placeholder: "amount",
+        inputProps: {
+          value: campaign.content
+            ? formatter.format(
+                campaign.content.billable_hours * campaign.content.bill_rate
+              )
+            : "",
+          readOnly: true,
+          style: { textAlign: "right" }
+        }
+      };
+    } else if (campaign.service === 2) {
+      quantityProps = {
+        placeholder: "number of hours",
+        inputProps: {
+          value: campaign.content ? campaign.content.performance : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "performance")
+      };
+      rateProps = {
+        placeholder: "cost per hour",
+        inputProps: {
+          value: campaign.content ? campaign.content.performance_rate : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "performance_rate")
+      };
+      amountProps = {
+        placeholder: "amount",
+        inputProps: {
+          value: campaign.content
+            ? formatter.format(
+                campaign.content.performance * campaign.content.performance_rate
+              )
+            : "",
+          readOnly: true,
+          style: { textAlign: "right" }
+        }
+      };
+    } else {
+      quantityProps = {
+        placeholder: "number of hours",
+        inputProps: {
+          value: campaign.content ? campaign.content.did : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "did")
+      };
+      rateProps = {
+        placeholder: "cost per hour",
+        inputProps: {
+          value: campaign.content ? campaign.content.did_rate : " ",
+          style: { textAlign: "right" }
+        },
+        onChange: e => handleField(e, i, "did_rate")
+      };
+      amountProps = {
+        placeholder: "amount",
+        inputProps: {
+          value: campaign.content
+            ? formatter.format(campaign.content.did * campaign.content.did_rate)
+            : "",
+          readOnly: true,
+          style: { textAlign: "right" }
+        }
+      };
     }
-    // eslint-disable-next-line
-  }, [activeCampaigns]);
+
+    return (
+      <>
+        <Grid item xs={2}>
+          <TextField {...quantityProps} fullWidth />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField {...rateProps} fullWidth />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField {...amountProps} fullWidth />
+        </Grid>
+      </>
+    );
+  };
 
   const getActiveCompainies = () => {
     setTimeout(() => {
@@ -164,15 +272,22 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const getActiveCampaigns = uuid => {
     if (uuid === "") {
       setActiveCampaignsLoading(true);
-      setSelectInputs({ ...selectInputs, company: uuid, campaign: [] });
+      setSelectInputs({
+        ...selectInputs,
+        company: uuid,
+        campaign: [],
+        billingType: " "
+      });
       return;
     }
     setTimeout(() => {
-      const campaigns = mockCampaigns.filter(c => c.company === uuid);
+      let temp = mockCampaigns.filter(c => c.company === uuid);
+      const campaigns = temp.map(item => (item = { ...item, service: 1 }));
       setSelectInputs({
         ...selectInputs,
         campaign: campaigns.map(d => d.uuid),
-        company: uuid
+        company: uuid,
+        billingType: " "
       });
       setActiveCampaigns(campaigns);
       setActiveCampaignsLoading(false);
@@ -195,15 +310,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       });
     }
   };
-  const handleBillableHoursChange = (e, label) => {
-    setBillableHours({ ...billableHours, [label]: e.target.value });
-  };
-  const handlePerformanceChange = (e, label) => {
-    setPerformance({ ...performance, [label]: e.target.value });
-  };
-  const handleDIDsChange = (e, label) => {
-    setDID({ ...did, [label]: e.target.value });
-  };
+
   const handleLitigator = (e, label) => {
     setLitigator({ ...litigator, [label]: e.target.value });
   };
@@ -212,34 +319,36 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const handleBillingChange = event => {
-    setSelectInputs({
-      ...selectInputs,
-      [event.target.name]: event.target.value
-    });
     getMock("/company1", {}).then(res => {
-      const mock = res.data[Math.floor(Math.random() * 10)];
-      setBillableHours({
-        ...billableHours,
-        qty: mock.billable_hours,
-        rate: mock.bill_rate
+      const mock = res.data;
+      console.log(mock);
+      let temp = activeCampaigns;
+      temp.forEach(item => {
+        let data = res.data[Math.floor(Math.random() * 10)];
+        item["content"] = data;
       });
-      setPerformance({
-        ...performance,
-        qty: mock.performance,
-        rate: mock.performance_rate
-      });
-      setDID({
-        ...did,
-        qty: mock.did,
-        rate: mock.did_rate
+      setActiveCampaigns(temp);
+      setSelectInputs({
+        ...selectInputs,
+        [event.target.name]: event.target.value
       });
     });
   };
   const getItemSubtotal = () => {
-    const total =
-      billableHours.qty * billableHours.rate +
-      performance.qty * performance.rate +
-      did.qty * did.rate;
+    const campaigns = activeCampaigns.filter(
+      item => selectInputs.campaign.indexOf(item.uuid) !== -1
+    );
+    let total = 0;
+    campaigns.forEach(item => {
+      if (item.content) {
+        total +=
+          item.service === 1
+            ? item.content.billable_hours * item.content.bill_rate
+            : item.service === 2
+            ? item.content.performance * item.content.performance_rate
+            : item.content.did * item.content.did_rate;
+      }
+    });
     if (total) return total;
     else return "0.00";
   };
@@ -250,12 +359,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const getTotal = () => {
-    const total =
-      billableHours.qty * billableHours.rate +
-      performance.qty * performance.rate +
-      did.qty * did.rate +
-      litigator.qty * litigator.rate +
-      merchant;
+    const total = parseFloat(getItemSubtotal()) + parseFloat(getAddSubtotal());
     if (total) return total;
     else return "0.00";
   };
@@ -264,7 +368,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     const tax =
       selectInputs.taxation !== " "
         ? Math.round(
-            (parseFloat(selectInputs.taxation) / 100) * getItemSubtotal() * 100
+            (parseFloat(selectInputs.taxation) / 100) * getTotal() * 100
           ) / 100
         : 0;
     return tax;
@@ -337,7 +441,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         Line: [
           {
             LineNum: 1,
-            Amount: billableHours.qty * billableHours.rate,
+            //Amount: billableHours.qty * billableHours.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
                 value: tax ? "TAX" : "NON"
@@ -345,9 +449,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               ItemRef: {
                 name: "Billable Hours",
                 value: "21"
-              },
-              Qty: billableHours.qty,
-              UnitPrice: billableHours.rate
+              }
+              //Qty: billableHours.qty,
+              //UnitPrice: billableHours.rate
             },
             Id: "1",
             DetailType: "SalesItemLineDetail",
@@ -375,7 +479,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           },
           {
             LineNum: 3,
-            Amount: did.qty * did.rate,
+            //Amount: did.qty * did.rate,
             SalesItemLineDetail: {
               TaxCodeRef: {
                 value: tax ? "TAX" : "NON"
@@ -383,9 +487,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               ItemRef: {
                 name: "DID",
                 value: "23"
-              },
-              Qty: did.qty,
-              UnitPrice: did.rate
+              }
+              //Qty: did.qty,
+              //UnitPrice: did.rate
             },
             Id: "3",
             DetailType: "SalesItemLineDetail",
@@ -514,9 +618,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const resetState = () => {
-    setBillableHours(defaultBillableHours);
-    setPerformance(defaultPerformance);
-    setDID(defaultDID);
     setLitigator(defaultLS);
     setMerchant(" ");
     setSelectInputs(defaultSelectInputs);
@@ -833,8 +934,11 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           xs={12}
           style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
-          <Grid item xs={6} className={classes.head}>
-            Name
+          <Grid item xs={3} className={classes.head}>
+            Campaign
+          </Grid>
+          <Grid item xs={3} className={classes.head}>
+            Service
           </Grid>
           <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Quantity
@@ -847,157 +951,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           </Grid>
         </Grid>
 
-        <Grid
-          container
-          spacing={1}
-          xs={12}
-          style={{ marginBottom: 30, boxSizing: "border-box" }}
-        >
-          <Grid item xs={6}>
-            <TextField
-              placeholder="Item name"
-              value={billableHours.name}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="number of hours"
-              inputProps={{
-                value: billableHours.qty,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handleBillableHoursChange(e, "qty")}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="cost per hour"
-              inputProps={{
-                value: billableHours.rate,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handleBillableHoursChange(e, "rate")}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="Amount"
-              inputProps={{
-                value:
-                  billableHours.qty !== "" && billableHours.rate !== ""
-                    ? formatter.format(billableHours.qty * billableHours.rate)
-                    : "",
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handleBillableHoursChange(e, "amt")}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-        <Grid
-          container
-          spacing={1}
-          xs={12}
-          style={{ marginBottom: 30, boxSizing: "border-box" }}
-        >
-          <Grid item xs={6}>
-            <TextField
-              placeholder="Item name"
-              value={performance.name}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="number of interactions"
-              inputProps={{
-                value: performance.qty,
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handlePerformanceChange(e, "qty")}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="cost per interactions"
-              inputProps={{
-                value: performance.rate,
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handlePerformanceChange(e, "rate")}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="Amount"
-              inputProps={{
-                value:
-                  performance.qty !== "" && performance.rate !== ""
-                    ? formatter.format(performance.qty * performance.rate)
-                    : "",
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-        <Grid
-          container
-          spacing={1}
-          xs={12}
-          style={{ marginBottom: 30, boxSizing: "border-box" }}
-        >
-          <Grid item xs={6}>
-            <TextField placeholder="Item name" value={did.name} fullWidth />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="total DID"
-              inputProps={{
-                value: did.qty,
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handleDIDsChange(e, "qty")}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="cost per DID"
-              inputProps={{
-                value: did.rate,
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              onChange={e => handleDIDsChange(e, "rate")}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField
-              placeholder="Amount"
-              inputProps={{
-                value:
-                  did.qty !== "" && did.rate !== ""
-                    ? formatter.format(did.qty * did.rate)
-                    : "",
-                readOnly: true,
-                style: { textAlign: "right" }
-              }}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
+        {renderItems()}
 
         <Divider />
         <div
