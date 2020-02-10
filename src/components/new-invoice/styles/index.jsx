@@ -71,6 +71,9 @@ export const useStyles = makeStyles(theme => ({
   },
   alignRight: {
     textAlign: "right"
+  },
+  alignCenter: {
+    textAlign: "center"
   }
 }));
 

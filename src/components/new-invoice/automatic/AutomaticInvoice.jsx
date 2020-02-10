@@ -21,7 +21,9 @@ import {
   Close,
   KeyboardArrowDown,
   KeyboardArrowUp,
-  ArrowDropDown
+  ArrowDropDown,
+  Sort,
+  Delete
 } from "@material-ui/icons";
 
 import "date-fns";
@@ -40,24 +42,6 @@ const today = new Date();
 const date =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
-const defaultBillableHours = {
-  name: "Billable hours",
-  qty: "",
-  rate: "",
-  amt: ""
-};
-const defaultPerformance = {
-  name: "Performance",
-  qty: "",
-  rate: "",
-  amt: ""
-};
-const defaultDID = {
-  name: "DID",
-  qty: "",
-  rate: "",
-  amt: ""
-};
 const defaultLS = {
   name: "Litigator Scrubbing",
   qty: "",
@@ -110,15 +94,56 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     setSelectInputs({ ...selectInputs });
   };
 
+  const handleAddLine = () => {
+    let temp = {
+      name: " ",
+      new_line: true,
+      service: 1,
+      content: {},
+      uuid: "none"
+    };
+    setActiveCampaigns([...activeCampaigns, temp]);
+  };
+
+  const removeLine = uuid => {
+    let temp = selectInputs.campaign.filter(item => item !== uuid);
+    setSelectInputs({ ...selectInputs, campaign: temp });
+  };
+
+  const removeNewLine = index => {
+    let temp = activeCampaigns;
+    temp.splice(index, 1);
+    setActiveCampaigns(temp);
+    setSelectInputs({ ...selectInputs });
+  };
+
+  const handleSelectNewLine = (event, index) => {
+    let temp = activeCampaigns;
+    const data = activeCampaigns.filter(
+      item => item.uuid === event.target.value
+    );
+    const okay = temp.map((item, i) => {
+      if (i === index) {
+        return (item = { ...item, ...data[0] });
+      } else return item;
+    });
+    setActiveCampaigns(okay);
+    setSelectInputs({ ...selectInputs });
+  };
+
   const renderItems = () => {
     const campaigns = activeCampaigns.filter(
-      item => selectInputs.campaign.indexOf(item.uuid) !== -1
+      item => selectInputs.campaign.indexOf(item.uuid) !== -1 || item.new_line
     );
     const options = [
       { label: "Billable Hours", value: 1 },
       { label: "Performance", value: 2 },
       { label: "DID", value: 3 }
     ];
+    let newLineOptions = activeCampaigns.filter(
+      item => selectInputs.campaign.indexOf(item.uuid) !== -1 && !item.new_line
+    );
+    newLineOptions.unshift({ uuid: "none", name: "Select a campaign" });
     return campaigns.map((campaign, i) => (
       <Grid
         container
@@ -126,10 +151,28 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         xs={12}
         style={{ marginBottom: 30, boxSizing: "border-box" }}
       >
-        <Grid item xs={3}>
-          <TextField value={campaign.name} fullWidth />
+        <Grid item xs className={classes.alignCenter}>
+          <Sort />
         </Grid>
         <Grid item xs={3}>
+          {campaign.new_line ? (
+            <TextField
+              select
+              value={campaign.uuid}
+              fullWidth
+              onChange={e => handleSelectNewLine(e, i)}
+            >
+              {newLineOptions.map(option => (
+                <MenuItem key={option.uuid} value={option.uuid}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            <TextField value={campaign.name} fullWidth />
+          )}
+        </Grid>
+        <Grid item xs={2}>
           <TextField
             select
             value={campaign.service}
@@ -144,6 +187,15 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           </TextField>
         </Grid>
         {renderFields(campaign, i)}
+        <Grid item xs className={classes.alignCenter}>
+          <Delete
+            onClick={
+              campaign.new_line
+                ? () => removeNewLine(i)
+                : () => removeLine(campaign.uuid)
+            }
+          />
+        </Grid>
       </Grid>
     ));
   };
@@ -181,11 +233,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       amountProps = {
         placeholder: "amount",
         inputProps: {
-          value: campaign.content
-            ? formatter.format(
-                campaign.content.billable_hours * campaign.content.bill_rate
-              )
-            : "",
+          value:
+            campaign.content.billable_hours && campaign.content.bill_rate
+              ? formatter.format(
+                  campaign.content.billable_hours * campaign.content.bill_rate
+                )
+              : "",
           readOnly: true,
           style: { textAlign: "right" }
         }
@@ -210,11 +263,13 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       amountProps = {
         placeholder: "amount",
         inputProps: {
-          value: campaign.content
-            ? formatter.format(
-                campaign.content.performance * campaign.content.performance_rate
-              )
-            : "",
+          value:
+            campaign.content.performance && campaign.content.performance_rate
+              ? formatter.format(
+                  campaign.content.performance *
+                    campaign.content.performance_rate
+                )
+              : "",
           readOnly: true,
           style: { textAlign: "right" }
         }
@@ -239,9 +294,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       amountProps = {
         placeholder: "amount",
         inputProps: {
-          value: campaign.content
-            ? formatter.format(campaign.content.did * campaign.content.did_rate)
-            : "",
+          value:
+            campaign.content.did && campaign.content.did_rate
+              ? formatter.format(
+                  campaign.content.did * campaign.content.did_rate
+                )
+              : "",
           readOnly: true,
           style: { textAlign: "right" }
         }
@@ -282,7 +340,9 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     }
     setTimeout(() => {
       let temp = mockCampaigns.filter(c => c.company === uuid);
-      const campaigns = temp.map(item => (item = { ...item, service: 1 }));
+      const campaigns = temp.map(
+        item => (item = { ...item, service: 1, content: {} })
+      );
       setSelectInputs({
         ...selectInputs,
         campaign: campaigns.map(d => d.uuid),
@@ -426,11 +486,55 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         item => item.percentage === taxPercent
       )[0];
 
+      let lineData = [];
+
       const finalLine = {
         DetailType: "SubTotalLineDetail",
         Amount: total,
         SubTotalLineDetail: {}
       };
+
+      campaigns.map((campaign, i) => {
+        let qty,
+          rate,
+          itemName,
+          itemId,
+          count = i + 1;
+        if (campaign.service === 1) {
+          qty = campaign.content.billable_hours;
+          rate = campaign.content.bill_rate;
+          itemName = "Billable Hours";
+          itemId = "21";
+        } else if (campaign.service === 2) {
+          qty = campaign.content.performance;
+          rate = campaign.content.performance_rate;
+          itemName = "Performance";
+          itemId = "22";
+        } else {
+          qty = campaign.content.did;
+          rate = campaign.content.did_rate;
+          itemName = "DID Billing";
+          itemId = "23";
+        }
+        lineData.push({
+          LineNum: count,
+          Amount: qty * rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: tax ? "TAX" : "NON"
+            },
+            ItemRef: {
+              name: itemName,
+              value: itemId
+            },
+            Qty: qty,
+            UnitPrice: rate
+          },
+          Id: count.toString,
+          DetailType: "SalesItemLineDetail",
+          Description: campaign.name
+        });
+      });
 
       let data = {
         CustomerRef: {
@@ -438,65 +542,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         },
         TxnDate: startDate,
         DueDate: dueDate,
-        Line: [
-          {
-            LineNum: 1,
-            //Amount: billableHours.qty * billableHours.rate,
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: tax ? "TAX" : "NON"
-              },
-              ItemRef: {
-                name: "Billable Hours",
-                value: "21"
-              }
-              //Qty: billableHours.qty,
-              //UnitPrice: billableHours.rate
-            },
-            Id: "1",
-            DetailType: "SalesItemLineDetail",
-            Description:
-              campaigns[Math.floor(Math.random() * campaigns.length)].name
-          },
-          {
-            LineNum: 2,
-            Amount: performance.qty * performance.rate,
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: tax ? "TAX" : "NON"
-              },
-              ItemRef: {
-                name: "Performance",
-                value: "22"
-              },
-              Qty: performance.qty,
-              UnitPrice: performance.rate
-            },
-            Id: "2",
-            Description:
-              campaigns[Math.floor(Math.random() * campaigns.length)].name,
-            DetailType: "SalesItemLineDetail"
-          },
-          {
-            LineNum: 3,
-            //Amount: did.qty * did.rate,
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: tax ? "TAX" : "NON"
-              },
-              ItemRef: {
-                name: "DID",
-                value: "23"
-              }
-              //Qty: did.qty,
-              //UnitPrice: did.rate
-            },
-            Id: "3",
-            DetailType: "SalesItemLineDetail",
-            Description:
-              campaigns[Math.floor(Math.random() * campaigns.length)].name
-          }
-        ],
+        Line: lineData,
         CustomerMemo: {
           value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
         }
@@ -836,7 +882,8 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               renderValue={selected =>
                 selected.length === 0
                   ? "Select campaign"
-                  : selected.length === activeCampaigns.length
+                  : selected.length ===
+                    activeCampaigns.filter(item => !item.new_line).length
                   ? "All"
                   : selected
                       .map(s =>
@@ -851,14 +898,19 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
               fullWidth
             >
               {!activeCampaignsLoading &&
-                activeCampaigns.map((name, i) => (
-                  <MenuItem key={i} value={name.uuid}>
-                    <Checkbox
-                      checked={selectInputs.campaign.indexOf(name.uuid) > -1}
-                    />
-                    <ListItemText primary={name.name} />
-                  </MenuItem>
-                ))}
+                activeCampaigns.map(
+                  (name, i) =>
+                    !name.new_line && (
+                      <MenuItem key={i} value={name.uuid}>
+                        <Checkbox
+                          checked={
+                            selectInputs.campaign.indexOf(name.uuid) > -1
+                          }
+                        />
+                        <ListItemText primary={name.name} />
+                      </MenuItem>
+                    )
+                )}
             </Select>
           </Grid>
 
@@ -934,10 +986,15 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           xs={12}
           style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
+          <Grid
+            item
+            xs
+            className={`${classes.head} ${classes.alignRight}`}
+          ></Grid>
           <Grid item xs={3} className={classes.head}>
             Campaign
           </Grid>
-          <Grid item xs={3} className={classes.head}>
+          <Grid item xs={2} className={classes.head}>
             Service
           </Grid>
           <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
@@ -949,29 +1006,40 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <Grid item xs={2} className={`${classes.head} ${classes.alignRight}`}>
             Amount
           </Grid>
+          <Grid
+            item
+            xs
+            className={`${classes.head} ${classes.alignRight}`}
+          ></Grid>
         </Grid>
 
         {renderItems()}
 
         <Divider />
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end"
-          }}
-        >
-          <span>SUBTOTAL</span>
-          <span
+        <div style={{ display: "grid", gridTemplateColumns: "115px 1fr" }}>
+          <Button onClick={handleAddLine} variant="outlined">
+            Add a line
+          </Button>
+          <div
             style={{
-              fontWeight: 600,
-              fontSize: 20
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end"
             }}
           >
-            {formatter.format(getItemSubtotal())}
-          </span>
+            <span>SUBTOTAL</span>
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: 20
+              }}
+            >
+              {formatter.format(getItemSubtotal())}
+            </span>
+          </div>
         </div>
-        {!collapse ? renderTax() : <Divider />}
+        <Divider />
+        {!collapse && renderTax()}
         <div
           style={{ padding: "15px 0", display: "flex", alignItems: "center" }}
         >
