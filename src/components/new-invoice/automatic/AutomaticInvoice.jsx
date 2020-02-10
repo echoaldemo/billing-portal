@@ -426,11 +426,55 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         item => item.percentage === taxPercent
       )[0];
 
+      let lineData = [];
+
       const finalLine = {
         DetailType: "SubTotalLineDetail",
         Amount: total,
         SubTotalLineDetail: {}
       };
+
+      campaigns.map((campaign, i) => {
+        let qty,
+          rate,
+          itemName,
+          itemId,
+          count = i + 1;
+        if (campaign.service === 1) {
+          qty = campaign.content.billable_hours;
+          rate = campaign.content.bill_rate;
+          itemName = "Billable Hours";
+          itemId = "21";
+        } else if (campaign.service === 2) {
+          qty = campaign.content.performance;
+          rate = campaign.content.performance_rate;
+          itemName = "Performance";
+          itemId = "22";
+        } else {
+          qty = campaign.content.did;
+          rate = campaign.content.did_rate;
+          itemName = "DID Billing";
+          itemId = "23";
+        }
+        lineData.push({
+          LineNum: count,
+          Amount: qty * rate,
+          SalesItemLineDetail: {
+            TaxCodeRef: {
+              value: tax ? "TAX" : "NON"
+            },
+            ItemRef: {
+              name: itemName,
+              value: itemId
+            },
+            Qty: qty,
+            UnitPrice: rate
+          },
+          Id: count.toString,
+          DetailType: "SalesItemLineDetail",
+          Description: campaign.name
+        });
+      });
 
       let data = {
         CustomerRef: {
@@ -438,65 +482,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         },
         TxnDate: startDate,
         DueDate: dueDate,
-        Line: [
-          {
-            LineNum: 1,
-            //Amount: billableHours.qty * billableHours.rate,
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: tax ? "TAX" : "NON"
-              },
-              ItemRef: {
-                name: "Billable Hours",
-                value: "21"
-              }
-              //Qty: billableHours.qty,
-              //UnitPrice: billableHours.rate
-            },
-            Id: "1",
-            DetailType: "SalesItemLineDetail",
-            Description:
-              campaigns[Math.floor(Math.random() * campaigns.length)].name
-          },
-          {
-            LineNum: 2,
-            Amount: performance.qty * performance.rate,
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: tax ? "TAX" : "NON"
-              },
-              ItemRef: {
-                name: "Performance",
-                value: "22"
-              },
-              Qty: performance.qty,
-              UnitPrice: performance.rate
-            },
-            Id: "2",
-            Description:
-              campaigns[Math.floor(Math.random() * campaigns.length)].name,
-            DetailType: "SalesItemLineDetail"
-          },
-          {
-            LineNum: 3,
-            //Amount: did.qty * did.rate,
-            SalesItemLineDetail: {
-              TaxCodeRef: {
-                value: tax ? "TAX" : "NON"
-              },
-              ItemRef: {
-                name: "DID",
-                value: "23"
-              }
-              //Qty: did.qty,
-              //UnitPrice: did.rate
-            },
-            Id: "3",
-            DetailType: "SalesItemLineDetail",
-            Description:
-              campaigns[Math.floor(Math.random() * campaigns.length)].name
-          }
-        ],
+        Line: lineData,
         CustomerMemo: {
           value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
         }
