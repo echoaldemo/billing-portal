@@ -269,10 +269,17 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     });
   };
   const getItemSubtotal = () => {
-    const total =
+    const campaigns = activeCampaigns.filter(
+      item => selectInputs.campaign.indexOf(item.uuid) !== -1
+    );
+    let total = 0;
+    campaigns.forEach(item => {
+      total += item.qty * item.rate;
+    });
+    /* const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
-      did.qty * did.rate;
+      did.qty * did.rate;*/
     if (total) return total;
     else return "0.00";
   };
@@ -283,12 +290,19 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   };
 
   const getTotal = () => {
-    const total =
+    const campaigns = activeCampaigns.filter(
+      item => selectInputs.campaign.indexOf(item.uuid) !== -1
+    );
+    let total = 0;
+    campaigns.forEach(item => {
+      total += item.qty * item.rate;
+    });
+    /* const total =
       billableHours.qty * billableHours.rate +
       performance.qty * performance.rate +
       did.qty * did.rate +
       litigator.qty * litigator.rate +
-      merchant;
+      merchant; */
     if (total) return total;
     else return "0.00";
   };
