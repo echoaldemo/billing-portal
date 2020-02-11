@@ -148,7 +148,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       <Grid
         container
         spacing={1}
-        xs={12}
         style={{ marginBottom: 30, boxSizing: "border-box" }}
       >
         <Grid item xs className={classes.alignCenter}>
@@ -844,7 +843,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       </AppBar>
 
       <form className={classes.form}>
-        <Grid container spacing={2} xs={12} style={{ marginBottom: 10 }}>
+        <Grid container spacing={2} style={{ marginBottom: 10 }}>
           <Grid item xs={3}>
             <InputLabel id="label">Company</InputLabel>
             <Select
@@ -983,7 +982,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
         <Grid
           container
           spacing={1}
-          xs={12}
           style={{ marginBottom: 30, boxSizing: "border-box" }}
         >
           <Grid
@@ -1054,7 +1052,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <Grid
             container
             spacing={1}
-            xs={12}
             style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6} className={classes.head}>
@@ -1086,7 +1083,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <Grid
             container
             spacing={1}
-            xs={12}
             style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6}>
@@ -1132,7 +1128,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           <Grid
             container
             spacing={1}
-            xs={12}
             style={{ marginBottom: 30, boxSizing: "border-box" }}
           >
             <Grid item xs={6}>

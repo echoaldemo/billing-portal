@@ -33,7 +33,6 @@ export default function PendingCheckboxToolbar() {
   };
   return (
     <div className="display-space-between p-normal">
-      {console.log(state.data)}
       <div>
         <Button
           style={{
