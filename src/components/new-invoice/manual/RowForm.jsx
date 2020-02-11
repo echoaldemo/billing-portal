@@ -1,6 +1,6 @@
 import React from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, Grid, IconButton } from "@material-ui/core";
+import { Collapse, IconButton } from "@material-ui/core";
 import { InputField, Row } from "common-components";
 
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
@@ -11,7 +11,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const ShowExpand = () => {
     return (
       <div style={{ textAlign: "right" }}>
-        {console.log(rowCollapse)}
         {!rowCollapse.includes(index) ? (
           <IconButton
             style={{ padding: 5 }}

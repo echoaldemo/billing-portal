@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
@@ -6,7 +6,6 @@ import {
 } from "@material-ui/pickers";
 
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
-import { useStyles, MenuProps } from "../styles";
 import {
   Grid,
   MenuItem,
@@ -17,12 +16,10 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 
 export default function GeneralForm() {
-  const classes = useStyles();
   const {
     state,
     formState,
     setFormState,
-    setActiveCampaigns,
     selectedCampaign,
     setSelectedCampaign
   } = useContext(ManualInvoiceContext);

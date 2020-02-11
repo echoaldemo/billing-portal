@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from "react";
 import { Search } from "@material-ui/icons";
 import { InputField } from "common-components";
