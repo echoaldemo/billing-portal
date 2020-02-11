@@ -8,7 +8,6 @@ import { TableLoader } from "common-components";
 import NewInvoiceAppbar from "../components/NewInvoiceAppbar";
 import GeneralForm from "./GeneralForm";
 import BillingForm from "./BillingForm";
-import { Divider } from "@material-ui/core";
 const FormContent = () => {
   return (
     <form>
@@ -28,10 +27,10 @@ const NewInvoice = ({ handleClose }) => {
   );
 };
 
-const Manual = () => {
+const Manual = ({ handleClose }) => {
   return (
     <ManualInvoiceProvider>
-      <NewInvoice />
+      <NewInvoice handleClose={handleClose} />
     </ManualInvoiceProvider>
   );
 };
