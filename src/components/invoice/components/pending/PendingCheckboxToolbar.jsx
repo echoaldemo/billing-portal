@@ -12,7 +12,6 @@ export default function PendingCheckboxToolbar() {
     setConfirmModal,
     selectedItems,
     getPendingInvoicesData,
-    state,
     setSelectedItems
   } = React.useContext(StateContext);
   const [duplicateLoading, setDuplicateLoading] = React.useState(false);

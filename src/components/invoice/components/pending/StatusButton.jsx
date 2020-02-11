@@ -23,6 +23,8 @@ const statusToString = status => {
           <ThumbUp fontSize="small" /> &nbsp; <b>Approved</b>
         </div>
       );
+    default:
+      return null;
   }
 };
 const StatusButton = ({ item }) => {

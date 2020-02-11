@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useContext, useState, useEffect } from "react";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import CampaignBilling from "./CampaignBilling";
