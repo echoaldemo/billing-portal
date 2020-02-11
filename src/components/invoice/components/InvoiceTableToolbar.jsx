@@ -19,7 +19,7 @@ const InvoiceTableToolbar = props => {
   const classes = useStyles();
   const [state, setState] = React.useState({
     anchorEl: null,
-    type: "automatic"
+    type: "manual"
   });
 
   const handleClose = () => {
