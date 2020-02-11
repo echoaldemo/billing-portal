@@ -1,138 +1,54 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Collapse,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow
-} from "@material-ui/core";
-import { ExpandMore, ExpandLess } from "@material-ui/icons";
+import { Collapse, Grid } from "@material-ui/core";
+import RowForm from "./RowForm";
+
+const rowHeaderData = [
+  { label: "Campaign", size: 3 },
+  { label: "Services", size: 2 },
+  { label: "Quantity", size: 2 },
+  { label: "Rate", size: 2 },
+  { label: "Total Amount", size: 2 },
+  { label: " ", size: 1 }
+];
 
 const CampaignBilling = ({ campaignDetails }) => {
   const [rowCollapse, setRowCollapse] = useState(null);
+
   return (
-    <div style={{ border: "solid 1px #F1F1F1" }}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <b>Campaign</b>
-            </TableCell>
-            <TableCell align="right">
-              <b>Service</b>
-            </TableCell>
-            <TableCell align="right">
-              <b>Quantity</b>
-            </TableCell>
-            <TableCell align="right">
-              <b>Rate</b>
-            </TableCell>
-            <TableCell align="right">
-              <b>Amount</b>
-            </TableCell>
-            <TableCell align="right">&nbsp;</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow>
-            <TableCell>
-              <b>adasd</b>
-            </TableCell>
-            <TableCell align="right">3</TableCell>
-            <TableCell align="right">2</TableCell>
-            <TableCell align="right">$33 23</TableCell>
-            <TableCell align="right">$32.21</TableCell>
-            <TableCell align="right">
-              <ExpandMore
-                onClick={() => {
-                  setRowCollapse(true);
-                }}
-              />
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-      <Collapse in={rowCollapse}>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <b>adasd</b>
-              </TableCell>
-              <TableCell align="right">3</TableCell>
-              <TableCell align="right">2</TableCell>
-              <TableCell align="right">$33 23</TableCell>
-              <TableCell align="right">$32.21</TableCell>
-              <TableCell align="right">
-                <ExpandMore
-                  onClick={() => {
-                    setRowCollapse(1);
-                  }}
-                />
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </Collapse>
+    <div style={{ border: "solid 1px #F1F1F1", borderBottom: 0 }}>
+      <RowHeader rowHeaderData={rowHeaderData} />
+      {campaignDetails.map((el, i) => {
+        return (
+          <RowForm
+            campDetail={el}
+            rowCollapse={rowCollapse}
+            setRowCollapse={setRowCollapse}
+            key={i}
+            index={i}
+          />
+        );
+      })}
     </div>
   );
 };
 
-const RowDetails = ({ elementDetails, index, rowCollapse, setRowCollapse }) => {
-  const ShowExpand = () => {
-    return (
-      <React.Fragment>
-        {rowCollapse !== index ? (
-          <ExpandMore
-            onClick={() => {
-              setRowCollapse(index);
-            }}
-          />
-        ) : (
-          <ExpandLess
-            onClick={() => {
-              setRowCollapse(null);
-            }}
-          />
-        )}
-      </React.Fragment>
-    );
-  };
-
+const RowHeader = ({ rowHeaderData }) => {
   return (
-    <React.Fragment>
-      <TableRow>
-        <TableCell>
-          <b>{elementDetails.name}</b>
-        </TableCell>
-        <TableCell align="right">3</TableCell>
-        <TableCell align="right">2</TableCell>
-        <TableCell align="right">$33 23</TableCell>
-        <TableCell align="right">$32.21</TableCell>
-        <TableCell align="right">
-          <ShowExpand />
-        </TableCell>
-      </TableRow>
-      <Collapse in={rowCollapse === index} unmountOnExit>
-        <Table>
-          <TableRow>
-            <TableCell>
-              <b>{elementDetails.name}</b>
-            </TableCell>
-            <TableCell align="right">3</TableCell>
-            <TableCell align="right">2</TableCell>
-            <TableCell align="right">$33 23</TableCell>
-            <TableCell align="right">$32.21</TableCell>
-            <TableCell align="right">
-              <ShowExpand />
-            </TableCell>
-          </TableRow>
-        </Table>
-      </Collapse>
-    </React.Fragment>
+    <Grid container style={{ borderBottom: "solid 1px #F1F1f1" }}>
+      {rowHeaderData.map((item, i) => {
+        return (
+          <Grid
+            item
+            key={i}
+            xs={item.size}
+            className="row-header-item p-normal"
+          >
+            <b>{item.label}</b>
+          </Grid>
+        );
+      })}
+    </Grid>
   );
 };
 

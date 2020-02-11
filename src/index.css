@@ -1,12 +1,12 @@
-@import 'https://fonts.googleapis.com/css?family=Roboto&display=swap';
+@import "https://fonts.googleapis.com/css?family=Roboto&display=swap";
 body {
   color: #444851;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
 }
 
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -212,6 +212,10 @@ input[type='number']::-webkit-outer-spin-button {
 .MuiSelect-select:focus {
   background-color: transparent !important;
 }
+
+.row-header-item {
+}
+
 @media screen and (min-device-width: 1440px) and (max-device-width: 1600px) {
   .tab-panel-container {
     width: 70% !important;
