@@ -45,7 +45,10 @@ export default function InvoiceDetails() {
       <Grid container spacing={3}>
         <Grid item lg={3} xs={3} md={3}>
           <InputLabel>Company</InputLabel>
-          <InputField
+          <b style={{ position: 'relative', top: 10 }}>
+            {formState.company ? formState.company.name : ''}
+          </b>
+          {/* <InputField
             select
             value={formState.company ? companyId : ""}
             disabled={!state.editManageData}
@@ -71,7 +74,7 @@ export default function InvoiceDetails() {
                 {comp.name}
               </MenuItem>
             ))}
-          </InputField>
+          </InputField> */}
         </Grid>
         <Grid item lg={3} xs={3} md={3}>
           <InputLabel>Campaign</InputLabel>
@@ -146,7 +149,7 @@ export default function InvoiceDetails() {
         </Grid>
       </Grid>
       <br />
-      <ItemsTable formState={formState} setFormState={setFormState} />
+      <ItemsTable campaigns={campaigns} selectedCampaigns={selectedCampaigns} />
     </div>
   );
 }
