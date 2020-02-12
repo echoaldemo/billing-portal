@@ -24,6 +24,8 @@ const ManualInvoiceProvider = ({ children }) => {
   const [formState, setFormState] = useState(initialFormState);
 
   const [selectedCampaign, setSelectedCampaign] = useState([]);
+  const [billingFormState, setBillingFormState] = useState([]);
+
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-loading":
@@ -67,7 +69,9 @@ const ManualInvoiceProvider = ({ children }) => {
         setFormState,
         setActiveCampaigns,
         selectedCampaign,
-        setSelectedCampaign
+        setSelectedCampaign,
+        billingFormState,
+        setBillingFormState
       }}
     >
       {children}

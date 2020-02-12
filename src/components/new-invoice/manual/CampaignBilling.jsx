@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RowForm from "./RowForm";
 import { RowHeader } from "common-components";
+
+import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
   { label: "Services", size: 2 },
@@ -9,9 +11,9 @@ const rowHeaderData = [
   { label: "Total Amount", size: 2 },
   { label: " ", size: 1 }
 ];
-
 const CampaignBilling = ({ campaignDetails }) => {
-  const [rowCollapse, setRowCollapse] = useState([0]);
+  const [rowCollapse, setRowCollapse] = useState([0, 1]);
+
   return (
     <div
       style={{
