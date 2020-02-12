@@ -1,19 +1,18 @@
-import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Collapse, Grid } from "@material-ui/core";
+import React, { useState } from "react";
+import { RowHeader } from "common-components";
 import RowForm from "./RowForm";
 
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
   { label: "Services", size: 2 },
-  { label: "Quantity", size: 2 },
-  { label: "Rate", size: 2 },
-  { label: "Total Amount", size: 2 },
+  { label: "Quantity", size: 2, align_right: true },
+  { label: "Rate", size: 2, align_right: true },
+  { label: "Total Amount", size: 2, align_right: true },
   { label: " ", size: 1 }
 ];
 
 const CampaignBilling = ({ campaignDetails }) => {
-  const [rowCollapse, setRowCollapse] = useState(null);
+  const [rowCollapse, setRowCollapse] = useState([0]);
 
   return (
     <div style={{ border: "solid 1px #F1F1F1", borderBottom: 0 }}>
@@ -30,25 +29,6 @@ const CampaignBilling = ({ campaignDetails }) => {
         );
       })}
     </div>
-  );
-};
-
-const RowHeader = ({ rowHeaderData }) => {
-  return (
-    <Grid container style={{ borderBottom: "solid 1px #F1F1f1" }}>
-      {rowHeaderData.map((item, i) => {
-        return (
-          <Grid
-            item
-            key={i}
-            xs={item.size}
-            className="row-header-item p-normal"
-          >
-            <b>{item.label}</b>
-          </Grid>
-        );
-      })}
-    </Grid>
   );
 };
 

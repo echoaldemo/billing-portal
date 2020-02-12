@@ -1,10 +1,34 @@
 import React from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, Grid } from "@material-ui/core";
-import { InputField as TryField } from "common-components";
+import { Collapse, IconButton, Input, makeStyles } from "@material-ui/core";
+import { InputField as TryField, Row } from "common-components";
+
+const useStyles = makeStyles(theme => ({
+  underline: {
+    borderBottom: "2px solid white",
+    "&:after": {
+      // The source seems to use this but it doesn't work
+      borderBottom: "2px solid white"
+    }
+  }
+}));
 
 const InputField = props => {
-  return <TryField inputProps={{ style: { textAlign: "right" } }} {...props} />;
+  const classes = useStyles();
+  return (
+    <TryField
+      fullWidth
+      inputProps={{ style: { textAlign: "right" } }}
+      input={
+        <Input
+          classes={{
+            underline: classes.underline
+          }}
+        />
+      }
+      {...props}
+    />
+  );
 };
 
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
@@ -16,6 +40,11 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     did,
     did_rate
   } = campDetail.content;
+
+  const removeElement = () => {
+    const newEl = rowCollapse.filter(item => item !== index);
+    return newEl;
+  };
 
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -31,18 +60,24 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const ShowExpand = () => {
     return (
       <div style={{ textAlign: "right" }}>
-        {rowCollapse !== index ? (
-          <ExpandMore
+        {!rowCollapse.includes(index) ? (
+          <IconButton
+            style={{ padding: 5 }}
             onClick={() => {
-              setRowCollapse(index);
+              setRowCollapse([...rowCollapse, index]);
             }}
-          />
+          >
+            <ExpandMore />
+          </IconButton>
         ) : (
-          <ExpandLess
+          <IconButton
+            style={{ padding: 5 }}
             onClick={() => {
-              setRowCollapse(null);
+              setRowCollapse(removeElement());
             }}
-          />
+          >
+            <ExpandLess />
+          </IconButton>
         )}
       </div>
     );
@@ -61,6 +96,19 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: <InputField value={compute(billable_hours, bill_rate)} />,
       size: 2
     },
+    { label: <ShowExpand />, size: 1 }
+  ];
+
+  const rowData1Collapse = [
+    {
+      label: <b>{campDetail.name}</b>,
+      size: 3,
+      bold: true
+    },
+    { label: "Fields not set", size: 2 },
+    { label: "Fields not set", size: 2 },
+    { label: "n/a", size: 2 },
+    { label: "Fields not set", size: 2 },
     { label: <ShowExpand />, size: 1 }
   ];
 
@@ -96,26 +144,15 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
   return (
     <div style={{ borderBottom: "solid 1px #F1F1F1" }}>
-      <Row rowData={rowData1} />
-      <Collapse in={rowCollapse === index}>
+      <Row
+        rowData={rowCollapse.includes(index) ? rowData1 : rowData1Collapse}
+      />
+
+      <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
         <Row rowData={rowData3} />
       </Collapse>
     </div>
-  );
-};
-
-const Row = ({ rowData }) => {
-  return (
-    <Grid container>
-      {rowData.map((item, i) => {
-        return (
-          <Grid item xs={item.size} key={i} className="row-item p-normal">
-            {item.label}
-          </Grid>
-        );
-      })}
-    </Grid>
   );
 };
 
