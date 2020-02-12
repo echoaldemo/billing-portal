@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Slide } from "@material-ui/core";
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles(theme => ({
   appBar: {
     position: "relative",
     backgroundColor: "#5F7D98"
@@ -68,6 +68,12 @@ export const useStyles = makeStyles((theme) => ({
   actions: {
     backgroundColor: "#5F7D98",
     color: "#fff"
+  },
+  alignRight: {
+    textAlign: "right"
+  },
+  alignCenter: {
+    textAlign: "center"
   }
 }));
 

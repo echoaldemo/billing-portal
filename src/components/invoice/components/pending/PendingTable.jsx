@@ -1,28 +1,37 @@
 /* eslint-disable */
 import React from "react";
 import { StateContext } from "context/StateContext";
-import { TableLoader } from "common-components";
-import { get } from "utils/api";
-import { InvoiceTableHeader, PendingTableBody, TableStepper } from "../index";
-import { Table, TableContainer, TablePagination } from "@material-ui/core";
+import { TableLoader, NoResult } from "common-components";
+import { InvoiceTableHeader, PendingTableBody } from "../index";
+import {
+  Table,
+  TableContainer,
+  TablePagination,
+  Divider
+} from "@material-ui/core";
 
-import { mockData } from "../mockData";
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
+import DuplicateModal from "./duplicate-modal/DuplicateModal";
 
 const headCells = [
+  { id: "status", label: "Status" },
   { id: "invoice", label: "Invoice" },
-  { id: "invoice_type", label: "Invoice Type" },
+  { id: "invoice_type", label: "Type" },
+  { id: "billing_type", label: "Billing Type" },
   { id: "company", label: "Company" },
-  { id: "campaigns", label: "Campaigns" },
   { id: "start_date", label: "Start date" },
   { id: "due-date", label: "Due date" },
   { id: "total", label: "Total" },
-  { id: "status", label: "Status" },
   { id: "actions", label: "Actions" }
 ];
 
 const PendingTable = () => {
-  const { state, setLoading, setData } = React.useContext(StateContext);
+  const {
+    state,
+    getPendingInvoicesData,
+    setSelectedItems,
+    selectedItems
+  } = React.useContext(StateContext);
 
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -40,18 +49,7 @@ const PendingTable = () => {
   };
 
   React.useEffect(() => {
-    setLoading(true);
-    setData(mockData());
-    get("/api/pending/list")
-      .then(res => {
-        setLoading(false);
-        setData(res.data);
-        console.log(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      });
+    getPendingInvoicesData();
   }, []);
 
   function desc(a, b, orderBy) {
@@ -85,18 +83,36 @@ const PendingTable = () => {
       page * rowsPerPage + rowsPerPage
     );
   }
+  const checked = () => {
+    return selectedItems.length === state.data.length;
+  };
   return (
     <div>
       {state.loading ? (
         <TableLoader />
       ) : (
         <React.Fragment>
-          <TableContainer>
-            <Table>
-              <InvoiceTableHeader headCells={headCells} />
-              <PendingTableBody data={sortData(state.data)} />
-            </Table>
-          </TableContainer>
+          {state.data.length > 0 ? (
+            <TableContainer>
+              <Table>
+                <InvoiceTableHeader
+                  headCells={headCells}
+                  onSelectAllClick={e => {
+                    if (e.target.checked) {
+                      setSelectedItems(state.data);
+                    } else {
+                      setSelectedItems([]);
+                    }
+                  }}
+                  check={checked()}
+                />
+                <PendingTableBody data={sortData(state.data)} />
+              </Table>
+            </TableContainer>
+          ) : (
+            <NoResult />
+          )}
+          <Divider />
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
@@ -109,6 +125,7 @@ const PendingTable = () => {
         </React.Fragment>
       )}
       <ManagePendingInvoice />
+      <DuplicateModal />
     </div>
   );
 };

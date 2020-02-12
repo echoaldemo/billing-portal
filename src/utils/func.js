@@ -1,13 +1,12 @@
-
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
 }
 
-
 function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max))
+  return Math.floor(Math.random() * Math.floor(max));
 }
-
+const truncate = (input, length, end) =>
+  input.length > 5 ? `${input.substring(0, length)}${end}` : input;
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -19,7 +18,6 @@ function desc(a, b, orderBy) {
   return 0;
 }
 
-
 function stableSort(array, cmp) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -30,7 +28,9 @@ function stableSort(array, cmp) {
   return stabilizedThis.map(el => el[0]);
 }
 function getSorting(order, orderBy) {
-  return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
+  return order === "desc"
+    ? (a, b) => desc(a, b, orderBy)
+    : (a, b) => -desc(a, b, orderBy);
 }
 
-export { createData, getRandomInt, desc, stableSort, getSorting }
+export { truncate, createData, getRandomInt, desc, stableSort, getSorting };
