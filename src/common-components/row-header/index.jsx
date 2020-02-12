@@ -1,7 +1,6 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 const RowHeader = ({ rowHeaderData }) => {
-  console.log(rowHeaderData);
   return (
     <Grid
       container

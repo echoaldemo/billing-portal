@@ -13,7 +13,10 @@ const rowHeaderData = [
 ];
 const CampaignBilling = ({ campaignDetails }) => {
   const [rowCollapse, setRowCollapse] = useState([0, 1]);
-
+  const { setBillingFormState } = React.useContext(ManualInvoiceContext);
+  useEffect(() => {
+    setBillingFormState(campaignDetails);
+  }, []);
   return (
     <div
       style={{
