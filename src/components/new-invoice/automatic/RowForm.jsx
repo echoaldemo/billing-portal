@@ -1,8 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, IconButton, InputAdornment } from "@material-ui/core";
+import {
+  Collapse,
+  IconButton,
+  InputAdornment,
+  Divider
+} from "@material-ui/core";
 import { InputField as TryField, Row } from "common-components";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
+import styled from "styled-components";
+const BillDiv = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 20px 1fr 1fr;
+  justify-items: end;
+`;
 const InputField = ({ customWidth, ...rest }) => {
   return (
     <TryField
@@ -14,9 +25,43 @@ const InputField = ({ customWidth, ...rest }) => {
     />
   );
 };
+const convertHourMin = value => {
+  const hrs = parseInt(Number(value));
+  const min = Math.round((Number(value) - hrs) * 60);
+  return hrs + ":" + min;
+};
+const HourMin = ({ value, onChange, state, handleHourMin }) => {
+  return (
+    <BillDiv>
+      <InputField
+        value={value}
+        customWidth="100%"
+        onChange={e => onChange(e, "billable_hours")}
+      />
+      <Divider orientation="vertical" />
+      <InputField
+        InputProps={{
+          endAdornment: <InputAdornment position="end">hr</InputAdornment>
+        }}
+        customWidth="80%"
+        onChange={e => handleHourMin(e.target.value, "hour")}
+        value={state.hour}
+      />
 
+      <InputField
+        InputProps={{
+          endAdornment: <InputAdornment position="end">min</InputAdornment>
+        }}
+        customWidth="80%"
+        onChange={e => handleHourMin(e.target.value, "min")}
+        value={state.min}
+      />
+    </BillDiv>
+  );
+};
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const { formState, setFormState } = useContext(AutomaticInvoiceContext);
+  const [timeState, setTimeState] = useState({ hour: "", min: "" });
   const {
     billable_hours,
     bill_rate,
@@ -25,58 +70,28 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     did,
     did_rate
   } = campDetail.content;
-
+  useEffect(() => {
+    if (billable_hours) {
+      let hourMin = convertHourMin(billable_hours);
+      hourMin = hourMin.split(":");
+      const hour = parseFloat(hourMin[0]) || "";
+      const min = parseFloat(hourMin[1]) || "";
+      setTimeState({ hour, min });
+    }
+  }, [billable_hours]);
   const removeElement = () => {
     const newEl = rowCollapse.filter(item => item !== index);
     return newEl;
   };
-
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2
   });
-
   const compute = (x, y) => {
     if (x * y) return formatter.format(x * y);
     else return " ";
   };
-
-  const convertHourMin = value => {
-    const hrs = parseInt(Number(value));
-    const min = Math.round((Number(value) - hrs) * 60);
-    return hrs + ":" + min;
-  };
-
-  const HourMin = ({ value }) => {
-    let hourMin = convertHourMin(value);
-    hourMin = hourMin.split(":");
-    return (
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          justifyItems: "end"
-        }}
-      >
-        <InputField
-          InputProps={{
-            endAdornment: <InputAdornment position="end">hr</InputAdornment>
-          }}
-          customWidth="80%"
-          value={hourMin[0]}
-        />
-        <InputField
-          InputProps={{
-            endAdornment: <InputAdornment position="end">min</InputAdornment>
-          }}
-          customWidth="80%"
-          value={hourMin[1]}
-        />
-      </div>
-    );
-  };
-
   const ShowExpand = () => {
     return (
       <div style={{ textAlign: "right" }}>
@@ -102,7 +117,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       </div>
     );
   };
-
   const handleChange = (e, type) => {
     let temp = formState.campaign;
     temp.map((item, i) => {
@@ -112,7 +126,28 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     });
     setFormState({ ...formState, campaign: temp });
   };
-
+  const hourMinToDec = (value, label) => {
+    if ((parseFloat(value) <= 59 && parseFloat(value) > 0) || value === "") {
+      setTimeState({ ...timeState, [label]: value });
+      let temp;
+      if (label === "hour") temp = `${value}:${timeState.min}`;
+      else temp = `${timeState.hour}:${value}`;
+      const arr = temp.split(":");
+      const dec = parseInt((arr[1] / 6) * 10, 10);
+      const final = parseFloat(
+        parseInt(arr[0], 10) + "." + (dec < 10 ? "0" : "") + dec
+      );
+      if (final) {
+        let temp = formState.campaign;
+        temp.map((item, i) => {
+          if (i === index) {
+            item.content["billable_hours"] = final;
+          }
+        });
+        setFormState({ ...formState, campaign: temp });
+      }
+    }
+  };
   const rowData1 = [
     {
       label: <b>{campDetail.name}</b>,
@@ -120,7 +155,17 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       bold: true
     },
     { label: "Billable Hours", size: 2 },
-    { label: <HourMin value={billable_hours} />, size: 2 },
+    {
+      label: (
+        <HourMin
+          onChange={handleChange}
+          handleHourMin={hourMinToDec}
+          value={billable_hours}
+          state={timeState}
+        />
+      ),
+      size: 2
+    },
     {
       label: (
         <InputField
@@ -136,7 +181,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: <ShowExpand />, size: 1 }
   ];
-
   const rowData1Collapse = [
     {
       label: <b>{campDetail.name}</b>,
@@ -149,7 +193,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     { label: "Fields not set", size: 2 },
     { label: <ShowExpand />, size: 1 }
   ];
-
   const rowData2 = [
     {
       label: " ",
@@ -206,13 +249,11 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: " ", size: 1 }
   ];
-
   return (
     <div style={{ borderBottom: "solid 1px #F1F1F1" }}>
       <Row
         rowData={rowCollapse.includes(index) ? rowData1 : rowData1Collapse}
       />
-
       <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
         <Row rowData={rowData3} />

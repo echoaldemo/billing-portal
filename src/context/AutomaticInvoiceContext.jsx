@@ -17,6 +17,7 @@ const initialFormState = {
   campaign: [],
   billingType: "1",
   billingPeriod: date,
+  total: " ",
   taxation: " "
 };
 
@@ -82,7 +83,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
     });
   };
-  console.log(formState);
+
   return (
     <AutomaticInvoiceContext.Provider
       value={{

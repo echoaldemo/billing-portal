@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
@@ -26,6 +26,17 @@ export default function GeneralForm() {
     setSelectedCampaign,
     handleBillingChange
   } = useContext(AutomaticInvoiceContext);
+
+  const getBalance = () => {
+    let total = 0;
+    formState.campaign.map(item => {
+      total +=
+        item.content.billable_hours * item.content.bill_rate +
+        item.content.performance * item.content.performance_rate +
+        item.content.did * item.content.did_rate;
+    });
+    return total;
+  };
 
   const filterCampaign = uuid => {
     const filteredCampaign = state.campaigns.filter(
@@ -163,7 +174,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            {formatter.format(parseFloat(300))}
+            {formatter.format(parseFloat(getBalance()))}
           </span>
         </div>
       </Grid>
