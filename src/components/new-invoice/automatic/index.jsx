@@ -1,9 +1,9 @@
 /* eslint-disable */
 import React, { useContext } from "react";
 import {
-  ManualInvoiceContext,
-  ManualInvoiceProvider
-} from "context/ManualInvoiceContext";
+  AutomaticInvoiceContext,
+  AutomaticInvoiceProvider
+} from "context/AutomaticInvoiceContext";
 import { TableLoader } from "common-components";
 import NewInvoiceAppbar from "../components/NewInvoiceAppbar";
 import GeneralForm from "./GeneralForm";
@@ -18,21 +18,21 @@ const FormContent = () => {
 };
 
 const NewInvoice = ({ handleClose }) => {
-  const { state } = useContext(ManualInvoiceContext);
+  const { state } = useContext(AutomaticInvoiceContext);
   return (
     <React.Fragment>
-      <NewInvoiceAppbar handleClose={handleClose} />
+      <NewInvoiceAppbar handleClose={handleClose} type="Automatic" />
       {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
     </React.Fragment>
   );
 };
 
-const Manual = () => {
+const Automatic = () => {
   return (
-    <ManualInvoiceProvider>
+    <AutomaticInvoiceProvider>
       <NewInvoice />
-    </ManualInvoiceProvider>
+    </AutomaticInvoiceProvider>
   );
 };
 
-export default Manual;
+export default Automatic;
