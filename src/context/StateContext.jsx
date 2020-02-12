@@ -9,9 +9,9 @@ const initialState = {
   openDuplicate: false,
   selectedData: {},
   itemTable: {
-    billable: {},
-    performance: {},
-    did: {}
+    services: {},
+    litigator: {},
+    merchant: 0
   },
   editManageData: false,
   updateLoading: false
