@@ -10,7 +10,7 @@ import {
 
 import { Add } from "@material-ui/icons";
 import Manual from "../../new-invoice/manual/ManualInvoice";
-import Automatic from "../../new-invoice/automatic/AutomaticInvoice";
+import Automatic from "../../new-invoice/automatic/";
 import { useStyles, Transition } from "../../new-invoice/styles";
 
 import { LoadingNoDialog as Loading } from "common-components";

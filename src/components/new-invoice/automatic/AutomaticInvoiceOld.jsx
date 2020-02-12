@@ -39,6 +39,9 @@ import { useStyles, MenuProps } from "../styles";
 import { getMock, post, get } from "utils/api";
 import { mockCompanies, mockCampaigns } from "../mock";
 
+//dnd
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 const today = new Date();
 const date =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
@@ -105,7 +108,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     };
     setActiveCampaigns([...activeCampaigns, temp]);
   };
-
   const removeLine = uuid => {
     let temp = selectInputs.campaign.filter(item => item !== uuid);
     setSelectInputs({ ...selectInputs, campaign: temp });
@@ -123,11 +125,13 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     const data = activeCampaigns.filter(
       item => item.uuid === event.target.value
     );
+    console.log(data);
     const okay = temp.map((item, i) => {
       if (i === index) {
         return (item = { ...item, ...data[0] });
       } else return item;
     });
+    console.log(okay);
     setActiveCampaigns(okay);
     setSelectInputs({ ...selectInputs });
   };
@@ -146,57 +150,71 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
     );
     newLineOptions.unshift({ uuid: "none", name: "Select a campaign" });
     return campaigns.map((campaign, i) => (
-      <Grid
-        container
-        spacing={1}
-        style={{ marginBottom: 30, boxSizing: "border-box" }}
-      >
-        <Grid item xs className={classes.alignCenter}>
-          <Sort />
-        </Grid>
-        <Grid item xs={3}>
-          {campaign.new_line ? (
-            <TextField
-              select
-              value={campaign.uuid}
-              fullWidth
-              onChange={e => handleSelectNewLine(e, i)}
-            >
-              {newLineOptions.map(option => (
-                <MenuItem key={option.uuid} value={option.uuid}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          ) : (
-            <TextField value={campaign.name} fullWidth />
-          )}
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            select
-            value={campaign.service}
-            fullWidth
-            onChange={e => handleServiceChange(e, i, "service")}
+      <Draggable key={i} draggableId={`${i}`} index={i}>
+        {provided => (
+          <div
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
           >
-            {options.map(option => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        {renderFields(campaign, i)}
-        <Grid item xs className={classes.alignCenter}>
-          <Delete
-            onClick={
-              campaign.new_line
-                ? () => removeNewLine(i)
-                : () => removeLine(campaign.uuid)
-            }
-          />
-        </Grid>
-      </Grid>
+            <Grid
+              container
+              spacing={1}
+              xs={12}
+              style={{ marginBottom: 30, boxSizing: "border-box" }}
+            >
+              <Grid item xs className={classes.alignCenter}>
+                <Sort />
+              </Grid>
+              <Grid item xs={3}>
+                {campaign.new_line ? (
+                  <TextField
+                    select
+                    value={campaign.uuid}
+                    fullWidth
+                    onChange={e => handleSelectNewLine(e, i)}
+                  >
+                    {newLineOptions.map(option => (
+                      <MenuItem key={option.uuid} value={option.uuid}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : (
+                  <TextField value={campaign.name} fullWidth />
+                )}
+              </Grid>
+              <Grid item xs={2}>
+                <TextField
+                  select
+                  value={campaign.service}
+                  fullWidth
+                  onChange={e => handleServiceChange(e, i, "service")}
+                >
+                  {options.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              {renderFields(campaign, i)}
+              <Grid item xs className={classes.alignCenter}>
+                <IconButton
+                  style={{ padding: 0 }}
+                  onClick={
+                    campaign.new_line
+                      ? () => removeNewLine(i)
+                      : () => removeLine(campaign.uuid)
+                  }
+                >
+                  <Delete />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </div>
+        )}
+      </Draggable>
     ));
   };
 
@@ -381,7 +399,6 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
   const handleBillingChange = event => {
     getMock("/company1", {}).then(res => {
       const mock = res.data;
-      console.log(mock);
       let temp = activeCampaigns;
       temp.forEach(item => {
         let data = res.data[Math.floor(Math.random() * 10)];
@@ -477,6 +494,12 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       const campaigns = activeCampaigns.filter(
         item => selectInputs.campaign.indexOf(item.uuid) !== -1
       );
+
+      const uniqueCamp = activeCampaigns.filter(
+        item =>
+          selectInputs.campaign.indexOf(item.uuid) !== -1 && !item.new_line
+      );
+
       const total = getBalanceDue();
 
       const taxableAmt = parseFloat(getTotal());
@@ -637,7 +660,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           ...data,
           invoiceType: "Automatic",
           company,
-          campaigns,
+          campaigns: uniqueCamp,
           startDate,
           dueDate,
           total,
@@ -790,8 +813,25 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
       </div>
     );
   };
+  const dragEnd = result => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
+
+    const column = activeCampaigns[source.index];
+    let temp = Array.from(activeCampaigns);
+    temp.splice(source.index, 1);
+    temp.splice(destination.index, 0, column);
+    setActiveCampaigns(temp);
+    setSelectInputs({ ...selectInputs });
+    console.log(temp);
+  };
   return (
-    <>
+    <DragDropContext onDragEnd={dragEnd}>
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
@@ -1011,9 +1051,14 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
             className={`${classes.head} ${classes.alignRight}`}
           ></Grid>
         </Grid>
-
-        {renderItems()}
-
+        <Droppable droppableId={"1"}>
+          {provided => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              {renderItems()}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
         <Divider />
         <div style={{ display: "grid", gridTemplateColumns: "115px 1fr" }}>
           <Button onClick={handleAddLine} variant="outlined">
@@ -1201,7 +1246,7 @@ const NewInvoice = ({ handleClose, renderLoading, duplicate }) => {
           {collapse && renderTax()}
         </Collapse>
       </form>
-    </>
+    </DragDropContext>
   );
 };
 
