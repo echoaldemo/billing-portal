@@ -45,6 +45,24 @@ export const mockCampaigns = [
     archived: false
   },
   {
+    uuid: "14ba35e4-d938-11e7-8a1b-0242ac11000f",
+    realms: ["d97e4a0c-508b-11e7-8a8e-525400aa3818"],
+    company: "986cf0b2-e381-11e6-ac3a-02420aff000a",
+    slug: "frutos-team",
+    name: "Frutos",
+    active: true,
+    archived: false
+  },
+  {
+    uuid: "24ba35e4-d938-11e7-8a1b-0242ac11000f",
+    realms: ["d97e4a0c-508b-11e7-8a8e-525400aa3818"],
+    company: "986cf0b2-e381-11e6-ac3a-02420aff000a",
+    slug: "lion-king",
+    name: "Lion King",
+    active: true,
+    archived: false
+  },
+  {
     uuid: "18e60922-e765-11e6-982a-02420aff000e",
     realms: ["49de5ece-c616-11e5-90dc-44a8422b4ea3"],
     company: "986cf0b2-e381-11e6-ac3a-02420aff000a",

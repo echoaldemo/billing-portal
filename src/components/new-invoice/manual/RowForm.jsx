@@ -1,23 +1,34 @@
 import React from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, Grid } from "@material-ui/core";
-import { InputField } from "common-components";
+import { Collapse, IconButton } from "@material-ui/core";
+import { InputField, Row } from "common-components";
+
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
+  const removeElement = () => {
+    const newEl = rowCollapse.filter(item => item !== index);
+    return newEl;
+  };
   const ShowExpand = () => {
     return (
       <div style={{ textAlign: "right" }}>
-        {rowCollapse !== index ? (
-          <ExpandMore
+        {!rowCollapse.includes(index) ? (
+          <IconButton
+            style={{ padding: 5 }}
             onClick={() => {
-              setRowCollapse(index);
+              setRowCollapse([...rowCollapse, index]);
             }}
-          />
+          >
+            <ExpandMore />
+          </IconButton>
         ) : (
-          <ExpandLess
+          <IconButton
+            style={{ padding: 5 }}
             onClick={() => {
-              setRowCollapse(null);
+              setRowCollapse(removeElement());
             }}
-          />
+          >
+            <ExpandLess />
+          </IconButton>
         )}
       </div>
     );
@@ -35,7 +46,18 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     { label: <InputField value={51} />, size: 2 },
     { label: <ShowExpand />, size: 1 }
   ];
-
+  const rowData1Collapse = [
+    {
+      label: <b>{campDetail.name}</b>,
+      size: 3,
+      bold: true
+    },
+    { label: "Fields not set", size: 2 },
+    { label: "Fields not set", size: 2 },
+    { label: "n/a", size: 2 },
+    { label: "Fields not set", size: 2 },
+    { label: <ShowExpand />, size: 1 }
+  ];
   const rowData2 = [
     {
       label: " ",
@@ -62,26 +84,15 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
   return (
     <div style={{ borderBottom: "solid 1px #F1F1F1" }}>
-      <Row rowData={rowData1} />
-      <Collapse in={rowCollapse === index}>
+      <Row
+        rowData={rowCollapse.includes(index) ? rowData1 : rowData1Collapse}
+      />
+
+      <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
         <Row rowData={rowData3} />
       </Collapse>
     </div>
-  );
-};
-
-const Row = ({ rowData }) => {
-  return (
-    <Grid container>
-      {rowData.map((item, i) => {
-        return (
-          <Grid item xs={item.size} key={i} className="row-item p-normal">
-            {item.label}
-          </Grid>
-        );
-      })}
-    </Grid>
   );
 };
 

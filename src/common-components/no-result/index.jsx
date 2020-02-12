@@ -13,7 +13,7 @@ export default function NoResult() {
         flexDirection: "column"
       }}
     >
-      <img src={NoDataImg} width={150} />
+      <img src={NoDataImg} width={150} alt="no-date-img" />
       <h4>No available data</h4>
     </div>
   );

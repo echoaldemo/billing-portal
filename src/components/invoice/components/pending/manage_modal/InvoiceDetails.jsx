@@ -1,46 +1,45 @@
-import React, { useState, useEffect } from 'react'
-import { InputField } from 'common-components'
+import React, { useState, useEffect } from "react";
+import { InputField } from "common-components";
 import {
   Grid,
   MenuItem,
   Checkbox,
   ListItemText,
   InputLabel
-} from '@material-ui/core'
+} from "@material-ui/core";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
-} from '@material-ui/pickers'
-import DateFnsUtils from '@date-io/date-fns'
-import ItemsTable from './components/ItemsTable'
-import { StateContext } from 'context/StateContext'
-import { truncate } from 'utils/func'
-import { mockCompanies, mockCampaigns } from '../../../../new-invoice/mock'
+} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import ItemsTable from "./components/ItemsTable";
+import { StateContext } from "context/StateContext";
+import { mockCompanies, mockCampaigns } from "../../../../new-invoice/mock";
 
 export default function InvoiceDetails() {
-  const { state, setFormState, formState } = React.useContext(StateContext)
-  const [companyId, setCompanyId] = useState('')
-  const [companies, setCompanies] = useState([])
-  const [campaigns, setCampaigns] = useState([])
-  const [selectedCampaigns, setSelectedCampaigns] = useState([])
+  const { state, setFormState, formState } = React.useContext(StateContext);
+  const [companyId, setCompanyId] = useState("");
+  const [companies, setCompanies] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
+  const [selectedCampaigns, setSelectedCampaigns] = useState([]);
 
   useEffect(() => {
-    setCompanies(mockCompanies)
+    setCompanies(mockCompanies);
     setCampaigns(
       mockCampaigns.filter(
         camp => camp.company === state.selectedData.company.uuid
       )
-    )
-    setFormState(state.selectedData)
-    setCompanyId(state.selectedData.company.uuid)
-    setSelectedCampaigns(state.selectedData.campaigns.map(camp => camp.uuid))
+    );
+    setFormState(state.selectedData);
+    setCompanyId(state.selectedData.company.uuid);
+    setSelectedCampaigns(state.selectedData.campaigns.map(camp => camp.uuid));
     // eslint-disable-next-line
-  }, [])
+  }, []);
 
   useEffect(() => {
-    setCampaigns(mockCampaigns.filter(camp => camp.company === companyId))
+    setCampaigns(mockCampaigns.filter(camp => camp.company === companyId));
     // eslint-disable-next-line
-  }, [companyId])
+  }, [companyId]);
   return (
     <div className="modal-details-container">
       <Grid container spacing={3}>
@@ -48,7 +47,7 @@ export default function InvoiceDetails() {
           <InputLabel>Company</InputLabel>
           <InputField
             select
-            value={formState.company ? companyId : ''}
+            value={formState.company ? companyId : ""}
             disabled={!state.editManageData}
             fullWidth
             onChange={e => {
@@ -58,13 +57,13 @@ export default function InvoiceDetails() {
                   comp => comp.uuid === e.target.value
                 ),
                 campaigns: []
-              })
-              setCompanyId(e.target.value)
+              });
+              setCompanyId(e.target.value);
               setSelectedCampaigns(
                 mockCampaigns
                   .filter(camp => camp.company === e.target.value)
                   .map(camp => camp.uuid)
-              )
+              );
             }}
           >
             {companies.map((comp, i) => (
@@ -85,25 +84,25 @@ export default function InvoiceDetails() {
               displayEmpty: true,
               renderValue: selected =>
                 selected.length === 0
-                  ? 'Select campaign'
+                  ? "Select campaign"
                   : selected.length === campaigns.length
-                  ? 'All'
+                  ? "All"
                   : selected
                       .map(s =>
                         campaigns
                           .filter(a => a.uuid === s)
                           .map(data => data.name)
                       )
-                      .join(', ')
+                      .join(", ")
             }}
             onChange={e => {
-              setSelectedCampaigns(e.target.value)
+              setSelectedCampaigns(e.target.value);
               setFormState({
                 ...formState,
                 campaigns: e.target.value.map(sel =>
                   campaigns.find(a => a.uuid === sel)
                 )
-              })
+              });
             }}
             disabled={!state.editManageData}
           >
@@ -119,7 +118,7 @@ export default function InvoiceDetails() {
           <InputLabel>Billing Type</InputLabel>
           <InputField
             fullWidth
-            value={formState.billingType || ' '}
+            value={formState.billingType || " "}
             select
             disabled={!state.editManageData}
             onChange={e =>
@@ -149,5 +148,5 @@ export default function InvoiceDetails() {
       <br />
       <ItemsTable formState={formState} setFormState={setFormState} />
     </div>
-  )
+  );
 }

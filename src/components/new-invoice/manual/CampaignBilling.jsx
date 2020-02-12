@@ -1,8 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Collapse, Grid } from "@material-ui/core";
+import React, { useState } from "react";
 import RowForm from "./RowForm";
-
+import { RowHeader } from "common-components";
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
   { label: "Services", size: 2 },
@@ -13,42 +11,35 @@ const rowHeaderData = [
 ];
 
 const CampaignBilling = ({ campaignDetails }) => {
-  const [rowCollapse, setRowCollapse] = useState(null);
-
+  const [rowCollapse, setRowCollapse] = useState([0]);
   return (
-    <div style={{ border: "solid 1px #F1F1F1", borderBottom: 0 }}>
+    <div
+      style={{
+        border: "solid 1px #F1F1F1",
+        borderBottom: 0
+      }}
+    >
       <RowHeader rowHeaderData={rowHeaderData} />
-      {campaignDetails.map((el, i) => {
-        return (
-          <RowForm
-            campDetail={el}
-            rowCollapse={rowCollapse}
-            setRowCollapse={setRowCollapse}
-            key={i}
-            index={i}
-          />
-        );
-      })}
+      <div
+        style={{
+          height: 600,
+          overflow: "auto",
+          borderBottom: "solid 1px #F1F1F1"
+        }}
+      >
+        {campaignDetails.map((el, i) => {
+          return (
+            <RowForm
+              campDetail={el}
+              rowCollapse={rowCollapse}
+              setRowCollapse={setRowCollapse}
+              key={i}
+              index={i}
+            />
+          );
+        })}
+      </div>
     </div>
-  );
-};
-
-const RowHeader = ({ rowHeaderData }) => {
-  return (
-    <Grid container style={{ borderBottom: "solid 1px #F1F1f1" }}>
-      {rowHeaderData.map((item, i) => {
-        return (
-          <Grid
-            item
-            key={i}
-            xs={item.size}
-            className="row-header-item p-normal"
-          >
-            <b>{item.label}</b>
-          </Grid>
-        );
-      })}
-    </Grid>
   );
 };
 

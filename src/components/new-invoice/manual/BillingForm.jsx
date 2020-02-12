@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
-import { InputField } from "common-components";
 import BillingTable from "./BillingTable";
 
 const FormFields = () => {
