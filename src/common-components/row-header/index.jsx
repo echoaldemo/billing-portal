@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 const RowHeader = ({ rowHeaderData }) => {
+  console.log(rowHeaderData);
   return (
     <Grid
       container
@@ -14,7 +15,11 @@ const RowHeader = ({ rowHeaderData }) => {
             item
             key={i}
             xs={item.size}
-            className="row-header-item p-normal"
+            className={
+              item.align_right
+                ? "row-header-item p-normal p-align-right"
+                : "row-header-item p-normal"
+            }
           >
             <b>{item.label}</b>
           </Grid>

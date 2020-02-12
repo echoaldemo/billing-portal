@@ -33,7 +33,7 @@ import { post, get } from "utils/api";
 import { StateContext } from "context/StateContext";
 import { mockCompanies, mockCampaigns } from "../mock";
 import { useStyles, MenuProps } from "../styles";
-export default function NewInvoiceAppbar({ handleClose }) {
+export default function NewInvoiceAppbar({ handleClose, type }) {
   const classes = useStyles();
 
   const [state, setState] = useState({
@@ -68,7 +68,7 @@ export default function NewInvoiceAppbar({ handleClose }) {
           <Close />
         </IconButton>
         <Typography variant="h6" className={classes.title}>
-          New Manual Invoice
+          New {type || "Manual"} Invoice
         </Typography>
         <Button
           classes={{ root: classes.save, disabled: classes.save_disabled }}
