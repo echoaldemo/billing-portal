@@ -21,7 +21,8 @@ export default function GeneralForm() {
     formState,
     setFormState,
     selectedCampaign,
-    setSelectedCampaign
+    setSelectedCampaign,
+    billingFormState
   } = useContext(ManualInvoiceContext);
 
   const filterCampaign = uuid => {
@@ -30,6 +31,18 @@ export default function GeneralForm() {
     );
     setSelectedCampaign(filteredCampaign.map(item => item.uuid));
     return filteredCampaign;
+  };
+
+  const getBalance = () => {
+    let total = 0;
+    billingFormState.map(item => {
+      total +=
+        item.billableHrsQty * item.billableHrsRate +
+        item.didQty * item.didRate +
+        item.performanceQty * item.performanceRate;
+    });
+
+    return total;
   };
   return (
     <div
@@ -159,7 +172,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            {formatter.format(parseFloat(300))}
+            {formatter.format(getBalance())}
           </span>
         </div>
       </Grid>
