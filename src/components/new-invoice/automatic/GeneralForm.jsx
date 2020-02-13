@@ -1,12 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
-import { useStyles } from "../styles";
 import {
   Grid,
   MenuItem,
@@ -21,22 +19,11 @@ export default function GeneralForm() {
     state,
     formState,
     setFormState,
-    setActiveCampaigns,
     selectedCampaign,
     setSelectedCampaign,
-    handleBillingChange
+    handleBillingChange,
+    getBalance
   } = useContext(AutomaticInvoiceContext);
-
-  const getBalance = () => {
-    let total = 0;
-    formState.campaign.map(item => {
-      total +=
-        item.content.billable_hours * item.content.bill_rate +
-        item.content.performance * item.content.performance_rate +
-        item.content.did * item.content.did_rate;
-    });
-    return total;
-  };
 
   const filterCampaign = uuid => {
     const filteredCampaign = state.campaigns.filter(

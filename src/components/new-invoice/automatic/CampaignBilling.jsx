@@ -7,7 +7,7 @@ const rowHeaderData = [
   { label: "Services", size: 2 },
   { label: "Quantity", size: 2, align_right: true },
   { label: "Rate", size: 2, align_right: true },
-  { label: "Total Amount", size: 2, align_right: true },
+  { label: "Amount", size: 2, align_right: true },
   { label: " ", size: 1 }
 ];
 
