@@ -1,37 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, IconButton, Input, makeStyles } from "@material-ui/core";
+import { Collapse, IconButton, InputAdornment } from "@material-ui/core";
 import { InputField as TryField, Row } from "common-components";
-
-const useStyles = makeStyles(theme => ({
-  underline: {
-    borderBottom: "2px solid white",
-    "&:after": {
-      // The source seems to use this but it doesn't work
-      borderBottom: "2px solid white"
-    }
-  }
-}));
-
-const InputField = props => {
-  const classes = useStyles();
+import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
+const InputField = ({ customWidth, ...rest }) => {
   return (
     <TryField
-      fullWidth
-      inputProps={{ style: { textAlign: "right" } }}
-      input={
-        <Input
-          classes={{
-            underline: classes.underline
-          }}
-        />
-      }
-      {...props}
+      inputProps={{
+        style: { textAlign: "right" }
+      }}
+      style={{ width: customWidth || "60%", float: "right" }}
+      {...rest}
     />
   );
 };
 
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
+  const { formState, setFormState } = useContext(AutomaticInvoiceContext);
   const {
     billable_hours,
     bill_rate,
@@ -55,6 +40,41 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const compute = (x, y) => {
     if (x * y) return formatter.format(x * y);
     else return " ";
+  };
+
+  const convertHourMin = value => {
+    const hrs = parseInt(Number(value));
+    const min = Math.round((Number(value) - hrs) * 60);
+    return hrs + ":" + min;
+  };
+
+  const HourMin = ({ value }) => {
+    let hourMin = convertHourMin(value);
+    hourMin = hourMin.split(":");
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          justifyItems: "end"
+        }}
+      >
+        <InputField
+          InputProps={{
+            endAdornment: <InputAdornment position="end">hr</InputAdornment>
+          }}
+          customWidth="80%"
+          value={hourMin[0]}
+        />
+        <InputField
+          InputProps={{
+            endAdornment: <InputAdornment position="end">min</InputAdornment>
+          }}
+          customWidth="80%"
+          value={hourMin[1]}
+        />
+      </div>
+    );
   };
 
   const ShowExpand = () => {
@@ -83,6 +103,16 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     );
   };
 
+  const handleChange = (e, type) => {
+    let temp = formState.campaign;
+    temp.map((item, i) => {
+      if (i === index) {
+        item.content[type] = e.target.value;
+      }
+    });
+    setFormState({ ...formState, campaign: temp });
+  };
+
   const rowData1 = [
     {
       label: <b>{campDetail.name}</b>,
@@ -90,8 +120,16 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       bold: true
     },
     { label: "Billable Hours", size: 2 },
-    { label: <InputField value={billable_hours} />, size: 2 },
-    { label: <InputField value={bill_rate} />, size: 2 },
+    { label: <HourMin value={billable_hours} />, size: 2 },
+    {
+      label: (
+        <InputField
+          value={bill_rate}
+          onChange={e => handleChange(e, "bill_rate")}
+        />
+      ),
+      size: 2
+    },
     {
       label: <InputField value={compute(billable_hours, bill_rate)} />,
       size: 2
@@ -119,8 +157,19 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       bold: true
     },
     { label: "DID Billing", size: 2 },
-    { label: <InputField value={did} />, size: 2 },
-    { label: <InputField value={did_rate} />, size: 2 },
+    {
+      label: <InputField value={did} onChange={e => handleChange(e, "did")} />,
+      size: 2
+    },
+    {
+      label: (
+        <InputField
+          value={did_rate}
+          onChange={e => handleChange(e, "did_rate")}
+        />
+      ),
+      size: 2
+    },
     {
       label: <InputField value={compute(did, did_rate)} />,
       size: 2
@@ -133,8 +182,24 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       size: 3
     },
     { label: "Performance", size: 2 },
-    { label: <InputField value={performance} />, size: 2 },
-    { label: <InputField value={performance_rate} />, size: 2 },
+    {
+      label: (
+        <InputField
+          value={performance}
+          onChange={e => handleChange(e, "performance")}
+        />
+      ),
+      size: 2
+    },
+    {
+      label: (
+        <InputField
+          value={performance_rate}
+          onChange={e => handleChange(e, "performance_rate")}
+        />
+      ),
+      size: 2
+    },
     {
       label: <InputField value={compute(performance, performance_rate)} />,
       size: 2

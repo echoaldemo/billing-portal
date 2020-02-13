@@ -82,7 +82,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
     });
   };
-
+  console.log(formState);
   return (
     <AutomaticInvoiceContext.Provider
       value={{
