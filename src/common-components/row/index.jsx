@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
-const Row = ({ rowData }) => {
+const Row = ({ rowData, style }) => {
   return (
-    <Grid container>
+    <Grid container style={{ ...style }}>
       {rowData.map((item, i) => {
         return (
           <Grid item xs={item.size} key={i} className="row-item p-normal">
