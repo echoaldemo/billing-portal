@@ -8,7 +8,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 const defaultBillable = {
   amt: 0,
-  qty: 0,
+  qty: '',
   rate: ''
 }
 const defaultPerformance = {
@@ -26,6 +26,12 @@ const defaultLitigator = {
   qty: '',
   rate: ''
 }
+
+const mockTaxation = [
+  { code: '5', taxrate: '7', name: 'Utah', percentage: 6.1 },
+  { code: '6', taxrate: '8', name: 'California', percentage: 8 },
+  { code: '7', taxrate: '11', name: 'Mexico', percentage: 16 }
+]
 
 const handleQty = ({ billable, performance, did }) => {
   return (
@@ -52,11 +58,14 @@ const handleAmt = ({ billable, performance, did }) => {
 }
 
 const useStyles = makeStyles({
-  twenty: { width: '20%' },
-  forty: { width: '40%' }
+  tab1: { width: '30%' },
+  tab2: { width: '20%', textAlign: 'right' },
+  tab3: { width: '10%', textAlign: 'right' },
+  right: { textAlign: 'right' }
 })
 
 export {
+  mockTaxation,
   defaultBillable,
   defaultPerformance,
   defaultDid,
