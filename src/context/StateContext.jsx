@@ -11,6 +11,7 @@ const initialState = {
   itemTable: {
     services: {},
     litigator: {},
+    tax: {},
     merchant: 0
   },
   editManageData: false,
