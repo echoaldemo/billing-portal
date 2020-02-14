@@ -13,7 +13,9 @@ import { Close, ArrowDropDown } from "@material-ui/icons";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import { useStyles } from "../styles";
 export default function NewInvoiceAppbar({ handleClose, type }) {
-  const { createInvoice } = useContext(AutomaticInvoiceContext);
+  if (type === "Automatic") {
+    const { createInvoice } = useContext(AutomaticInvoiceContext);
+  }
   const classes = useStyles();
   const [state, setState] = useState({
     anchorEl: null,

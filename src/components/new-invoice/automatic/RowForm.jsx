@@ -161,7 +161,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     if (performance * performance_rate) label.push("Performance");
     if (did * did_rate) label.push("DID Billing");
 
-    if (!label.length) return "";
+    if (!label.length) return <i>Fields not set</i>;
     else if (label.length === 1) return label[0];
     else return label.join(", ");
   };
@@ -208,9 +208,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     {
       label: (
         <div style={{ textAlign: "right", width: "100%" }}>
-          <b>
-            {getSubTotal() ? formatter.format(getSubTotal()) : "Fields not set"}
-          </b>
+          <b>{getSubTotal() ? formatter.format(getSubTotal()) : ""}</b>
         </div>
       ),
       size: 6
