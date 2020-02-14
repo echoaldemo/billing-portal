@@ -1,12 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
-import { useStyles } from "../styles";
 import {
   Grid,
   MenuItem,
@@ -21,10 +19,10 @@ export default function GeneralForm() {
     state,
     formState,
     setFormState,
-    setActiveCampaigns,
     selectedCampaign,
     setSelectedCampaign,
-    handleBillingChange
+    handleBillingChange,
+    getBalance
   } = useContext(AutomaticInvoiceContext);
 
   const filterCampaign = uuid => {
@@ -143,14 +141,13 @@ export default function GeneralForm() {
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
+            alignItems: "flex-end",
+            marginRight: 20
           }}
         >
           <span
             style={{
-              fontWeight: 500,
-              fontSize: 24,
+              fontSize: 14,
               color: "#444851"
             }}
           >
@@ -163,7 +160,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            {formatter.format(parseFloat(300))}
+            {formatter.format(parseFloat(getBalance()))}
           </span>
         </div>
       </Grid>
