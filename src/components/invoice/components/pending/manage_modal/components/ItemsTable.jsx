@@ -11,7 +11,7 @@ import {
   Checkbox
 } from '@material-ui/core'
 import { ExpandMore, ExpandLess } from '@material-ui/icons'
-import { InputField } from 'common-components'
+import { InputField, TimeInput } from 'common-components'
 import { StateContext } from 'context/StateContext'
 import {
   defaultBillable,
@@ -22,6 +22,8 @@ import {
   handleQty,
   handleRate,
   handleAmt,
+  handleServices,
+  handleAdditional,
   useStyles,
   mockTaxation
 } from '../constVar'
@@ -43,6 +45,7 @@ export default function ItemsTable() {
   })
   const [collapsed, setCollapsed] = useState([])
   const [services, setServices] = useState({})
+  const [billableTime, setBillableTime] = useState({ hour: 0, min: 0 })
 
   const gatherData = () => {
     let array = [],
@@ -59,6 +62,13 @@ export default function ItemsTable() {
           qty: temp.SalesItemLineDetail.Qty,
           rate: temp.SalesItemLineDetail.UnitPrice
         }
+        setBillableTime({
+          hour: Math.floor(temp.SalesItemLineDetail.Qty),
+          min:
+            (temp.SalesItemLineDetail.Qty -
+              Math.floor(temp.SalesItemLineDetail.Qty)) *
+            60
+        })
       } catch {
         obj.billable = defaultBillable
       }
@@ -125,7 +135,13 @@ export default function ItemsTable() {
   useEffect(() => {
     if (Object.keys(formState).length > 0) {
       setTotal(formState.Line[formState.Line.length - 1].Amount)
+      if (formState.campaigns.length === 1) {
+        setCollapsed([...collapsed, 0])
+      }
       gatherData()
+    }
+    return () => {
+      setCollapsed([])
     }
     // eslint-disable-next-line
   }, [formState])
@@ -169,6 +185,34 @@ export default function ItemsTable() {
     })
   }
 
+  const handleBillableTime = (value, type, index) => {
+    let temp = 0
+
+    if (type === 'hour') {
+      temp = `${value}:${billableTime.min}`
+      setBillableTime({ ...billableTime, [type]: value })
+    } else {
+      temp = `${billableTime.hour}:${value < 59 ? value : 59}`
+      setBillableTime({ ...billableTime, [type]: value < 59 ? value : 59 })
+    }
+    const arr = temp.split(':')
+    const dec = parseInt((arr[1] / 6) * 10, 10)
+    const final =
+      parseFloat(parseInt(arr[0], 10) + '.' + (dec < 10 ? '0' : '') + dec) || 0
+
+    const obj = { target: { name: 'billable', value: final } }
+
+    handleChange(obj, index, 'qty', 'rate')
+  }
+
+  const handleCollapse = index => {
+    if (collapsed.includes(index)) {
+      setCollapsed(collapsed.filter(c => c !== index))
+    } else {
+      setCollapsed([...collapsed, index])
+    }
+  }
+
   return (
     <React.Fragment>
       {Object.keys(formState).length > 0 ? (
@@ -180,15 +224,7 @@ export default function ItemsTable() {
                 <div key={camp.uuid}>
                   <Table>
                     <TableBody>
-                      <TableRow
-                        onClick={() => {
-                          if (collapsed.includes(i)) {
-                            setCollapsed(collapsed.filter(c => c !== i))
-                          } else {
-                            setCollapsed([...collapsed, i])
-                          }
-                        }}
-                      >
+                      <TableRow>
                         <TableCell className={classes.tab1}>
                           <div
                             style={{ display: 'flex', alignItems: 'center' }}
@@ -196,57 +232,27 @@ export default function ItemsTable() {
                             <b>{camp.name}</b>
                           </div>
                         </TableCell>
-                        <TableCell align="right" className={classes.tab2}>
+                        <TableCell className={classes.tab4}>
                           {services[i] && !collapsed.includes(i)
-                            ? handleQty(services[i])
-                            : ''}
+                            ? handleServices(services[i])
+                            : 'Billable hours'}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i)
-                            ? handleRate(services[i])
-                            : ''}
-                        </TableCell>
-                        <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i)
-                            ? formatter.format(handleAmt(services[i]))
-                            : ''}
-                        </TableCell>
-                        <TableCell className={classes.tab3}>
-                          {collapsed.includes(i) ? (
-                            <ExpandLess style={{ cursor: 'pointer' }} />
+                          {services[i] && !collapsed.includes(i) ? (
+                            handleQty(services[i]).toFixed(2)
                           ) : (
-                            <ExpandMore style={{ cursor: 'pointer' }} />
+                            <TimeInput
+                              state={billableTime}
+                              handleChange={handleBillableTime}
+                              index={i}
+                              disabled={!state.editManageData}
+                            />
                           )}
                         </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                  <Collapse in={collapsed.includes(i)} unmountOnExit>
-                    <Table>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className={classes.tab1}>
-                            <span style={{ marginLeft: 8 }} />
-                            Billable hours
-                          </TableCell>
-                          <TableCell className={classes.tab2}>
-                            <InputField
-                              fullWidth
-                              type="number"
-                              style={{ textAlign: 'center' }}
-                              inputProps={{
-                                min: 0,
-                                style: { textAlign: 'right' }
-                              }}
-                              name="billable"
-                              disabled={!state.editManageData}
-                              value={
-                                services[i] ? services[i].billable.qty : ''
-                              }
-                              onChange={e => handleChange(e, i, 'qty', 'rate')}
-                            />
-                          </TableCell>
-                          <TableCell className={classes.tab2}>
+                        <TableCell align="right" className={classes.tab2}>
+                          {services[i] && !collapsed.includes(i) ? (
+                            handleRate(services[i])
+                          ) : (
                             <InputField
                               fullWidth
                               type="number"
@@ -261,17 +267,37 @@ export default function ItemsTable() {
                               }
                               onChange={e => handleChange(e, i, 'rate', 'qty')}
                             />
-                          </TableCell>
-                          <TableCell className={classes.tab2}>
-                            {formatter.format(
-                              services[i] ? services[i].billable.amt : ''
-                            )}
-                          </TableCell>
-                          <TableCell className={classes.tab3} />
-                        </TableRow>
+                          )}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tab2}>
+                          {services[i] && !collapsed.includes(i)
+                            ? formatter.format(handleAmt(services[i]))
+                            : formatter.format(
+                                services[i] ? services[i].billable.amt : ''
+                              )}
+                        </TableCell>
+                        <TableCell className={classes.tab3}>
+                          {collapsed.includes(i) ? (
+                            <ExpandLess
+                              onClick={() => handleCollapse(i)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          ) : (
+                            <ExpandMore
+                              onClick={() => handleCollapse(i)}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                  <Collapse in={collapsed.includes(i)} unmountOnExit>
+                    <Table>
+                      <TableBody>
                         <TableRow>
-                          <TableCell className={classes.tab1}>
-                            <span style={{ marginLeft: 8 }} />
+                          <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab4}>
                             Performance
                           </TableCell>
                           <TableCell className={classes.tab2}>
@@ -314,10 +340,8 @@ export default function ItemsTable() {
                           <TableCell />
                         </TableRow>
                         <TableRow>
-                          <TableCell className={classes.tab1}>
-                            <span style={{ marginLeft: 8 }} />
-                            Did
-                          </TableCell>
+                          <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab4}>Did</TableCell>
                           <TableCell className={classes.tab2}>
                             <InputField
                               fullWidth
@@ -367,33 +391,15 @@ export default function ItemsTable() {
                       <b>Additional fees</b>
                     </div>
                   </TableCell>
-                  <TableCell className={classes.tab2}>
-                    {!add ? litigator.qty || 0 : ''}
+                  <TableCell className={classes.tab4}>
+                    {add
+                      ? 'Litigator Scrubbing'
+                      : handleAdditional(litigator.amt, merchant)}
                   </TableCell>
                   <TableCell className={classes.tab2}>
-                    {!add ? litigator.rate || 0 : ''}
-                  </TableCell>
-                  <TableCell className={classes.tab2}>
-                    {!add ? formatter.format(litigator.amt + merchant) : ''}
-                  </TableCell>
-                  <TableCell className={classes.tab3}>
-                    {add ? (
-                      <ExpandLess style={{ cursor: 'pointer' }} />
+                    {!add ? (
+                      litigator.qty || 0
                     ) : (
-                      <ExpandMore style={{ cursor: 'pointer' }} />
-                    )}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-            <Collapse in={add} unmountOnExit>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className={classes.tab1}>
-                      Litigator Scrubbing
-                    </TableCell>
-                    <TableCell className={classes.tab2}>
                       <InputField
                         fullWidth
                         type="number"
@@ -411,8 +417,12 @@ export default function ItemsTable() {
                           })
                         }
                       />
-                    </TableCell>
-                    <TableCell className={classes.tab2}>
+                    )}
+                  </TableCell>
+                  <TableCell className={classes.tab2}>
+                    {!add ? (
+                      litigator.rate || 0
+                    ) : (
                       <InputField
                         fullWidth
                         type="number"
@@ -430,18 +440,33 @@ export default function ItemsTable() {
                           })
                         }
                       />
-                    </TableCell>
-                    <TableCell className={classes.tab2}>
-                      {formatter.format(litigator.amt)}
-                    </TableCell>
-                    <TableCell className={classes.tab3} />
-                  </TableRow>
+                    )}
+                  </TableCell>
+                  <TableCell className={classes.tab2}>
+                    {!add
+                      ? formatter.format(litigator.amt + merchant)
+                      : formatter.format(litigator.amt)}
+                  </TableCell>
+                  <TableCell className={classes.tab3}>
+                    {add ? (
+                      <ExpandLess style={{ cursor: 'pointer' }} />
+                    ) : (
+                      <ExpandMore style={{ cursor: 'pointer' }} />
+                    )}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+            <Collapse in={add} unmountOnExit>
+              <Table>
+                <TableBody>
                   <TableRow>
-                    <TableCell className={classes.tab1}>
+                    <TableCell className={classes.tab1} />
+                    <TableCell className={classes.tab4}>
                       Merchant Fees
                     </TableCell>
-                    <TableCell className={classes.tab2}></TableCell>
-                    <TableCell className={classes.tab2}></TableCell>
+                    <TableCell className={classes.tab2} />
+                    <TableCell className={classes.tab2} />
                     <TableCell className={classes.tab2}>
                       <InputField
                         fullWidth
@@ -471,6 +496,7 @@ export default function ItemsTable() {
               <TableBody>
                 <TableRow>
                   <TableCell className={classes.tab1}>Taxable</TableCell>
+                  <TableCell className={classes.tab4} />
                   <TableCell className={classes.tab2}>
                     <div
                       style={{
@@ -530,9 +556,9 @@ export default function ItemsTable() {
                   <TableCell className={classes.tab1}>
                     <b style={{ fontSize: 15 }}>Total</b>
                   </TableCell>
-
+                  <TableCell className={classes.tab4} />
                   <TableCell className={classes.tab2}>
-                    <b style={{ fontSize: 15 }}>{qty}</b>
+                    <b style={{ fontSize: 15 }}>{qty.toFixed(2)}</b>
                   </TableCell>
                   <TableCell className={classes.tab2}></TableCell>
                   <TableCell className={classes.tab2}>

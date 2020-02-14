@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
-import { InputField } from "common-components";
 import BillingTable from "./BillingTable";
+import NoCompanyResult from "../components/NoCompanyResult";
 
 const FormFields = () => {
   return <BillingTable />;
@@ -12,9 +12,7 @@ const BillingForm = () => {
   return (
     <div style={{ padding: 15, paddingTop: 0, color: "#444851" }}>
       {!formState.company ? (
-        <h3 style={{ padding: 0 }}>
-          Need to select company to create a manual invoice
-        </h3>
+        <NoCompanyResult />
       ) : (
         <React.Fragment>
           <FormFields />
