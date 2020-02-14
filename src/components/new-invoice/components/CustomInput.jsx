@@ -3,6 +3,7 @@ import { InputField as TryField } from "common-components";
 const InputField = ({ customWidth, ...rest }) => {
   return (
     <TryField
+      type="number"
       inputProps={{
         style: { textAlign: "right" }
       }}

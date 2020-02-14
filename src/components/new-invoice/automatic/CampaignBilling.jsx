@@ -34,6 +34,18 @@ const CampaignBilling = ({ campaignDetails }) => {
     }
     setTax(event.target.checked);
   };
+  const getAmount = label => {
+    const { qty, rate } = addFee[label];
+    let content;
+    if (qty && rate)
+      content = (
+        <div style={{ textAlign: "right", width: "100%" }}>
+          <b>{formatter.format(parseFloat(qty) + parseFloat(rate))}</b>
+        </div>
+      );
+    else content = "";
+    return content;
+  };
   const additionalFeesCollapse = [
     {
       label: <b>Additional Fees</b>,
@@ -70,16 +82,7 @@ const CampaignBilling = ({ campaignDetails }) => {
       size: 2
     },
     {
-      label:
-        addFee.merchant.qty * addFee.merchant.rate ? (
-          <div style={{ textAlign: "right", width: "100%" }}>
-            <b>
-              {formatter.format(addFee.merchant.qty * addFee.merchant.rate)}
-            </b>
-          </div>
-        ) : (
-          " "
-        ),
+      label: getAmount("merchant"),
       size: 2
     },
     {
@@ -148,16 +151,7 @@ const CampaignBilling = ({ campaignDetails }) => {
       size: 2
     },
     {
-      label:
-        addFee.litigator.qty * addFee.litigator.rate ? (
-          <div style={{ textAlign: "right", width: "100%" }}>
-            <b>
-              {formatter.format(addFee.litigator.qty * addFee.litigator.rate)}
-            </b>
-          </div>
-        ) : (
-          " "
-        ),
+      label: getAmount("litigator"),
       size: 2
     },
 
@@ -279,7 +273,10 @@ const CampaignBilling = ({ campaignDetails }) => {
           BorderBottom: 0
         }}
       >
-        <RowHeader rowHeaderData={rowHeaderData} />
+        <RowHeader
+          rowHeaderData={rowHeaderData}
+          style={{ backgroundColor: "#dce9f1", color: "#4C7F9E" }}
+        />
         <div
           style={{
             maxHeight: 442,
