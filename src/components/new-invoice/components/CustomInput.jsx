@@ -1,5 +1,6 @@
 import React from "react";
 import { InputField as TryField } from "common-components";
+import "./style.css";
 const InputField = ({ customWidth, ...rest }) => {
   return (
     <TryField

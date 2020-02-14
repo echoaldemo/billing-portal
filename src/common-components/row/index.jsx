@@ -8,7 +8,13 @@ const Row = ({ rowData, style }) => {
           ? "row-item p-normal border"
           : "row-tem p-normal";
         return (
-          <Grid item xs={item.size} key={i} className={classTitle}>
+          <Grid
+            item
+            xs={item.size}
+            key={i}
+            className={classTitle}
+            style={{ ...item.style }}
+          >
             {item.label}
           </Grid>
         );

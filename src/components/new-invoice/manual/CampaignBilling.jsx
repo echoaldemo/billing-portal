@@ -8,9 +8,9 @@ import ExpandButton from "./ExpandButtton";
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
   { label: "Services", size: 2 },
-  { label: "Quantity", size: 2 },
-  { label: "Rate", size: 2 },
-  { label: "Total Amount", size: 2 },
+  { label: "Quantity", size: 2, style: { textAlign: "right" } },
+  { label: "Rate", size: 2, style: { textAlign: "right" } },
+  { label: "Total Amount", size: 2, style: { textAlign: "right" } },
   { label: " ", size: 1 }
 ];
 const CampaignBilling = ({ campaignDetails }) => {

@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
 import { Collapse, IconButton } from "@material-ui/core";
-import { InputField, Row } from "common-components";
+import { Row, TimeInput } from "common-components";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
-
+import InputField from "../components/CustomInput";
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
+  const [timeState, setTimeState] = useState({ hour: "", min: "" });
+
   const { billingFormState, setBillingFormState } = useContext(
     ManualInvoiceContext
   );
@@ -13,6 +15,30 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     return newEl;
   };
 
+  const hourMinToDec = (value, label) => {
+    if ((parseFloat(value) <= 59 && parseFloat(value) > 0) || value === "") {
+      setTimeState({ ...timeState, [label]: value });
+      let temp;
+      if (value === "") {
+        value = 0;
+      }
+      if (label === "hour") temp = `${value}:${timeState.min}`;
+      else temp = `${timeState.hour}:${value}`;
+      const arr = temp.split(":");
+
+      const dec = parseInt((arr[1] / 6) * 10, 10);
+      const final =
+        parseFloat(parseInt(arr[0], 10) + "." + (dec < 10 ? "0" : "") + dec) ||
+        0;
+      const newVal = billingFormState.map((item, i) => {
+        if (i === index) {
+          item["billableHrsQty"] = final;
+        }
+        return item;
+      });
+      setBillingFormState(newVal);
+    }
+  };
   const compute = (x, y) => {
     if (x * y) return formatter.format(x * y);
     else return "";
@@ -90,16 +116,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: "Billable Hours", size: 2 },
     {
-      label: (
-        <InputField
-          value={campDetail.billableHrsQty}
-          onChange={e => {
-            handleTextField(e, "billableHrsQty");
-          }}
-          placeholder="Number of hours"
-          type="number"
-        />
-      ),
+      label: <TimeInput handleChange={hourMinToDec} state={timeState} />,
       size: 2
     },
     {
@@ -117,9 +134,10 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     {
       label: (
-        <b> {compute(campDetail.billableHrsQty, campDetail.billableHrsRate)}</b>
+        <b>{compute(campDetail.billableHrsQty, campDetail.billableHrsRate)}</b>
       ),
-      size: 2
+      size: 2,
+      style: { textAlign: "right" }
     },
     { label: <ShowExpand />, size: 1 }
   ];
@@ -132,7 +150,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: <span>{renderLessServices()}</span>, size: 4 },
     { label: " ", size: 2 },
-    { label: <b>{campaignTotal()}</b>, size: 2 },
+    { label: <b style={{ textAlign: "right" }}>{campaignTotal()}</b>, size: 2 },
     { label: <ShowExpand />, size: 1 }
   ];
 
@@ -167,7 +185,8 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     {
       label: <b>{compute(campDetail.didQty, campDetail.didRate)}</b>,
-      size: 2
+      size: 2,
+      style: { textAlign: "right" }
     },
     { label: " ", size: 1 }
   ];
@@ -201,9 +220,12 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     {
       label: (
-        <b>{compute(campDetail.performanceQty, campDetail.performanceRate)}</b>
+        <b style={{ textAlign: "right" }}>
+          {compute(campDetail.performanceQty, campDetail.performanceRate)}
+        </b>
       ),
-      size: 2
+      size: 2,
+      style: { textAlign: "right" }
     },
     { label: " ", size: 1 }
   ];
