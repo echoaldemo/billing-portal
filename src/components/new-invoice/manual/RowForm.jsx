@@ -15,7 +15,18 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
   const compute = (x, y) => {
     if (x * y) return formatter.format(x * y);
-    else return " ";
+    else return "";
+  };
+
+  const campaignTotal = () => {
+    let campTotal = 0;
+    let billableHrs = campDetail.billableHrsQty * campDetail.billableHrsRate;
+    let did = campDetail.didQty * campDetail.didRate;
+    let performance = campDetail.performanceQty * campDetail.performanceRate;
+
+    campTotal = billableHrs + did + performance;
+
+    return campTotal ? formatter.format(campTotal) : "";
   };
 
   const ShowExpand = () => {
@@ -54,6 +65,23 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     setBillingFormState(newVal);
   };
 
+  const renderLessServices = () => {
+    let services = [];
+    Object.keys(campDetail).map(item => {
+      if (campDetail[item]) {
+        item === "billableHrsQty" && services.push("Billable Hours");
+        item === "didQty" && services.push("DID Billing");
+        item === "performanceQty" && services.push("Performance");
+      }
+    });
+
+    return (
+      <div>
+        {services.length > 0 ? services.join(", ") : <i>Field not set</i>}
+      </div>
+    );
+  };
+
   const rowData1 = [
     {
       label: <b>{campDetail.name}</b>,
@@ -89,9 +117,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     {
       label: (
-        <InputField
-          value={compute(campDetail.billableHrsQty, campDetail.billableHrsRate)}
-        />
+        <b> {compute(campDetail.billableHrsQty, campDetail.billableHrsRate)}</b>
       ),
       size: 2
     },
@@ -104,10 +130,9 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       size: 3,
       bold: true
     },
-    { label: "Fields not set", size: 2 },
-    { label: "Fields not set", size: 2 },
-    { label: "n/a", size: 2 },
-    { label: "Fields not set", size: 2 },
+    { label: <span>{renderLessServices()}</span>, size: 4 },
+    { label: " ", size: 2 },
+    { label: <b>{campaignTotal()}</b>, size: 2 },
     { label: <ShowExpand />, size: 1 }
   ];
 
@@ -141,9 +166,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       size: 2
     },
     {
-      label: (
-        <InputField value={compute(campDetail.didQty, campDetail.didRate)} />
-      ),
+      label: <b>{compute(campDetail.didQty, campDetail.didRate)}</b>,
       size: 2
     },
     { label: " ", size: 1 }
@@ -178,16 +201,18 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     {
       label: (
-        <InputField
-          value={compute(campDetail.performanceQty, campDetail.performanceRate)}
-        />
+        <b>{compute(campDetail.performanceQty, campDetail.performanceRate)}</b>
       ),
       size: 2
     },
     { label: " ", size: 1 }
   ];
   return (
-    <div style={{ borderBottom: "solid 1px #F1F1F1" }}>
+    <div
+      style={{
+        borderBottom: "solid 1px #F1F1F1"
+      }}
+    >
       <Row
         rowData={rowCollapse.includes(index) ? rowData1 : rowData1Collapse}
       />

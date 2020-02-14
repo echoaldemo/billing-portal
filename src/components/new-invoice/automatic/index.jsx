@@ -27,10 +27,10 @@ const NewInvoice = ({ handleClose }) => {
   );
 };
 
-const Automatic = () => {
+const Automatic = ({ handleClose }) => {
   return (
     <AutomaticInvoiceProvider>
-      <NewInvoice />
+      <NewInvoice handleClose={handleClose} />
     </AutomaticInvoiceProvider>
   );
 };
