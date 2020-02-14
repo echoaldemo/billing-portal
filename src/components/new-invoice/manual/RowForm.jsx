@@ -207,6 +207,39 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: " ", size: 1 }
   ];
+
+  const getSubTotal = () => {
+    const a = campDetail.billableHrsQty * campDetail.billableHrsRate;
+    const b = campDetail.didQty * campDetail.didRate;
+    const c = campDetail.performanceQty * campDetail.performanceRate;
+    return formatter.format(parseFloat(a + b + c));
+  };
+  const totalRow = [
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
+          }}
+        >
+          <span>SUBTOTAL</span>
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: 20
+            }}
+          >
+            {getSubTotal()}
+          </span>
+        </div>
+      ),
+      size: 12,
+      border: true
+    }
+  ];
+
   return (
     <div
       style={{
@@ -220,6 +253,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
         <Row rowData={rowData3} />
+        <Row rowData={totalRow} />
       </Collapse>
     </div>
   );
