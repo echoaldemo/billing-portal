@@ -42,7 +42,19 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     return newEl;
   };
   const compute = (x, y) => {
-    if (x * y) return formatter.format(x * y);
+    if (x * y)
+      return (
+        <div
+          style={{
+            width: "100%",
+            fontWeight: "bold",
+            textAlign: "right",
+            marginTop: 10
+          }}
+        >
+          {formatter.format(x * y)}
+        </div>
+      );
     else return " ";
   };
   const ShowExpand = () => {
@@ -135,13 +147,14 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={bill_rate}
+          placeholder="billing rate"
           onChange={e => handleChange(e, "bill_rate")}
         />
       ),
       size: 2
     },
     {
-      label: <InputField value={compute(billable_hours, bill_rate)} />,
+      label: compute(billable_hours, bill_rate),
       size: 2
     },
     { label: <ShowExpand />, size: 1 }
@@ -171,20 +184,27 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: "DID Billing", size: 2 },
     {
-      label: <InputField value={did} onChange={e => handleChange(e, "did")} />,
+      label: (
+        <InputField
+          placeholder="DIDs used"
+          value={did}
+          onChange={e => handleChange(e, "did")}
+        />
+      ),
       size: 2
     },
     {
       label: (
         <InputField
           value={did_rate}
+          placeholder="DID rate"
           onChange={e => handleChange(e, "did_rate")}
         />
       ),
       size: 2
     },
     {
-      label: <InputField value={compute(did, did_rate)} />,
+      label: compute(did, did_rate),
       size: 2
     },
     { label: " ", size: 1 }
@@ -199,6 +219,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={performance}
+          placeholder="performance quantity"
           onChange={e => handleChange(e, "performance")}
         />
       ),
@@ -208,13 +229,14 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={performance_rate}
+          placeholder="performance rate"
           onChange={e => handleChange(e, "performance_rate")}
         />
       ),
       size: 2
     },
     {
-      label: <InputField value={compute(performance, performance_rate)} />,
+      label: compute(performance, performance_rate),
       size: 2
     },
     { label: " ", size: 1 }

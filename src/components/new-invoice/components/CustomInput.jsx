@@ -4,6 +4,7 @@ import "./style.css";
 const InputField = ({ customWidth, ...rest }) => {
   return (
     <TryField
+      type="number"
       inputProps={{
         style: { textAlign: "right" }
       }}
