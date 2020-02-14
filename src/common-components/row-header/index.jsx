@@ -5,7 +5,8 @@ const RowHeader = ({ rowHeaderData, style }) => {
     <Grid
       container
       style={{
-        borderBottom: "solid 1px #F1F1f1"
+        borderBottom: "solid 1px #F1F1f1",
+        ...style
       }}
     >
       {rowHeaderData.map((item, i) => {
@@ -20,7 +21,7 @@ const RowHeader = ({ rowHeaderData, style }) => {
                 : "row-header-item p-normal"
             }
             style={{
-              ...style
+              ...item.style
             }}
           >
             <b>{item.label}</b>

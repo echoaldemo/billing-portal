@@ -146,20 +146,18 @@ export default function GeneralForm() {
           />
         </MuiPickersUtilsProvider>
       </Grid>
-
       <Grid item xs={2}>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center"
+            alignItems: "flex-end",
+            marginRight: 20
           }}
         >
           <span
             style={{
-              fontWeight: 500,
-              fontSize: 24,
+              fontSize: 14,
               color: "#444851"
             }}
           >
@@ -172,7 +170,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            {formatter.format(getBalance())}
+            {formatter.format(parseFloat(getBalance()))}
           </span>
         </div>
       </Grid>
