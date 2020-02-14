@@ -57,10 +57,44 @@ const handleAmt = ({ billable, performance, did }) => {
   )
 }
 
+const handleServices = ({ billable, performance, did }) => {
+  const text = []
+  if (handleAmt({ billable, performance, did })) {
+    if (billable.amt) {
+      text.push('Billable hours')
+    }
+    if (performance.amt) {
+      text.push('Performance')
+    }
+    if (did.amt) {
+      text.push('Did')
+    }
+  } else {
+    text.push('Field not set')
+  }
+  return text.join(', ')
+}
+
+const handleAdditional = (litigator, merchant) => {
+  const text = []
+  if (litigator || merchant) {
+    if (litigator) {
+      text.push('Litigator Scrubbing')
+    }
+    if (merchant) {
+      text.push('Merchant Fees')
+    }
+  } else {
+    text.push('Field not set')
+  }
+  return text.join(', ')
+}
+
 const useStyles = makeStyles({
-  tab1: { width: '30%' },
+  tab1: { width: '20%' },
   tab2: { width: '20%', textAlign: 'right' },
-  tab3: { width: '10%', textAlign: 'right' },
+  tab3: { width: '5%', textAlign: 'right' },
+  tab4: { width: '15%', textAlign: 'left' },
   right: { textAlign: 'right' }
 })
 
@@ -74,5 +108,7 @@ export {
   handleQty,
   handleRate,
   handleAmt,
+  handleServices,
+  handleAdditional,
   useStyles
 }

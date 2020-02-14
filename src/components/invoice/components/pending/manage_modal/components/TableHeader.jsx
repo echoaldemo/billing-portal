@@ -7,18 +7,21 @@ const TableHeader = () => {
   return (
     <Table aria-label="simple table">
       <TableHead>
-        <TableRow>
+        <TableRow style={{ backgroundColor: '#dce9f1' }}>
           <TableCell className={classes.tab1}>
-            <b>Item Description</b>
+            <b style={{ color: '#4C7F9E' }}>Campaigns</b>
+          </TableCell>
+          <TableCell className={classes.tab4}>
+            <b style={{ color: '#4C7F9E' }}>Services</b>
           </TableCell>
           <TableCell align="right" className={classes.tab2}>
-            <b>Quantity</b>
+            <b style={{ color: '#4C7F9E' }}>Quantity</b>
           </TableCell>
           <TableCell align="right" className={classes.tab2}>
-            <b>Rate</b>
+            <b style={{ color: '#4C7F9E' }}>Rate</b>
           </TableCell>
           <TableCell align="right" className={classes.tab2}>
-            <b>Amount</b>
+            <b style={{ color: '#4C7F9E' }}>Amount</b>
           </TableCell>
           <TableCell align="right" className={classes.tab3} />
         </TableRow>
