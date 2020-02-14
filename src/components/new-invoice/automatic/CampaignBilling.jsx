@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { RowHeader, Row, InputField } from "common-components";
 import RowForm from "./RowForm";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
 import { IconButton, Checkbox, MenuItem } from "@material-ui/core";
-
+import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
   { label: "Services", size: 2 },
@@ -12,10 +12,128 @@ const rowHeaderData = [
   { label: "Amount", size: 2, align_right: true },
   { label: " ", size: 1 }
 ];
-
 const CampaignBilling = ({ campaignDetails }) => {
+  const {
+    getTotal,
+    getTax,
+    getBalance,
+    formState,
+    setFormState,
+    mockTaxation
+  } = useContext(AutomaticInvoiceContext);
   const [rowCollapse, setRowCollapse] = useState([0]);
+  const [tax, setTax] = useState(false);
+  const handleTax = event => {
+    if (event.target.checked === false) {
+      setFormState({ ...formState, taxation: " " });
+    }
+    setTax(event.target.checked);
+  };
+  const TaxMenu = () => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end"
+        }}
+      >
+        <Checkbox
+          checked={tax}
+          disableRipple
+          disableTouchRipple
+          disableFocusRipple
+          style={{ backgroundColor: "transparent" }}
+          onChange={handleTax}
+          value="secondary"
+        />
+        &nbsp;&nbsp;
+        <InputField
+          select
+          variant="outlined"
+          label="Taxable"
+          disabled={!tax}
+          style={{ padding: 0, width: 170 }}
+          value={formState.taxation}
+          onChange={e =>
+            setFormState({ ...formState, taxation: e.target.value })
+          }
+        >
+          <MenuItem value=" " disabled>
+            Select Taxation
+          </MenuItem>
+          {mockTaxation.map(item => (
+            <MenuItem value={item.percentage}>
+              {item.name} ({item.percentage}%)
+            </MenuItem>
+          ))}
+        </InputField>
+      </div>
+    );
+  };
+  const taxRow = [
+    { label: " ", size: 3 },
+    { label: " ", size: 3 },
+    {
+      label: "",
+      size: 2
+    },
+    { label: <TaxMenu />, size: 3 },
 
+    {
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b>{getTax() ? formatter.format(getTax()) : " "}</b>
+        </div>
+      ),
+      size: 1
+    }
+  ];
+
+  const totalRow = [
+    { label: " ", size: 3 },
+    { label: " ", size: 3 },
+    {
+      label: "",
+      size: 2
+    },
+    {
+      label: <div style={{ textAlign: "right" }}>TOTAL</div>,
+      size: 3
+    },
+    {
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b>{formatter.format(getTotal())}</b>
+        </div>
+      ),
+      size: 1
+    }
+  ];
+
+  const balanceRow = [
+    { label: " ", size: 3 },
+    { label: " ", size: 3 },
+    {
+      label: "",
+      size: 2
+    },
+    {
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b>BALANCE DUE</b>
+        </div>
+      ),
+      size: 3
+    },
+    {
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b>{formatter.format(getBalance())}</b>
+        </div>
+      ),
+      size: 1
+    }
+  ];
   return (
     <>
       <div
@@ -89,95 +207,9 @@ const additionalFeesRow = [
     size: 1
   }
 ];
-
-const TaxMenu = () => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-end"
-      }}
-    >
-      <Checkbox checked={false} style={{ padding: 0 }} />
-      &nbsp;
-      <InputField
-        select
-        placeholder="Select Taxation"
-        style={{ padding: 0, width: 150 }}
-        value=" "
-        disabled
-      >
-        <MenuItem value=" " disabled>
-          Select Taxation
-        </MenuItem>
-      </InputField>
-    </div>
-  );
-};
-
-const taxRow = [
-  { label: " ", size: 3 },
-  { label: " ", size: 3 },
-  {
-    label: "",
-    size: 2
-  },
-  { label: <TaxMenu />, size: 3 },
-
-  {
-    label: (
-      <div style={{ textAlign: "right" }}>
-        <b>$0.00</b>
-      </div>
-    ),
-    size: 1
-  }
-];
-
-const totalRow = [
-  { label: " ", size: 3 },
-  { label: " ", size: 3 },
-  {
-    label: "",
-    size: 2
-  },
-  {
-    label: <div style={{ textAlign: "right" }}>TOTAL</div>,
-    size: 3
-  },
-  {
-    label: (
-      <div style={{ textAlign: "right" }}>
-        <b>$100</b>
-      </div>
-    ),
-    size: 1
-  }
-];
-
-const balanceRow = [
-  { label: " ", size: 3 },
-  { label: " ", size: 3 },
-  {
-    label: "",
-    size: 2
-  },
-  {
-    label: (
-      <div style={{ textAlign: "right" }}>
-        <b>BALANCE DUE</b>
-      </div>
-    ),
-    size: 3
-  },
-  {
-    label: (
-      <div style={{ textAlign: "right" }}>
-        <b>$100</b>
-      </div>
-    ),
-    size: 1
-  }
-];
-
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2
+});
 export default CampaignBilling;
