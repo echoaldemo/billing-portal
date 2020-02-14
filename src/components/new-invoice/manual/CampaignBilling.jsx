@@ -92,12 +92,7 @@ const CampaignBilling = ({ campaignDetails }) => {
           rowHeaderData={rowHeaderData}
           style={{ backgroundColor: "#dce9f1", color: "#4C7F9E" }}
         />
-        <div
-          style={{
-            maxHeight: 318,
-            overflow: "auto"
-          }}
-        >
+        <div className="billing-camp-rows">
           {campaignDetails.map((el, i) => {
             return (
               <RowForm
