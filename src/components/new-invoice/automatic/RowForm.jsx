@@ -1,14 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, IconButton, InputAdornment } from "@material-ui/core";
-import { InputField as TryField, Row } from "common-components";
+import { Collapse, IconButton } from "@material-ui/core";
+import { InputField as TryField, Row, TimeInput } from "common-components";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
-import styled from "styled-components";
-const BillDiv = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-items: end;
-`;
 const InputField = ({ customWidth, ...rest }) => {
   return (
     <TryField
@@ -30,36 +24,6 @@ const formatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
   minimumFractionDigits: 2
 });
-const HourMin = ({ state, handleHourMin }) => {
-  return (
-    <BillDiv>
-      <InputField
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              hr{state.hour > 1 ? "s" : ""}
-            </InputAdornment>
-          )
-        }}
-        customWidth="80%"
-        onChange={e => handleHourMin(e.target.value, "hour")}
-        value={state.hour}
-      />
-      <InputField
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              min{state.min > 1 ? "s" : ""}
-            </InputAdornment>
-          )
-        }}
-        customWidth="80%"
-        onChange={e => handleHourMin(e.target.value, "min")}
-        value={state.min}
-      />
-    </BillDiv>
-  );
-};
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const { formState, setFormState } = useContext(AutomaticInvoiceContext);
   const [timeState, setTimeState] = useState({ hour: "", min: "" });
@@ -173,14 +137,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: "Billable Hours", size: 2 },
     {
-      label: (
-        <HourMin
-          onChange={handleChange}
-          handleHourMin={hourMinToDec}
-          value={billable_hours}
-          state={timeState}
-        />
-      ),
+      label: <TimeInput handleChange={hourMinToDec} state={timeState} />,
       size: 2
     },
     {

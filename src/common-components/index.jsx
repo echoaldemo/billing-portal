@@ -9,6 +9,7 @@ import LoadingNoDialog from "./loading-modal/LoadingNoDialog";
 import NoResult from "./no-result";
 import Row from "./row";
 import RowHeader from "./row-header";
+import TimeInput from "./time-input/TimeInput";
 export {
   InputField,
   PanelHeader,
@@ -20,5 +21,6 @@ export {
   LoadingNoDialog,
   NoResult,
   Row,
-  RowHeader
+  RowHeader,
+  TimeInput
 };
