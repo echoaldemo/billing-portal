@@ -1,19 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
 import { Collapse, IconButton } from "@material-ui/core";
-import { InputField as TryField, Row, TimeInput } from "common-components";
+import { Row, TimeInput } from "common-components";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
-const InputField = ({ customWidth, ...rest }) => {
-  return (
-    <TryField
-      inputProps={{
-        style: { textAlign: "right" }
-      }}
-      style={{ width: customWidth || "60%", float: "right" }}
-      {...rest}
-    />
-  );
-};
+import InputField from "../components/CustomInput";
+
 const convertHourMin = value => {
   const hrs = parseInt(Number(value));
   const min = Math.round((Number(value) - hrs) * 60);

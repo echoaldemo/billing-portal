@@ -1,9 +1,11 @@
 import React, { useState, useContext } from "react";
-import { RowHeader, Row, InputField } from "common-components";
-import RowForm from "./RowForm";
-import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { IconButton, Checkbox, MenuItem } from "@material-ui/core";
+import { RowHeader, Row } from "common-components";
+import { Checkbox, MenuItem, Collapse } from "@material-ui/core";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
+import ExpandButton from "../manual/ExpandButtton";
+import InputField from "../components/CustomInput";
+import RowForm from "./RowForm";
+
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
   { label: "Services", size: 2 },
@@ -19,9 +21,12 @@ const CampaignBilling = ({ campaignDetails }) => {
     getBalance,
     formState,
     setFormState,
+    addFee,
+    handleAddFees,
     mockTaxation
   } = useContext(AutomaticInvoiceContext);
   const [rowCollapse, setRowCollapse] = useState([0]);
+  const [additionalCollapse, setAdditionalCollapse] = useState(false);
   const [tax, setTax] = useState(false);
   const handleTax = event => {
     if (event.target.checked === false) {
@@ -29,6 +34,138 @@ const CampaignBilling = ({ campaignDetails }) => {
     }
     setTax(event.target.checked);
   };
+  const additionalFeesCollapse = [
+    {
+      label: <b>Additional Fees</b>,
+      size: 3,
+      bold: true
+    },
+    { label: "Merchant Fees", size: 2 },
+    {
+      label: (
+        <InputField
+          value={addFee.merchant.qty}
+          name="merchant"
+          onChange={e => handleAddFees(e, "qty")}
+          placeholder="Merchant quantity"
+          inputProps={{
+            style: { textAlign: "right" }
+          }}
+        />
+      ),
+      size: 2
+    },
+    {
+      label: (
+        <InputField
+          name="merchant"
+          onChange={e => handleAddFees(e, "rate")}
+          value={addFee.merchant.rate}
+          placeholder="Rate value"
+          inputProps={{
+            style: { textAlign: "right" }
+          }}
+        />
+      ),
+      size: 2
+    },
+    {
+      label:
+        addFee.merchant.qty * addFee.merchant.rate ? (
+          <div style={{ textAlign: "right", width: "100%" }}>
+            <b>
+              {formatter.format(addFee.merchant.qty * addFee.merchant.rate)}
+            </b>
+          </div>
+        ) : (
+          " "
+        ),
+      size: 2
+    },
+    {
+      label: (
+        <ExpandButton
+          collapse={additionalCollapse}
+          setCollapse={setAdditionalCollapse}
+        />
+      ),
+      size: 1
+    }
+  ];
+  const additionalFeesRow = [
+    {
+      label: <b>Additional Fees</b>,
+      size: 3,
+      bold: true
+    },
+    { label: <i>None</i>, size: 2 },
+    { label: " ", size: 2 },
+    { label: " ", size: 2 },
+    { label: " ", size: 2 },
+    {
+      label: (
+        <ExpandButton
+          collapse={additionalCollapse}
+          setCollapse={setAdditionalCollapse}
+        />
+      ),
+      size: 1
+    }
+  ];
+  const additionalFeesRow2 = [
+    {
+      label: " ",
+      size: 3,
+      bold: true
+    },
+    { label: "Litigator Scrubbing", size: 2 },
+    {
+      label: (
+        <InputField
+          name="litigator"
+          onChange={e => handleAddFees(e, "qty")}
+          value={addFee.litigator.qty}
+          placeholder="Scrubbing quantity"
+          inputProps={{
+            style: { textAlign: "right" }
+          }}
+        />
+      ),
+      size: 2
+    },
+    {
+      label: (
+        <InputField
+          name="litigator"
+          onChange={e => handleAddFees(e, "rate")}
+          value={addFee.litigator.rate}
+          placeholder="Scrubbing rate value"
+          inputProps={{
+            style: { textAlign: "right" }
+          }}
+        />
+      ),
+      size: 2
+    },
+    {
+      label:
+        addFee.litigator.qty * addFee.litigator.rate ? (
+          <div style={{ textAlign: "right", width: "100%" }}>
+            <b>
+              {formatter.format(addFee.litigator.qty * addFee.litigator.rate)}
+            </b>
+          </div>
+        ) : (
+          " "
+        ),
+      size: 2
+    },
+
+    {
+      label: " ",
+      size: 1
+    }
+  ];
   const TaxMenu = () => {
     return (
       <div
@@ -161,15 +298,20 @@ const CampaignBilling = ({ campaignDetails }) => {
             );
           })}
         </div>
-
-        <Row
-          rowData={additionalFeesRow}
-          style={{
-            borderTop: "solid 1px #F1F1F1",
-            borderBottom: "solid 1px #F1F1F1"
-          }}
-        />
       </div>
+      <br />
+      <Row
+        rowData={
+          additionalCollapse ? additionalFeesCollapse : additionalFeesRow
+        }
+        style={{ border: "solid 1px #F1F1F1" }}
+      />
+      <Collapse in={additionalCollapse}>
+        <Row
+          rowData={additionalFeesRow2}
+          style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}
+        />
+      </Collapse>
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
         <Row rowData={totalRow} />
@@ -185,28 +327,6 @@ const CampaignBilling = ({ campaignDetails }) => {
     </>
   );
 };
-
-const additionalFeesRow = [
-  {
-    label: <b>Additional Fees</b>,
-    size: 3,
-    bold: true
-  },
-  { label: " ", size: 2 },
-  { label: " ", size: 2 },
-  { label: " ", size: 2 },
-  { label: " ", size: 2 },
-  {
-    label: (
-      <div style={{ textAlign: "right" }}>
-        <IconButton style={{ padding: 5 }}>
-          <ExpandMore />
-        </IconButton>
-      </div>
-    ),
-    size: 1
-  }
-];
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",

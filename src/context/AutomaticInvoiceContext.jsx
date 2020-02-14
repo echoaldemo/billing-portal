@@ -30,6 +30,11 @@ const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const [formState, setFormState] = useState(initialFormState);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
+  const [addFee, setAddFee] = useState({
+    litigator: { qty: "", rate: "" },
+    merchant: { qty: "", rate: "" }
+  });
+  console.log(addFee);
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-loading":
@@ -85,6 +90,12 @@ const AutomaticInvoiceProvider = ({ children }) => {
         type: "set-campaigns",
         payload: { campaigns: temp }
       });
+    });
+  };
+  const handleAddFees = (e, label) => {
+    setAddFee({
+      ...addFee,
+      [e.target.name]: { ...addFee[e.target.name], [label]: e.target.value }
     });
   };
   const getTotal = () => {
@@ -336,6 +347,9 @@ const AutomaticInvoiceProvider = ({ children }) => {
         selectedCampaign,
         setSelectedCampaign,
         handleBillingChange,
+        addFee,
+        setAddFee,
+        handleAddFees,
         getTotal,
         getTax,
         mockTaxation,
