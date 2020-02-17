@@ -10,6 +10,7 @@ import NoResult from "./no-result";
 import Row from "./row";
 import RowHeader from "./row-header";
 import TimeInput from "./time-input/TimeInput";
+import SuccessModal from "./success-modal";
 export {
   InputField,
   PanelHeader,
@@ -22,5 +23,6 @@ export {
   NoResult,
   Row,
   RowHeader,
-  TimeInput
+  TimeInput,
+  SuccessModal
 };
