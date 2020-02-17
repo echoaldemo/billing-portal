@@ -21,10 +21,20 @@ const initialFormState = {
   taxation: " "
 };
 
+const mockTaxation = [
+  { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
+  { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
+];
+
 const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const [formState, setFormState] = useState(initialFormState);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
+  const [addFee, setAddFee] = useState({
+    litigator: { qty: "", rate: "" },
+    merchant: { qty: "", rate: "" }
+  });
+  console.log(addFee);
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-loading":
@@ -82,19 +92,36 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
     });
   };
-  const getBalance = () => {
+  const handleAddFees = (e, label) => {
+    setAddFee({
+      ...addFee,
+      [e.target.name]: { ...addFee[e.target.name], [label]: e.target.value }
+    });
+  };
+  const getTotal = () => {
     let temp = formState.campaign.filter(
       item => selectedCampaign.indexOf(item.uuid) !== -1
     );
     let total = 0;
     temp.map(item => {
-      console.log(item);
       total +=
         item.content.billable_hours * item.content.bill_rate +
         item.content.performance * item.content.performance_rate +
         item.content.did * item.content.did_rate;
     });
     return total;
+  };
+  const getTax = () => {
+    const tax =
+      formState.taxation !== " "
+        ? Math.round(
+            (parseFloat(formState.taxation) / 100) * getTotal() * 100
+          ) / 100
+        : 0;
+    return tax;
+  };
+  const getBalance = () => {
+    return getTotal() + getTax();
   };
   const appendLeadingZeroes = n => {
     if (n <= 9) {
@@ -130,19 +157,13 @@ const AutomaticInvoiceProvider = ({ children }) => {
       item => selectedCampaign.indexOf(item.uuid) !== -1
     );
 
-    /* const uniqueCamp = activeCampaigns.filter(
-        item =>
-          selectInputs.campaign.indexOf(item.uuid) !== -1 && !item.new_line
-      ); */
-
     const total = getBalance();
-    const tax = null;
-    /* const taxableAmt = parseFloat(getTotal());
-      const taxPercent = parseFloat(selectInputs.taxation);
-      const tax = getTax();
-      const taxType = mockTaxation.filter(
-        item => item.percentage === taxPercent
-      )[0]; */
+    const tax = getTax();
+    const taxableAmt = parseFloat(getTotal());
+    const taxPercent = parseFloat(formState.taxation);
+    const taxType = mockTaxation.filter(
+      item => item.percentage === taxPercent
+    )[0];
     const finalLine = {
       DetailType: "SubTotalLineDetail",
       Amount: total,
@@ -159,8 +180,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
         did,
         did_rate
       } = campaign.content;
-      const count = i + 1;
-      console.log(count, campaign.name);
       if (billable_hours * bill_rate)
         temp.push({
           qty: billable_hours,
@@ -217,29 +236,29 @@ const AutomaticInvoiceProvider = ({ children }) => {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
     };
-    // if (tax !== 0) {
-    //   const taxObject = {
-    //     TxnTaxCodeRef: {
-    //       value: taxType.code
-    //     },
-    //     TotalTax: tax,
-    //     TaxLine: [
-    //       {
-    //         DetailType: "TaxLineDetail",
-    //         Amount: tax,
-    //         TaxLineDetail: {
-    //           NetAmountTaxable: taxableAmt,
-    //           TaxPercent: taxType.percentage,
-    //           TaxRateRef: {
-    //             value: taxType.taxrate
-    //           },
-    //           PercentBased: true
-    //         }
-    //       }
-    //     ]
-    //   };
-    //   data = { ...data, TxnTaxDetail: taxObject };
-    // }
+    if (tax !== 0) {
+      const taxObject = {
+        TxnTaxCodeRef: {
+          value: taxType.code
+        },
+        TotalTax: tax,
+        TaxLine: [
+          {
+            DetailType: "TaxLineDetail",
+            Amount: tax,
+            TaxLineDetail: {
+              NetAmountTaxable: taxableAmt,
+              TaxPercent: taxType.percentage,
+              TaxRateRef: {
+                value: taxType.taxrate
+              },
+              PercentBased: true
+            }
+          }
+        ]
+      };
+      data = { ...data, TxnTaxDetail: taxObject };
+    }
 
     // if (litigator.qty !== "" && litigator.rate !== "") {
     //   const litigatorObj = {
@@ -328,6 +347,12 @@ const AutomaticInvoiceProvider = ({ children }) => {
         selectedCampaign,
         setSelectedCampaign,
         handleBillingChange,
+        addFee,
+        setAddFee,
+        handleAddFees,
+        getTotal,
+        getTax,
+        mockTaxation,
         getBalance,
         createInvoice
       }}

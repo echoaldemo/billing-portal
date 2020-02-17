@@ -241,14 +241,31 @@ input[type="number"]::-webkit-outer-spin-button {
   text-align: right;
 }
 
+.inset-box-shadow {
+  box-shadow: inset 0px 8px 8px -10px #ccc, inset 0px -7px 8px -10px #ccc;
+}
 .border {
   border-top: 1px solid rgb(241, 241, 241);
   padding: 3px 12px !important;
 }
 
+.billing-camp-rows {
+  max-height: 318px;
+  overflow: auto;
+}
+
 @media screen and (min-device-width: 1440px) and (max-device-width: 1600px) {
   .tab-panel-container {
     width: 70% !important;
+  }
+  .header-text-container {
+    flex-direction: column;
+  }
+}
+
+@media screen and (min-device-width: 1024px) and (max-device-width: 1366px) {
+  .tab-panel-container {
+    width: 90% !important;
   }
   .header-text-container {
     flex-direction: column;

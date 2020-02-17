@@ -62,7 +62,6 @@ const defaultSelectInputs = {
 
 const mockTaxation = [
   { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
-  { code: "6", taxrate: "8", name: "California", percentage: 8 },
   { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
 ];
 
