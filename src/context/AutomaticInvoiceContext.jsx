@@ -304,6 +304,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
 
     data.Line.push(finalLine);
 
+    console.log(data, "data");
+
     if (type === "approve") {
       post("/api/invoice", data)
         .then(res => {

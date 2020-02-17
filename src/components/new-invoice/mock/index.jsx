@@ -127,3 +127,8 @@ export const mockCampaigns = [
     archived: false
   }
 ];
+
+export const company = uuid => {
+  const selectedCompany = mockCompanies.filter(item => item.uuid === uuid);
+  return selectedCompany[0];
+};

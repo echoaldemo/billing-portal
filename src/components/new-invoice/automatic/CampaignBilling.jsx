@@ -40,11 +40,34 @@ const CampaignBilling = ({ campaignDetails }) => {
     if (qty && rate)
       content = (
         <div style={{ textAlign: "right", width: "100%" }}>
-          <b>{formatter.format(parseFloat(qty) + parseFloat(rate))}</b>
+          <b>{formatter.format(parseFloat(qty) * parseFloat(rate))}</b>
         </div>
       );
     else content = "";
     return content;
+  };
+  const getTotalAdd = () => {
+    const { litigator, merchant } = addFee;
+    let content;
+    const total = merchant.qty * merchant.rate + litigator.qty * litigator.rate;
+    if (total)
+      content = (
+        <div style={{ textAlign: "right", width: "100%" }}>
+          <b>{formatter.format(total)}</b>
+        </div>
+      );
+    else content = "";
+    return content;
+  };
+  const getServices = () => {
+    const { litigator, merchant } = addFee;
+    let label = [];
+    if (merchant.qty * merchant.rate) label.push("Merchant Fees");
+    if (litigator.qty * litigator.rate) label.push("Litigator Scrubbing");
+
+    if (!label.length) return <i>None</i>;
+    else if (label.length === 1) return label[0];
+    else return label.join(", ");
   };
   const additionalFeesCollapse = [
     {
@@ -101,10 +124,10 @@ const CampaignBilling = ({ campaignDetails }) => {
       size: 3,
       bold: true
     },
-    { label: <i>None</i>, size: 2 },
+    { label: getServices(), size: 2 },
     { label: " ", size: 2 },
     { label: " ", size: 2 },
-    { label: " ", size: 2 },
+    { label: getTotalAdd(), size: 2 },
     {
       label: (
         <ExpandButton

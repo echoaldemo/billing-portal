@@ -271,8 +271,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
       <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
-        <Row rowData={rowData3} />
-        <Row rowData={totalRow} />
+        <Row rowData={rowData3} />-
       </Collapse>
     </div>
   );

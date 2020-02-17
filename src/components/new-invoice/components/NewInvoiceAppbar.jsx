@@ -10,11 +10,8 @@ import {
   Popover
 } from "@material-ui/core";
 import { Close, ArrowDropDown } from "@material-ui/icons";
-import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import { useStyles } from "../styles";
-export default function NewInvoiceAppbar({ handleClose, type }) {
-  /*   const { createInvoice } = useContext(AutomaticInvoiceContext);
-   */
+export default function NewInvoiceAppbar({ createFn, handleClose, type }) {
   const classes = useStyles();
   const [state, setState] = useState({
     anchorEl: null,
@@ -49,7 +46,9 @@ export default function NewInvoiceAppbar({ handleClose, type }) {
         </Typography>
         <Button
           classes={{ root: classes.save, disabled: classes.save_disabled }}
-          onClick={() => handleSave()}
+          onClick={() => {
+            createFn("draft");
+          }}
           color="inherit"
         >
           save
@@ -77,7 +76,7 @@ export default function NewInvoiceAppbar({ handleClose, type }) {
           <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
           <MenuItem
             style={{ padding: "15px 20px" }}
-            onClick={() => createInvoice("approve")}
+            onClick={() => createFn("approve")}
           >
             Save and approve
           </MenuItem>

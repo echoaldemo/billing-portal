@@ -21,6 +21,7 @@ const CampaignBilling = ({ campaignDetails }) => {
   const {
     setBillingFormState,
     billingFormState,
+    getBalance,
     additionalFee,
     setAdditionalFee,
     tax
@@ -29,17 +30,6 @@ const CampaignBilling = ({ campaignDetails }) => {
     setBillingFormState(campaignDetails);
   }, [campaignDetails]);
 
-  const getBalance = () => {
-    let total = 0;
-    billingFormState.map(item => {
-      total +=
-        item.billableHrsQty * item.billableHrsRate +
-        item.didQty * item.didRate +
-        item.performanceQty * item.performanceRate;
-    });
-
-    return total;
-  };
   const additionalFeeInitial = [
     {
       label: <b>Additional Fees</b>,
