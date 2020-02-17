@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, useState } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
 import { getMock, post } from "utils/api";
+import { te } from "date-fns/locale";
 
 const today = new Date();
 const date =
@@ -9,7 +10,8 @@ const date =
 const initialState = {
   companies: [],
   campaigns: [],
-  loading: false
+  loading: false,
+  modalType: ""
 };
 
 const initialFormState = {
@@ -21,6 +23,11 @@ const initialFormState = {
   taxation: " "
 };
 
+const initialAddFee = {
+  litigator: { qty: "", rate: "" },
+  merchant: { qty: "", rate: "" }
+};
+
 const mockTaxation = [
   { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
   { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
@@ -30,11 +37,7 @@ const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const [formState, setFormState] = useState(initialFormState);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
-  const [addFee, setAddFee] = useState({
-    litigator: { qty: "", rate: "" },
-    merchant: { qty: "", rate: "" }
-  });
-  console.log(addFee);
+  const [addFee, setAddFee] = useState(initialAddFee);
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-loading":
@@ -43,6 +46,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
         return { ...state, companies: action.payload.companies };
       case "set-campaigns":
         return { ...state, campaigns: action.payload.campaigns };
+      case "set-modal-type":
+        return { ...state, modalType: action.payload.modalType };
       default:
         return null;
     }
@@ -79,6 +84,11 @@ const AutomaticInvoiceProvider = ({ children }) => {
       dispatch({ type: "set-loading", payload: { loading: false } });
     }, 500);
   };
+  const createAnother = () => {
+    setFormState(initialFormState);
+    setAddFee(initialAddFee);
+    getGeneralData();
+  };
   const handleBillingChange = () => {
     getMock("/company1", {}).then(res => {
       let temp = formState.campaign;
@@ -86,9 +96,9 @@ const AutomaticInvoiceProvider = ({ children }) => {
         let data = res.data[Math.floor(Math.random() * 10)];
         item["content"] = data;
       });
-      dispatch({
-        type: "set-campaigns",
-        payload: { campaigns: temp }
+      setFormState({
+        ...formState,
+        campaign: temp
       });
     });
   };
@@ -130,6 +140,11 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return n;
   };
   const createInvoice = type => {
+    dispatch({
+      type: "set-modal-type",
+      payload: { modalType: "loading" }
+    });
+    const { litigator, merchant } = addFee;
     let dt = new Date(formState.billingPeriod);
 
     let startDate =
@@ -309,7 +324,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
     if (type === "approve") {
       post("/api/invoice", data)
         .then(res => {
-          console.log(res);
+          dispatch({
+            type: "set-modal-type",
+            payload: { modalType: "success" }
+          });
         })
         .catch(err => {
           console.log(err);
@@ -328,10 +346,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
       };
       post("/api/create_pending", data)
         .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
+          dispatch({
+            type: "set-modal-type",
+            payload: { modalType: "success" }
+          });
         })
         .catch(err => {
           console.log(err);
@@ -356,7 +374,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
         getTax,
         mockTaxation,
         getBalance,
-        createInvoice
+        createInvoice,
+        createAnother
       }}
     >
       {children}

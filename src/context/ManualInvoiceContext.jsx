@@ -165,6 +165,7 @@ const ManualInvoiceProvider = ({ children }) => {
       ...data,
       invoiceType: "Manual",
       company: company(formState.company),
+      campaigns: selectedCampaign,
       startDate: formatDate(new Date(date)),
       dueDate: formatDate(new Date(formState.billingPeriod)),
       total: getBalance(),

@@ -14,9 +14,7 @@ import { useStyles } from "../styles";
 export default function NewInvoiceAppbar({ createFn, handleClose, type }) {
   const classes = useStyles();
   const [state, setState] = useState({
-    anchorEl: null,
-    tax: false,
-    taxValue: ""
+    anchorEl: null
   });
   const handleShowMore = e => {
     setState({
