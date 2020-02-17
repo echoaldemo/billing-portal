@@ -256,6 +256,7 @@ export default function ItemsTable() {
                             <InputField
                               fullWidth
                               type="number"
+                              placeholder="billing rate"
                               inputProps={{
                                 min: 0,
                                 style: { textAlign: 'right' }
@@ -304,6 +305,7 @@ export default function ItemsTable() {
                             <InputField
                               fullWidth
                               type="number"
+                              placeholder="performance quantity"
                               inputProps={{
                                 min: 0,
                                 style: { textAlign: 'right' }
@@ -320,6 +322,7 @@ export default function ItemsTable() {
                             <InputField
                               fullWidth
                               type="number"
+                              placeholder="performance rate"
                               inputProps={{
                                 min: 0,
                                 style: { textAlign: 'right' }
@@ -346,6 +349,7 @@ export default function ItemsTable() {
                             <InputField
                               fullWidth
                               type="number"
+                              placeholder="DIDs used"
                               inputProps={{
                                 min: 0,
                                 style: { textAlign: 'right' }
@@ -360,6 +364,7 @@ export default function ItemsTable() {
                             <InputField
                               fullWidth
                               type="number"
+                              placeholder="DID rate"
                               inputProps={{
                                 min: 0,
                                 style: { textAlign: 'right' }
@@ -403,6 +408,7 @@ export default function ItemsTable() {
                       <InputField
                         fullWidth
                         type="number"
+                        placeholder="Scrubbing quantity"
                         inputProps={{
                           min: 0,
                           style: { textAlign: 'right' }
@@ -426,6 +432,7 @@ export default function ItemsTable() {
                       <InputField
                         fullWidth
                         type="number"
+                        placeholder="Scrubbing rate value"
                         inputProps={{
                           min: 0,
                           style: { textAlign: 'right' }
