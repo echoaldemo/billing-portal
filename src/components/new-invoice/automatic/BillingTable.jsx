@@ -18,7 +18,6 @@ const BillingTable = () => {
     <div>
       {campaignDetails.length > 0 ? (
         <React.Fragment>
-          <h3>Items</h3>
           <div style={{ paddingTop: 0 }}>
             <CampaignBilling campaignDetails={campaignDetails} />
           </div>
