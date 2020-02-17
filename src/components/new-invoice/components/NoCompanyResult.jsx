@@ -20,9 +20,9 @@ export default function NoCompanyResult() {
           textAlign: "center"
         }}
       >
-        <h3>Please select a company to create a manual invoice</h3>
+        <h3>Please select a company to create an invoice</h3>
       </div>
-      <img src={img_pic} alt="choose_pic" width={615} />
+      <img src={img_pic} alt="choose_pic" style={{ width: "62vh" }} />
     </div>
   );
 }

@@ -26,9 +26,11 @@ export default function GeneralForm() {
   } = useContext(AutomaticInvoiceContext);
 
   const filterCampaign = uuid => {
+    console.log(uuid, state.campaigns);
     const filteredCampaign = state.campaigns.filter(
       camp => camp.company === uuid
     );
+
     setSelectedCampaign(filteredCampaign.map(item => item.uuid));
     return filteredCampaign;
   };
