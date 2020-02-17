@@ -5,15 +5,24 @@ export default function NoCompanyResult() {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: 700,
-        flexDirection: "column"
+        display: "grid",
+        justifyItems: "center",
+        gridGap: 40,
+        border: "1px solid rgb(241, 241, 241)",
+        background: "#4a4a4a05"
       }}
     >
-      <h3>Please select a company to create a manual invoice</h3>
-      <img src={img_pic} alt="choose_pic" width={400} />
+      <div
+        style={{
+          backgroundColor: "rgb(220, 233, 241)",
+          color: "rgb(76, 127, 158)",
+          width: "100%",
+          textAlign: "center"
+        }}
+      >
+        <h3>Please select a company to create a manual invoice</h3>
+      </div>
+      <img src={img_pic} alt="choose_pic" width={615} />
     </div>
   );
 }

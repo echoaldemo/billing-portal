@@ -18,10 +18,14 @@ const FormContent = () => {
 };
 
 const NewInvoice = ({ handleClose }) => {
-  const { state } = useContext(AutomaticInvoiceContext);
+  const { state, createInvoice } = useContext(AutomaticInvoiceContext);
   return (
     <React.Fragment>
-      <NewInvoiceAppbar handleClose={handleClose} type="Automatic" />
+      <NewInvoiceAppbar
+        createFn={createInvoice}
+        handleClose={handleClose}
+        type="Automatic"
+      />
       {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
     </React.Fragment>
   );

@@ -10,7 +10,7 @@ const FormFields = () => {
 const BillingForm = () => {
   const { formState } = useContext(AutomaticInvoiceContext);
   return (
-    <div style={{ padding: 15, paddingTop: 0, color: "#444851" }}>
+    <div style={{ padding: "0px 15px 8px", color: "#444851" }}>
       {!formState.company ? (
         <NoCompanyResult />
       ) : (
