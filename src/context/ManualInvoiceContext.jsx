@@ -19,13 +19,29 @@ const initialFormState = {
   taxation: " "
 };
 
+const initialAdditionalFee = {
+  merchantQty: "",
+  merchantRate: "",
+  merchantTotal: "",
+
+  scrubbingQty: "",
+  scrubbingRate: "",
+  scrubbingTotal: ""
+};
+
 const ManualInvoiceContext = React.createContext();
 const ManualInvoiceProvider = ({ children }) => {
   const [formState, setFormState] = useState(initialFormState);
 
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [billingFormState, setBillingFormState] = useState([]);
+  const [additionalFee, setAdditionalFee] = useState(initialAdditionalFee);
 
+  const mockTaxation = [
+    { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
+    { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
+  ];
+  const [tax, setTax] = useState(0);
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-loading":
@@ -71,7 +87,12 @@ const ManualInvoiceProvider = ({ children }) => {
         selectedCampaign,
         setSelectedCampaign,
         billingFormState,
-        setBillingFormState
+        setBillingFormState,
+        additionalFee,
+        setAdditionalFee,
+        tax,
+        setTax,
+        mockTaxation
       }}
     >
       {children}

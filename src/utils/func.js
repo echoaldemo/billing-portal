@@ -33,4 +33,28 @@ function getSorting(order, orderBy) {
     : (a, b) => -desc(a, b, orderBy);
 }
 
-export { truncate, createData, getRandomInt, desc, stableSort, getSorting };
+const compute = (x, y) => {
+  if (x * y) return formatter.format(x * y);
+  else return "";
+};
+
+const computeInt = (x, y) => {
+  return x * y;
+};
+
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2
+});
+export {
+  truncate,
+  createData,
+  getRandomInt,
+  desc,
+  stableSort,
+  getSorting,
+  formatter,
+  compute,
+  computeInt
+};

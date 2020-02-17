@@ -13,6 +13,8 @@ export default function NoCompanyResult() {
       }}
     >
       <h3>Please select a company to create a manual invoice</h3>
+      <br />
+      <br />
       <img src={img_pic} alt="choose_pic" width={400} />
     </div>
   );

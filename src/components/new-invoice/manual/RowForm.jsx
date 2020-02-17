@@ -4,6 +4,7 @@ import { Collapse, IconButton } from "@material-ui/core";
 import { Row, TimeInput } from "common-components";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import InputField from "../components/CustomInput";
+import { compute, formatter } from "utils/func";
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const [timeState, setTimeState] = useState({ hour: "", min: "" });
 
@@ -38,10 +39,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       });
       setBillingFormState(newVal);
     }
-  };
-  const compute = (x, y) => {
-    if (x * y) return formatter.format(x * y);
-    else return "";
   };
 
   const campaignTotal = () => {
@@ -280,11 +277,5 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     </div>
   );
 };
-
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2
-});
 
 export default RowForm;

@@ -161,7 +161,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            BALANCE DUE
+            SERVICE BILL
           </span>
           <span
             style={{
