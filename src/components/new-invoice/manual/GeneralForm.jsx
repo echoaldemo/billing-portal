@@ -35,7 +35,7 @@ export default function GeneralForm() {
 
   const getBalance = () => {
     let total = 0;
-    billingFormState.map(item => {
+    billingFormState.forEach(item => {
       total +=
         item.billableHrsQty * item.billableHrsRate +
         item.didQty * item.didRate +

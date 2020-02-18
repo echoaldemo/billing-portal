@@ -1,7 +1,7 @@
+/* eslint-disable */
 import React, { useReducer, useEffect, useState } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
 import { getMock, post } from "utils/api";
-import { te } from "date-fns/locale";
 
 const today = new Date();
 const date =

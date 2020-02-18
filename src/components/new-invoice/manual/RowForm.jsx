@@ -96,6 +96,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
         item === "didQty" && services.push("DID Billing");
         item === "performanceQty" && services.push("Performance");
       }
+      return null;
     });
 
     return (
@@ -147,7 +148,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: <span>{renderLessServices()}</span>, size: 4 },
     { label: " ", size: 2 },
-    { label: <b style={{ textAlign: "right" }}>{campaignTotal()}</b>, size: 2 },
+    { label: <b>{campaignTotal()}</b>, size: 2, style: { textAlign: "right" } },
     { label: <ShowExpand />, size: 1 }
   ];
 
@@ -271,7 +272,8 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
       <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
-        <Row rowData={rowData3} />-
+        <Row rowData={rowData3} />
+        <Row rowData={totalRow} />
       </Collapse>
     </div>
   );

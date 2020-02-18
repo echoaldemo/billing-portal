@@ -1,4 +1,5 @@
-import React, { useReducer, useContext, useEffect, useState } from "react";
+/* eslint-disable */
+import React, { useReducer, useEffect, useState } from "react";
 import {
   mockCampaigns,
   mockCompanies,
@@ -11,7 +12,6 @@ import {
   additionalFeeDetails
 } from "utils/func";
 import { post } from "utils/api";
-import { StateContext } from "context/StateContext";
 const today = new Date();
 const date =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
@@ -40,12 +40,11 @@ const initialAdditionalFee = {
 const ManualInvoiceContext = React.createContext();
 const ManualInvoiceProvider = ({ children }) => {
   const [formState, setFormState] = useState(initialFormState);
-  const { getPendingInvoicesData } = useContext(StateContext);
-
+  const [createLoading, setCreateLoading] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [billingFormState, setBillingFormState] = useState([]);
   const [additionalFee, setAdditionalFee] = useState(initialAdditionalFee);
-
+  const [showCreateNew, setShowCreateNew] = useState(false);
   const mockTaxation = [
     { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
@@ -150,17 +149,18 @@ const ManualInvoiceProvider = ({ children }) => {
   };
 
   const sendToQuickbooks = data => {
+    setCreateLoading(true);
     post("/api/invoice", data)
       .then(res => {
-        console.log(res, "Res");
-        getPendingInvoicesData();
+        setCreateLoading(false);
+        setShowCreateNew(true);
       })
       .catch(err => {
         console.log(err);
       });
   };
 
-  const saveAsDraft = data => {
+  const saveAsDraft = (data, handleClose) => {
     let newData = {
       ...data,
       invoiceType: "Manual",
@@ -172,10 +172,11 @@ const ManualInvoiceProvider = ({ children }) => {
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
-
+    setCreateLoading(true);
     post("/api/create_pending", newData)
       .then(res => {
-        getPendingInvoicesData();
+        setCreateLoading(false);
+        setShowCreateNew(true);
       })
       .catch(err => {
         console.log(err);
@@ -195,17 +196,21 @@ const ManualInvoiceProvider = ({ children }) => {
     };
     switch (type) {
       case "approve":
-        sendToQuickbooks(data);
-        handleClose();
+        sendToQuickbooks(data, handleClose);
         break;
       case "draft":
-        saveAsDraft(data);
-        handleClose();
+        saveAsDraft(data, handleClose);
         break;
       default:
-        saveAsDraft(data);
+        saveAsDraft(data, handleClose);
         break;
     }
+  };
+
+  const resetAllFormState = () => {
+    setFormState(initialFormState);
+    setBillingFormState([]);
+    setSelectedCampaign([]);
   };
 
   return (
@@ -226,7 +231,11 @@ const ManualInvoiceProvider = ({ children }) => {
         setTax,
         mockTaxation,
         createManualInvoice,
-        getBalance
+        getBalance,
+        createLoading,
+        showCreateNew,
+        setShowCreateNew,
+        resetAllFormState
       }}
     >
       {children}

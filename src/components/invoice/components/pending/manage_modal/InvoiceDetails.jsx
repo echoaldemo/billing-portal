@@ -19,7 +19,7 @@ import { mockCompanies, mockCampaigns } from "../../../../new-invoice/mock";
 export default function InvoiceDetails() {
   const { state, setFormState, formState } = React.useContext(StateContext);
   const [companyId, setCompanyId] = useState("");
-  const [companies, setCompanies] = useState([]);
+  const [companies, setCompanies] = useState([]); // eslint-disable-line
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaigns, setSelectedCampaigns] = useState([]);
 
@@ -45,8 +45,8 @@ export default function InvoiceDetails() {
       <Grid container spacing={3}>
         <Grid item lg={3} xs={3} md={3}>
           <InputLabel>Company</InputLabel>
-          <b style={{ position: 'relative', top: 10 }}>
-            {formState.company ? formState.company.name : ''}
+          <b style={{ position: "relative", top: 10 }}>
+            {formState.company ? formState.company.name : ""}
           </b>
           {/* <InputField
             select
