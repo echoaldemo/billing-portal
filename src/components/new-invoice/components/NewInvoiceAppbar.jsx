@@ -11,7 +11,6 @@ import {
 } from "@material-ui/core";
 import { Close, ArrowDropDown } from "@material-ui/icons";
 import { useStyles } from "../styles";
-
 export default function NewInvoiceAppbar({
   createFn,
   handleClose,

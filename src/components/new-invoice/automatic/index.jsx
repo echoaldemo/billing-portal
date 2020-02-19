@@ -45,6 +45,7 @@ const NewInvoice = ({ handleClose }) => {
     });
     createAnother();
   };
+  const balanceDue = getBalance();
   return (
     <React.Fragment>
       <NewInvoiceAppbar
