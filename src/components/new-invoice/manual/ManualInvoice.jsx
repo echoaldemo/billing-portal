@@ -26,7 +26,9 @@ const NewInvoice = ({ handleClose }) => {
     createLoading,
     showCreateNew,
     setShowCreateNew,
-    resetAllFormState
+    resetAllFormState,
+    formState,
+    getBalance
   } = useContext(ManualInvoiceContext);
   const { getPendingInvoicesData } = useContext(StateContext);
 
@@ -37,6 +39,9 @@ const NewInvoice = ({ handleClose }) => {
           createManualInvoice(type, handleClose);
         }}
         handleClose={handleClose}
+        type="manual"
+        balance={getBalance()}
+        selectedCompany={formState.company}
       />
       {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
 
