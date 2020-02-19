@@ -7,16 +7,18 @@ import InputField from "../components/CustomInput";
 import RowForm from "./RowForm";
 
 const rowHeaderData = [
-  { label: "Campaign", size: 3 },
+  { label: "Campaign", size: 2 },
   { label: "Tax", size: 1 },
   { label: "Services", size: 2 },
   { label: "Quantity", size: 2, align_right: true },
   { label: "Rate", size: 2, align_right: true },
-  { label: "Amount", size: 2, align_right: true }
+  { label: "Amount", size: 2, align_right: true },
+  { label: " ", size: 1 }
 ];
 const CampaignBilling = ({ campaignDetails }) => {
   const {
     getTotal,
+    getTaxableSubtotal,
     getTax,
     getBalance,
     formState,
@@ -264,6 +266,27 @@ const CampaignBilling = ({ campaignDetails }) => {
     }
   ];
 
+  const totalTaxableRow = [
+    { label: " ", size: 3 },
+    { label: " ", size: 3 },
+    {
+      label: "",
+      size: 2
+    },
+    {
+      label: <div style={{ textAlign: "right" }}>Taxable subtotal</div>,
+      size: 3
+    },
+    {
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b>{formatter.format(getTaxableSubtotal())}</b>
+        </div>
+      ),
+      size: 1
+    }
+  ];
+
   const balanceRow = [
     { label: " ", size: 3 },
     { label: " ", size: 3 },
@@ -335,6 +358,10 @@ const CampaignBilling = ({ campaignDetails }) => {
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
         <Row rowData={totalRow} />
+      </div>
+
+      <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
+        <Row rowData={totalTaxableRow} />
       </div>
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>

@@ -71,6 +71,11 @@ const AutomaticInvoiceProvider = ({ children }) => {
         performance_rate: " ",
         did: " ",
         did_rate: " "
+      },
+      tax: {
+        billable_hours: true,
+        performance: true,
+        did: true
       }
     }));
     setTimeout(() => {
@@ -124,11 +129,26 @@ const AutomaticInvoiceProvider = ({ children }) => {
     });
     return total;
   };
+  const getTaxableSubtotal = () => {
+    let temp = formState.campaign.filter(
+      item => selectedCampaign.indexOf(item.uuid) !== -1
+    );
+    let total = 0;
+    temp.map(item => {
+      let a = item.content.billable_hours * item.content.bill_rate,
+        b = item.content.performance * item.content.performance_rate,
+        c = item.content.did * item.content.did_rate;
+      if (item.tax.billable_hours) total += a;
+      if (item.tax.performance) total += b;
+      if (item.tax.did) total += c;
+    });
+    return total;
+  };
   const getTax = () => {
     const tax =
       formState.taxation !== " "
         ? Math.round(
-            (parseFloat(formState.taxation) / 100) * getTotal() * 100
+            (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
           ) / 100
         : 0;
     return tax;
@@ -372,6 +392,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
         setAddFee,
         handleAddFees,
         getTotal,
+        getTaxableSubtotal,
         getTax,
         mockTaxation,
         getBalance,
