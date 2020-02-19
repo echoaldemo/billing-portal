@@ -1,10 +1,12 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import RowForm from "./RowForm";
-import { RowHeader, Row, InputField } from "common-components";
+import { RowHeader, Row } from "common-components";
+import InputField from "../components/CustomInput";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import { Checkbox, MenuItem, Collapse } from "@material-ui/core";
 import ExpandButton from "./ExpandButtton";
-import { computeInt, formatter, compute } from "utils/func";
+import { computeInt, formatter } from "utils/func";
 
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
@@ -20,7 +22,6 @@ const CampaignBilling = ({ campaignDetails }) => {
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
   const {
     setBillingFormState,
-    billingFormState,
     getBalance,
     additionalFee,
     setAdditionalFee,
@@ -94,7 +95,8 @@ const CampaignBilling = ({ campaignDetails }) => {
           )}
         </b>
       ),
-      size: 2
+      size: 2,
+      style: { textAlign: "right" }
     },
     {
       label: (
@@ -156,7 +158,8 @@ const CampaignBilling = ({ campaignDetails }) => {
           )}
         </b>
       ),
-      size: 2
+      size: 2,
+      style: { textAlign: "right" }
     },
     {
       label: " ",

@@ -52,6 +52,11 @@ input[type="number"]::-webkit-outer-spin-button {
   padding-right: 25px;
   text-align: center;
 }
+.tab-text-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .tab-item {
   display: flex;
   text-decoration: none;
@@ -265,7 +270,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 @media screen and (min-device-width: 1024px) and (max-device-width: 1366px) {
   .tab-panel-container {
-    width: 90% !important;
+    width: 90vw !important;
   }
   .header-text-container {
     flex-direction: column;
@@ -274,13 +279,34 @@ input[type="number"]::-webkit-outer-spin-button {
 
 @media screen and (min-device-width: 768px) and (max-device-width: 1024px) {
   .tab-panel-container {
-    width: 90% !important;
+    width: 90vw !important;
   }
   .header-text-container {
     flex-direction: column;
   }
 }
 
+@media screen and (min-device-width: 425px) and (max-device-width: 768px) {
+  .tab-panel-container {
+    width: 95vw !important;
+  }
+  .header-text-container {
+    flex-direction: column;
+  }
+  .tab-text {
+    padding: 15px !important;
+    transition: ease-out 1s;
+  }
+  .tab-text-name {
+    display: none;
+  }
+  .tab-icon {
+    font-size: 20px !important;
+  }
+  .tabs-container {
+    justify-content: space-evenly;
+  }
+}
 @media screen and (max-device-width: 425px) {
   .tab-panel-container {
     width: 200% !important;

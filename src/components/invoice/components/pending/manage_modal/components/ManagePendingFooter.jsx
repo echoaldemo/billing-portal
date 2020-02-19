@@ -3,6 +3,7 @@ import { Button } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
 import { patch, post } from "utils/api";
 import { handleAmt } from "../constVar";
+import { remove } from "utils/api";
 
 export default function ManagePendingFooter() {
   const {
@@ -149,7 +150,7 @@ export default function ManagePendingFooter() {
         TaxLine: [
           {
             DetailType: "TaxLineDetail",
-            Amount: tax,
+            Amount: tax.amt,
             TaxLineDetail: {
               NetAmountTaxable: totalAmt,
               TaxPercent: tax.percentage,
@@ -188,15 +189,11 @@ export default function ManagePendingFooter() {
     });
 
     post("/api/invoice", rest).then(res => {
-      patch(`/api/pending/edit/${id}`, rest)
+      remove(`/api/pending/delete/${id}`)
         .then(res => {
           dispatch({
             type: "set-update-loading",
             payload: { updateLoading: false }
-          });
-          dispatch({
-            type: "set-selected-data",
-            payload: { selectedData: res.data }
           });
         })
         .then(() => {
