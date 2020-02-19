@@ -16,6 +16,15 @@ const today = new Date();
 const date =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
+const addMonth =
+  today.getFullYear() + "-" + (today.getMonth() + 2) + "-" + today.getDate();
+const addWeek =
+  today.getFullYear() +
+  "-" +
+  (today.getMonth() + 1) +
+  "-" +
+  (today.getDate() + 7);
+
 const initialState = {
   companies: [],
   campaigns: [],
@@ -160,13 +169,16 @@ const ManualInvoiceProvider = ({ children }) => {
       });
   };
 
+  const getStartDate = () => {
+    return new Date(formState.billingType === "1" ? addMonth : addWeek);
+  };
   const saveAsDraft = (data, handleClose) => {
     let newData = {
       ...data,
       invoiceType: "Manual",
       company: company(formState.company),
       campaigns: selectedCampaign,
-      startDate: formatDate(new Date(date)),
+      startDate: formatDate(getStartDate()),
       dueDate: formatDate(new Date(formState.billingPeriod)),
       total: getBalance(),
       billingType: formState.billingType,
