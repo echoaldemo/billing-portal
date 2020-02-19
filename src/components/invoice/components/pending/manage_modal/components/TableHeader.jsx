@@ -11,9 +11,9 @@ const TableHeader = () => {
           <TableCell className={classes.tab1}>
             <b style={{ color: '#4C7F9E' }}>Campaigns</b>
           </TableCell>
-          {/* <TableCell className={classes.tab5}>
+          <TableCell className={classes.tab5}>
             <b style={{ color: '#4C7F9E' }}>Tax</b>
-          </TableCell> */}
+          </TableCell>
           <TableCell className={classes.tab4}>
             <b style={{ color: '#4C7F9E' }}>Services</b>
           </TableCell>

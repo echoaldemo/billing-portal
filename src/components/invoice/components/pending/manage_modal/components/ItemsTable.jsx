@@ -44,7 +44,8 @@ export default function ItemsTable() {
   const [collapsed, setCollapsed] = useState([])
   const [customerRef, setCustomer] = useState('')
   const [services, setServices] = useState({})
-  const [billableTime, setBillableTime] = useState({ hour: 0, min: 0 })
+  const [billableTime, setBillableTime] = useState({})
+
   const convertToHM = decimalTime => {
     decimalTime = decimalTime * 60 * 60
     const hours = Math.floor(decimalTime / (60 * 60))
@@ -54,10 +55,11 @@ export default function ItemsTable() {
   }
   const gatherData = () => {
     let array = [],
-      temp = {}
+      temp = {},
+      timeArray = []
     setCustomer(formState.company.qb_id)
 
-    formState.campaigns.forEach(camp => {
+    formState.campaigns.forEach((camp, i) => {
       let obj = {}
       let result = formState.Line.filter(line => line.Description === camp.name)
       try {
@@ -70,12 +72,20 @@ export default function ItemsTable() {
           rate: temp.SalesItemLineDetail.UnitPrice
         }
         const time = convertToHM(temp.SalesItemLineDetail.Qty)
-        setBillableTime({
+        timeArray.push({
           hour: time.hours,
           min: time.minutes
         })
+        // setBillableTime({
+        //   ...billableTime,
+        //   [i]:
+        // })
       } catch {
         obj.billable = defaultBillable
+        timeArray.push({
+          hour: 0,
+          min: 0
+        })
       }
       try {
         temp = result.find(
@@ -104,6 +114,8 @@ export default function ItemsTable() {
       obj.name = camp.name
       array.push(obj)
     })
+    console.log({ ...timeArray })
+    setBillableTime({ ...timeArray })
     try {
       temp = formState.Line.find(
         res => res.SalesItemLineDetail.ItemRef.value === '24'
@@ -197,11 +209,20 @@ export default function ItemsTable() {
     let temp = 0
 
     if (type === 'hour') {
-      temp = `${value}:${billableTime.min}`
-      setBillableTime({ ...billableTime, [type]: value })
+      temp = `${value}:${billableTime[index].min}`
+      setBillableTime({
+        ...billableTime,
+        [index]: { ...billableTime[index], [type]: value }
+      })
     } else {
-      temp = `${billableTime.hour}:${value < 59 ? value : 59}`
-      setBillableTime({ ...billableTime, [type]: value < 59 ? value : 59 })
+      temp = `${billableTime[index].hour}:${value < 59 ? value : 59}`
+      setBillableTime({
+        ...billableTime,
+        [index]: {
+          ...billableTime[index],
+          [type]: value < 59 ? value : 59
+        }
+      })
     }
     const arr = temp.split(':')
     const dec = parseInt((arr[1] / 6) * 10, 10)
@@ -239,22 +260,27 @@ export default function ItemsTable() {
                             <b>{camp.name}</b>
                           </div>
                         </TableCell>
+                        <TableCell className={classes.tab5}>
+                          {services[i] && !collapsed.includes(i) ? null : (
+                            <Checkbox />
+                          )}
+                        </TableCell>
                         <TableCell className={classes.tab4}>
                           {services[i] && !collapsed.includes(i)
                             ? handleServices(services[i])
                             : 'Billable hours'}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i) ? (
-                            ''
-                          ) : (
-                            <TimeInput
-                              state={billableTime}
-                              handleChange={handleBillableTime}
-                              index={i}
-                              disabled={!state.editManageData}
-                            />
-                          )}
+                          {services[i] && !collapsed.includes(i)
+                            ? ''
+                            : billableTime[i] && (
+                                <TimeInput
+                                  state={billableTime[i]}
+                                  handleChange={handleBillableTime}
+                                  index={i}
+                                  disabled={!state.editManageData}
+                                />
+                              )}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
                           {services[i] && !collapsed.includes(i) ? (
@@ -305,6 +331,9 @@ export default function ItemsTable() {
                       <TableBody>
                         <TableRow>
                           <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab5}>
+                            <Checkbox />
+                          </TableCell>
                           <TableCell className={classes.tab4}>
                             Performance
                           </TableCell>
@@ -351,6 +380,9 @@ export default function ItemsTable() {
                         </TableRow>
                         <TableRow>
                           <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab5}>
+                            <Checkbox />
+                          </TableCell>
                           <TableCell className={classes.tab4}>Did</TableCell>
                           <TableCell className={classes.tab2}>
                             <InputField
@@ -402,6 +434,9 @@ export default function ItemsTable() {
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <b>Additional fees</b>
                     </div>
+                  </TableCell>
+                  <TableCell className={classes.tab5}>
+                    {add && <Checkbox />}
                   </TableCell>
                   <TableCell className={classes.tab4}>
                     {add
@@ -482,6 +517,9 @@ export default function ItemsTable() {
                 <TableBody>
                   <TableRow>
                     <TableCell className={classes.tab1} />
+                    <TableCell className={classes.tab5}>
+                      <Checkbox />
+                    </TableCell>
                     <TableCell className={classes.tab4}>
                       Merchant Fees
                     </TableCell>
