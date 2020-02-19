@@ -99,7 +99,7 @@ const useStyles = makeStyles({
   tab2: { width: '15%', textAlign: 'right' },
   tab3: { width: '5%', textAlign: 'right' },
   tab4: { width: '15%', textAlign: 'left' },
-  tab5: { width: '5%' },
+  tab5: { width: '5%', textAlign: 'center' },
   right: { textAlign: 'right' }
 })
 
