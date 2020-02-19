@@ -4,6 +4,7 @@ import { Collapse, IconButton } from "@material-ui/core";
 import { Row, TimeInput } from "common-components";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import InputField from "../components/CustomInput";
+import { compute, formatter } from "utils/func";
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const [timeState, setTimeState] = useState({ hour: "", min: "" });
 
@@ -38,10 +39,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       });
       setBillingFormState(newVal);
     }
-  };
-  const compute = (x, y) => {
-    if (x * y) return formatter.format(x * y);
-    else return "";
   };
 
   const campaignTotal = () => {
@@ -99,6 +96,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
         item === "didQty" && services.push("DID Billing");
         item === "performanceQty" && services.push("Performance");
       }
+      return null;
     });
 
     return (
@@ -150,7 +148,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     },
     { label: <span>{renderLessServices()}</span>, size: 4 },
     { label: " ", size: 2 },
-    { label: <b style={{ textAlign: "right" }}>{campaignTotal()}</b>, size: 2 },
+    { label: <b>{campaignTotal()}</b>, size: 2, style: { textAlign: "right" } },
     { label: <ShowExpand />, size: 1 }
   ];
 
@@ -274,16 +272,11 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
       <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
-        <Row rowData={rowData3} />-
+        <Row rowData={rowData3} />
+        <Row rowData={totalRow} />
       </Collapse>
     </div>
   );
 };
-
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2
-});
 
 export default RowForm;

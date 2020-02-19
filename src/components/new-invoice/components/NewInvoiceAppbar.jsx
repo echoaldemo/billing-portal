@@ -44,7 +44,9 @@ export default function NewInvoiceAppbar({ createFn, handleClose, type }) {
         </Typography>
         <Button
           classes={{ root: classes.save, disabled: classes.save_disabled }}
-          onClick={createFn}
+          onClick={() => {
+            createFn("draft");
+          }}
           color="inherit"
         >
           save

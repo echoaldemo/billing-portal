@@ -1,7 +1,7 @@
+/* eslint-disable */
 import React, { useReducer, useEffect, useState } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
 import { getMock, post } from "utils/api";
-import { te } from "date-fns/locale";
 
 const today = new Date();
 const date =
@@ -109,7 +109,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
     });
   };
   const getTotal = () => {
-    const { litigator, merchant } = addFee;
     let temp = formState.campaign.filter(
       item => selectedCampaign.indexOf(item.uuid) !== -1
     );
@@ -120,7 +119,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
         item.content.performance * item.content.performance_rate +
         item.content.did * item.content.did_rate;
     });
-    total += litigator.qty * litigator.rate + merchant.qty * merchant.rate;
     return total;
   };
   const getTax = () => {
@@ -277,49 +275,51 @@ const AutomaticInvoiceProvider = ({ children }) => {
       data = { ...data, TxnTaxDetail: taxObject };
     }
 
-    if (litigator.qty !== "" && litigator.rate !== "") {
-      const litigatorObj = {
-        LineNum: lineData.length + 1,
-        Amount: litigator.qty * litigator.rate,
-        SalesItemLineDetail: {
-          TaxCodeRef: {
-            value: tax ? "TAX" : "NON"
-          },
-          ItemRef: {
-            name: "Litigator Scrubbing",
-            value: "24"
-          },
-          Qty: parseFloat(litigator.qty),
-          UnitPrice: parseFloat(litigator.rate)
-        },
-        Id: `${lineData.length + 1}`,
-        DetailType: "SalesItemLineDetail"
-      };
-      data.Line.push(litigatorObj);
-    }
+    // if (litigator.qty !== "" && litigator.rate !== "") {
+    //   const litigatorObj = {
+    //     LineNum: 4,
+    //     Amount: litigator.qty * litigator.rate,
+    //     SalesItemLineDetail: {
+    //       TaxCodeRef: {
+    //         value: tax ? "TAX" : "NON"
+    //       },
+    //       ItemRef: {
+    //         name: "Litigator Scrubbing",
+    //         value: "24"
+    //       },
+    //       Qty: parseFloat(litigator.qty),
+    //       UnitPrice: parseFloat(litigator.rate)
+    //     },
+    //     Id: "4",
+    //     DetailType: "SalesItemLineDetail"
+    //   };
+    //   data.Line.push(litigatorObj);
+    // }
 
-    if (merchant.qty !== "" && merchant.rate !== "") {
-      const merchantObj = {
-        LineNum: lineData.length + 1,
-        Amount: merchant.qty * merchant.rate,
-        SalesItemLineDetail: {
-          TaxCodeRef: {
-            value: tax ? "TAX" : "NON"
-          },
-          ItemRef: {
-            name: "Merchant Fees",
-            value: "25"
-          },
-          Qty: merchant.qty,
-          UnitPrice: merchant.rate
-        },
-        Id: `${lineData.length + 1}`,
-        DetailType: "SalesItemLineDetail"
-      };
-      data.Line.push(merchantObj);
-    }
+    // if (merchant !== "") {
+    //   const merchantObj = {
+    //     LineNum: 5,
+    //     Amount: merchant,
+    //     SalesItemLineDetail: {
+    //       TaxCodeRef: {
+    //         value: tax ? "TAX" : "NON"
+    //       },
+    //       ItemRef: {
+    //         name: "Merchant Fees",
+    //         value: "25"
+    //       },
+    //       Qty: 1,
+    //       UnitPrice: merchant
+    //     },
+    //     Id: "5",
+    //     DetailType: "SalesItemLineDetail"
+    //   };
+    //   data.Line.push(merchantObj);
+    // }
 
     data.Line.push(finalLine);
+
+    console.log(data, "data");
 
     if (type === "approve") {
       post("/api/invoice", data)

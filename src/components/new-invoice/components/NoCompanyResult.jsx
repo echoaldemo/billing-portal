@@ -22,7 +22,11 @@ export default function NoCompanyResult() {
       >
         <h3>Please select a company to create an invoice</h3>
       </div>
-      <img src={img_pic} alt="choose_pic" style={{ width: "62vh" }} />
+      <img
+        src={img_pic}
+        alt="choose_pic"
+        style={{ width: "50vh", padding: 30 }}
+      />
     </div>
   );
 }
