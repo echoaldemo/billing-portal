@@ -33,9 +33,6 @@ export default function GeneralForm() {
     setSelectedCampaign(filteredCampaign.map(item => item.uuid));
     return filteredCampaign;
   };
-
-  console.log(selectedCampaign);
-
   return (
     <div
       style={{
@@ -111,11 +108,7 @@ export default function GeneralForm() {
           label="Billing Type"
           value={formState.billingType}
           onChange={e => {
-            setFormState({
-              ...formState,
-              billingType: e.target.value
-            });
-            handleBillingChange();
+            handleBillingChange(e);
           }}
           fullWidth
           select

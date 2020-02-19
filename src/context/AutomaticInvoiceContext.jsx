@@ -91,7 +91,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     setSelectedCampaign([]);
     getGeneralData();
   };
-  const handleBillingChange = () => {
+  const handleBillingChange = e => {
     getMock("/company1", {}).then(res => {
       let temp = formState.campaign;
       temp.forEach(item => {
@@ -100,6 +100,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
       setFormState({
         ...formState,
+        billingType: e.target.value,
         campaign: temp
       });
     });
@@ -320,7 +321,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
     }
 
     data.Line.push(finalLine);
-    console.log(data);
     if (type === "approve") {
       post("/api/invoice", data)
         .then(res => {

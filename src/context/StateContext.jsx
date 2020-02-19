@@ -12,7 +12,8 @@ const initialState = {
     services: {},
     litigator: {},
     tax: {},
-    merchant: 0
+    merchant: 0,
+    customerRef: ""
   },
   editManageData: false,
   updateLoading: false

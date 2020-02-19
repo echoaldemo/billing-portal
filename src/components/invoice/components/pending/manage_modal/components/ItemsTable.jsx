@@ -250,7 +250,13 @@ export default function ItemsTable() {
                             : "Billable hours"}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i) ? null : (
+                          {services[i] && !collapsed.includes(i) ? (
+                            handleQty(services[i]) ? (
+                              handleQty(services[i]).toFixed(2)
+                            ) : (
+                              ""
+                            )
+                          ) : (
                             <TimeInput
                               state={billableTime}
                               handleChange={handleBillableTime}
@@ -261,7 +267,7 @@ export default function ItemsTable() {
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
                           {services[i] && !collapsed.includes(i) ? (
-                            handleRate(services[i])
+                            handleRate(services[i]) || ""
                           ) : (
                             <InputField
                               fullWidth
@@ -400,7 +406,7 @@ export default function ItemsTable() {
             })}
             <Table>
               <TableBody>
-                <TableRow onClick={() => setAdd(!add)}>
+                <TableRow>
                   <TableCell className={classes.tab1}>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <b>Additional fees</b>
@@ -413,7 +419,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add ? (
-                      litigator.qty || 0
+                      litigator.qty || ""
                     ) : (
                       <InputField
                         fullWidth
@@ -437,7 +443,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add ? (
-                      litigator.rate || 0
+                      litigator.rate || ""
                     ) : (
                       <InputField
                         fullWidth
@@ -466,9 +472,15 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab3}>
                     {add ? (
-                      <ExpandLess style={{ cursor: "pointer" }} />
+                      <ExpandLess
+                        onClick={() => setAdd(!add)}
+                        style={{ cursor: "pointer" }}
+                      />
                     ) : (
-                      <ExpandMore style={{ cursor: "pointer" }} />
+                      <ExpandMore
+                        onClick={() => setAdd(!add)}
+                        style={{ cursor: "pointer" }}
+                      />
                     )}
                   </TableCell>
                 </TableRow>
