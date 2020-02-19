@@ -31,7 +31,8 @@ export const useStyles = makeStyles(theme => ({
     fontWeight: 600,
     "&:hover": {
       opacity: "0.7"
-    }
+    },
+    textTransform: "none"
   },
   save_disabled: {
     borderRadius: "3px 0 0 3px",

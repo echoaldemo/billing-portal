@@ -28,7 +28,8 @@ const NewInvoice = ({ handleClose }) => {
     dispatch,
     createInvoice,
     createAnother,
-    getBalance
+    getBalance,
+    formState
   } = useContext(AutomaticInvoiceContext);
   const closeAll = () => {
     dispatch({
@@ -51,7 +52,8 @@ const NewInvoice = ({ handleClose }) => {
         createFn={createInvoice}
         handleClose={handleClose}
         type="Automatic"
-        balanceDue={balanceDue}
+        balance={getBalance()}
+        selectedCompany={formState.company}
       />
       {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
       <Dialog

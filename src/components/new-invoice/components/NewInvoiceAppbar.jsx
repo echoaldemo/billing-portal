@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   IconButton,
@@ -15,9 +15,11 @@ export default function NewInvoiceAppbar({
   createFn,
   handleClose,
   type,
-  balanceDue
+  balance,
+  selectedCompany
 }) {
   const classes = useStyles();
+
   const [state, setState] = useState({
     anchorEl: null
   });
@@ -33,6 +35,7 @@ export default function NewInvoiceAppbar({
       anchorEl: null
     });
   };
+
   return (
     <AppBar className={classes.appBar}>
       <Toolbar>
@@ -53,8 +56,9 @@ export default function NewInvoiceAppbar({
             createFn("draft");
           }}
           color="inherit"
+          disabled={!selectedCompany}
         >
-          save
+          Save
         </Button>
         <Button
           classes={{ root: classes.more }}
@@ -79,8 +83,12 @@ export default function NewInvoiceAppbar({
           <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
           <MenuItem
             style={{ padding: "15px 20px" }}
-            disabled={balanceDue ? false : true}
-            onClick={() => createFn("approve")}
+            onClick={() => {
+              if (balance !== 0) {
+                createFn("approve");
+              }
+            }}
+            disabled={balance === 0}
           >
             Save and approve
           </MenuItem>
