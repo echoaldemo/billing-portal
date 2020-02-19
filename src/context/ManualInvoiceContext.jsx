@@ -54,6 +54,7 @@ const ManualInvoiceProvider = ({ children }) => {
   const [billingFormState, setBillingFormState] = useState([]);
   const [additionalFee, setAdditionalFee] = useState(initialAdditionalFee);
   const [showCreateNew, setShowCreateNew] = useState(false);
+  const [campaignDetails, setCampaignDetails] = useState([]);
   const mockTaxation = [
     { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
@@ -71,6 +72,7 @@ const ManualInvoiceProvider = ({ children }) => {
 
     return total;
   };
+
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-loading":
@@ -138,7 +140,7 @@ const ManualInvoiceProvider = ({ children }) => {
             TaxCodeRef: { value: tax ? "TAX" : "NON" },
             ItemRef: { name: detail.name, value: detail.value },
             Qty: additionalFee[qty],
-            UnitPrice: additionalFee[rate]
+            UnitPrice: parseFloat(additionalFee[rate])
           },
           DetailType: "SalesItemLineDetail",
           Description: detail.name,
@@ -172,18 +174,19 @@ const ManualInvoiceProvider = ({ children }) => {
   const getStartDate = () => {
     return new Date(formState.billingType === "1" ? addMonth : addWeek);
   };
-  const saveAsDraft = (data, handleClose) => {
+  const saveAsDraft = data => {
     let newData = {
       ...data,
       invoiceType: "Manual",
       company: company(formState.company),
-      campaigns: selectedCampaign,
+      campaigns: campaignDetails,
       startDate: formatDate(getStartDate()),
       dueDate: formatDate(new Date(formState.billingPeriod)),
       total: getBalance(),
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
+
     setCreateLoading(true);
     post("/api/create_pending", newData)
       .then(res => {
@@ -206,6 +209,7 @@ const ManualInvoiceProvider = ({ children }) => {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
     };
+
     switch (type) {
       case "approve":
         sendToQuickbooks(data, handleClose);
@@ -247,7 +251,9 @@ const ManualInvoiceProvider = ({ children }) => {
         createLoading,
         showCreateNew,
         setShowCreateNew,
-        resetAllFormState
+        resetAllFormState,
+        campaignDetails,
+        setCampaignDetails
       }}
     >
       {children}
