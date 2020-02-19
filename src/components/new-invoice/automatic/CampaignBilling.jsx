@@ -8,11 +8,11 @@ import RowForm from "./RowForm";
 
 const rowHeaderData = [
   { label: "Campaign", size: 3 },
+  { label: "Tax", size: 1 },
   { label: "Services", size: 2 },
   { label: "Quantity", size: 2, align_right: true },
   { label: "Rate", size: 2, align_right: true },
-  { label: "Amount", size: 2, align_right: true },
-  { label: " ", size: 1 }
+  { label: "Amount", size: 2, align_right: true }
 ];
 const CampaignBilling = ({ campaignDetails }) => {
   const {
