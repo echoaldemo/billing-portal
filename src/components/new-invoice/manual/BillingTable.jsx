@@ -7,17 +7,25 @@ const BillingTable = () => {
     billableHrsQty: "",
     billableHrsRate: "",
     billableHrsTotalAmount: "",
+    billableHrsTaxed: true,
 
     didQty: "",
     didRate: "",
     didTotalAmount: "",
+    didTaxed: true,
 
     performanceQty: "",
     performanceRate: "",
-    performanceTotalAmount: ""
+    performanceTotalAmount: "",
+    performanceTaxed: true
   };
-  const { selectedCampaign, state } = useContext(ManualInvoiceContext);
-  const [campaignDetails, setCampaignDetails] = useState([]);
+  const {
+    selectedCampaign,
+    state,
+    campaignDetails,
+    setCampaignDetails
+  } = useContext(ManualInvoiceContext);
+
   const getAllCampaignDetails = () => {
     const campaignsDetails = selectedCampaign.map(uuid => {
       let filteredDetails = state.campaigns.filter(item => item.uuid === uuid);

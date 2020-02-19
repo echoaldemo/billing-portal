@@ -1,16 +1,19 @@
 import React, { useContext, useState } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
 import { Collapse, IconButton } from "@material-ui/core";
-import { Row, TimeInput } from "common-components";
+import { Row, TimeInput, CustomCheckbox as Checkbox } from "common-components";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import InputField from "../components/CustomInput";
 import { compute, formatter } from "utils/func";
+
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const [timeState, setTimeState] = useState({ hour: "", min: "" });
 
-  const { billingFormState, setBillingFormState } = useContext(
+  const { billingFormState, setBillingFormState, tax } = useContext(
     ManualInvoiceContext
   );
+
+  const isTaxed = tax === 0;
   const removeElement = () => {
     const newEl = rowCollapse.filter(item => item !== index);
     return newEl;
@@ -81,7 +84,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const handleTextField = (e, type) => {
     const newVal = billingFormState.map((item, i) => {
       if (i === index) {
-        item[type] = e.target.value;
+        item[type] = e.target.value ? e.target.value : e.target.checked;
       }
       return item;
     });
@@ -109,8 +112,20 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const rowData1 = [
     {
       label: <b>{campDetail.name}</b>,
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          checked={isTaxed ? false : campDetail.billableHrsTaxed}
+          onChange={e => {
+            handleTextField(e, "billableHrsTaxed");
+          }}
+          disabled={isTaxed}
+        />
+      ),
+      size: 1
     },
     { label: "Billable Hours", size: 2 },
     {
@@ -155,8 +170,20 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const rowData2 = [
     {
       label: " ",
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          checked={isTaxed ? false : campDetail.didTaxed}
+          onChange={e => {
+            handleTextField(e, "didTaxed");
+          }}
+          disabled={isTaxed}
+        />
+      ),
+      size: 1
     },
     { label: "DID Billing", size: 2 },
     {
@@ -191,7 +218,17 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const rowData3 = [
     {
       label: " ",
-      size: 3
+      size: 2
+    },
+    {
+      label: (
+        <Checkbox
+          checked={isTaxed ? false : campDetail.performanceTaxed}
+          onChange={e => handleTextField(e, "performanceTaxed")}
+          disabled={isTaxed}
+        />
+      ),
+      size: 1
     },
     { label: "Performance", size: 2 },
     {

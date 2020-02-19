@@ -11,6 +11,7 @@ import Row from "./row";
 import RowHeader from "./row-header";
 import TimeInput from "./time-input/TimeInput";
 import SuccessModal from "./success-modal";
+import CustomCheckbox from "./custom-checkbox";
 export {
   InputField,
   PanelHeader,
@@ -24,5 +25,6 @@ export {
   Row,
   RowHeader,
   TimeInput,
-  SuccessModal
+  SuccessModal,
+  CustomCheckbox
 };
