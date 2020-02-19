@@ -91,6 +91,7 @@ const Text = styled.div`
   text-align: center;
   color: #7c8a97;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  text-transform: uppercase;
 `;
 const P = styled.p`
   color: #7c8a97;

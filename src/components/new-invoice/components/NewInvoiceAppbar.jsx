@@ -11,7 +11,12 @@ import {
 } from "@material-ui/core";
 import { Close, ArrowDropDown } from "@material-ui/icons";
 import { useStyles } from "../styles";
-export default function NewInvoiceAppbar({ createFn, handleClose, type }) {
+export default function NewInvoiceAppbar({
+  createFn,
+  handleClose,
+  type,
+  balanceDue
+}) {
   const classes = useStyles();
   const [state, setState] = useState({
     anchorEl: null
@@ -74,6 +79,7 @@ export default function NewInvoiceAppbar({ createFn, handleClose, type }) {
           <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
           <MenuItem
             style={{ padding: "15px 20px" }}
+            disabled={balanceDue ? false : true}
             onClick={() => createFn("approve")}
           >
             Save and approve

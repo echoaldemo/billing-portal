@@ -1,7 +1,7 @@
-/* eslint-disable */
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useState, useContext } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
 import { getMock, post } from "utils/api";
+import { StateContext } from "context/StateContext";
 
 const today = new Date();
 const date =
@@ -35,6 +35,7 @@ const mockTaxation = [
 
 const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
+  const { getPendingInvoicesData } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [addFee, setAddFee] = useState(initialAddFee);
@@ -87,9 +88,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
   const createAnother = () => {
     setFormState(initialFormState);
     setAddFee(initialAddFee);
+    setSelectedCampaign([]);
     getGeneralData();
   };
-  const handleBillingChange = () => {
+  const handleBillingChange = e => {
     getMock("/company1", {}).then(res => {
       let temp = formState.campaign;
       temp.forEach(item => {
@@ -98,6 +100,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
       setFormState({
         ...formState,
+        billingType: e.target.value,
         campaign: temp
       });
     });
@@ -275,52 +278,49 @@ const AutomaticInvoiceProvider = ({ children }) => {
       data = { ...data, TxnTaxDetail: taxObject };
     }
 
-    // if (litigator.qty !== "" && litigator.rate !== "") {
-    //   const litigatorObj = {
-    //     LineNum: 4,
-    //     Amount: litigator.qty * litigator.rate,
-    //     SalesItemLineDetail: {
-    //       TaxCodeRef: {
-    //         value: tax ? "TAX" : "NON"
-    //       },
-    //       ItemRef: {
-    //         name: "Litigator Scrubbing",
-    //         value: "24"
-    //       },
-    //       Qty: parseFloat(litigator.qty),
-    //       UnitPrice: parseFloat(litigator.rate)
-    //     },
-    //     Id: "4",
-    //     DetailType: "SalesItemLineDetail"
-    //   };
-    //   data.Line.push(litigatorObj);
-    // }
+    if (litigator.qty !== "" && litigator.rate !== "") {
+      const litigatorObj = {
+        LineNum: lineData.length + 1,
+        Amount: litigator.qty * litigator.rate,
+        SalesItemLineDetail: {
+          TaxCodeRef: {
+            value: tax ? "TAX" : "NON"
+          },
+          ItemRef: {
+            name: "Litigator Scrubbing",
+            value: "24"
+          },
+          Qty: parseFloat(litigator.qty),
+          UnitPrice: parseFloat(litigator.rate)
+        },
+        Id: `${lineData.length + 1}`,
+        DetailType: "SalesItemLineDetail"
+      };
+      data.Line.push(litigatorObj);
+    }
 
-    // if (merchant !== "") {
-    //   const merchantObj = {
-    //     LineNum: 5,
-    //     Amount: merchant,
-    //     SalesItemLineDetail: {
-    //       TaxCodeRef: {
-    //         value: tax ? "TAX" : "NON"
-    //       },
-    //       ItemRef: {
-    //         name: "Merchant Fees",
-    //         value: "25"
-    //       },
-    //       Qty: 1,
-    //       UnitPrice: merchant
-    //     },
-    //     Id: "5",
-    //     DetailType: "SalesItemLineDetail"
-    //   };
-    //   data.Line.push(merchantObj);
-    // }
+    if (merchant.qty !== "" && merchant.rate !== "") {
+      const merchantObj = {
+        LineNum: lineData.length + 1,
+        Amount: merchant.qty * merchant.rate,
+        SalesItemLineDetail: {
+          TaxCodeRef: {
+            value: tax ? "TAX" : "NON"
+          },
+          ItemRef: {
+            name: "Merchant Fees",
+            value: "25"
+          },
+          Qty: merchant.qty,
+          UnitPrice: merchant.rate
+        },
+        Id: `${lineData.length + 1}`,
+        DetailType: "SalesItemLineDetail"
+      };
+      data.Line.push(merchantObj);
+    }
 
     data.Line.push(finalLine);
-
-    console.log(data, "data");
-
     if (type === "approve") {
       post("/api/invoice", data)
         .then(res => {
@@ -350,6 +350,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
             type: "set-modal-type",
             payload: { modalType: "success" }
           });
+          getPendingInvoicesData();
         })
         .catch(err => {
           console.log(err);
