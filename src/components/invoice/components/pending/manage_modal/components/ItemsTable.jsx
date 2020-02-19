@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -9,10 +9,10 @@ import {
   InputAdornment,
   MenuItem,
   Checkbox
-} from '@material-ui/core'
-import { ExpandMore, ExpandLess } from '@material-ui/icons'
-import { InputField, TimeInput } from 'common-components'
-import { StateContext } from 'context/StateContext'
+} from "@material-ui/core";
+import { ExpandMore, ExpandLess } from "@material-ui/icons";
+import { InputField, TimeInput } from "common-components";
+import { StateContext } from "context/StateContext";
 import {
   defaultBillable,
   defaultPerformance,
@@ -26,150 +26,163 @@ import {
   handleAdditional,
   useStyles,
   mockTaxation
-} from '../constVar'
-import TableHeader from './TableHeader'
+} from "../constVar";
+import TableHeader from "./TableHeader";
 
 export default function ItemsTable() {
-  const classes = useStyles()
-  const { state, dispatch, formState } = useContext(StateContext)
-  const [litigator, setLitiGator] = useState(defaultLitigator)
-  const [merchant, setMerchant] = useState(0)
-  const [total, setTotal] = useState(0)
-  const [qty, setQty] = useState(0)
-  const [add, setAdd] = useState(false)
-  const [editTax, setEditTax] = useState(false)
+  const classes = useStyles();
+  const { state, dispatch, formState } = useContext(StateContext);
+  const [litigator, setLitiGator] = useState(defaultLitigator);
+  const [merchant, setMerchant] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [qty, setQty] = useState(0);
+  const [add, setAdd] = useState(false);
+  const [editTax, setEditTax] = useState(false);
   const [tax, setTax] = useState({
     percentage: 0,
     amt: 0,
-    code: ''
-  })
-  const [collapsed, setCollapsed] = useState([])
-  const [services, setServices] = useState({})
-  const [billableTime, setBillableTime] = useState({ hour: 0, min: 0 })
-
+    code: "",
+    taxRef: ""
+  });
+  const [collapsed, setCollapsed] = useState([]);
+  const [customerRef, setCustomer] = useState("");
+  const [services, setServices] = useState({});
+  const [billableTime, setBillableTime] = useState({ hour: 0, min: 0 });
+  const convertToHM = decimalTime => {
+    decimalTime = decimalTime * 60 * 60;
+    const hours = Math.floor(decimalTime / (60 * 60));
+    decimalTime = decimalTime - hours * 60 * 60;
+    const minutes = Math.floor(decimalTime / 60);
+    return { hours, minutes };
+  };
   const gatherData = () => {
     let array = [],
-      temp = {}
+      temp = {};
+    setCustomer(formState.company.qb_id);
+
     formState.campaigns.forEach(camp => {
-      let obj = {}
-      let result = formState.Line.filter(line => line.Description === camp.name)
+      let obj = {};
+      let result = formState.Line.filter(
+        line => line.Description === camp.name
+      );
       try {
         temp = result.find(
-          res => res.SalesItemLineDetail.ItemRef.value === '21'
-        )
+          res => res.SalesItemLineDetail.ItemRef.value === "21"
+        );
         obj.billable = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
           rate: temp.SalesItemLineDetail.UnitPrice
-        }
+        };
+        const time = convertToHM(temp.SalesItemLineDetail.Qty);
         setBillableTime({
-          hour: Math.floor(temp.SalesItemLineDetail.Qty),
-          min:
-            (temp.SalesItemLineDetail.Qty -
-              Math.floor(temp.SalesItemLineDetail.Qty)) *
-            60
-        })
+          hour: time.hours,
+          min: time.minutes
+        });
       } catch {
-        obj.billable = defaultBillable
+        obj.billable = defaultBillable;
       }
       try {
         temp = result.find(
-          res => res.SalesItemLineDetail.ItemRef.value === '22'
-        )
+          res => res.SalesItemLineDetail.ItemRef.value === "22"
+        );
         obj.performance = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
           rate: temp.SalesItemLineDetail.UnitPrice
-        }
+        };
       } catch {
-        obj.performance = defaultPerformance
+        obj.performance = defaultPerformance;
       }
       try {
         temp = result.find(
-          res => res.SalesItemLineDetail.ItemRef.value === '23'
-        )
+          res => res.SalesItemLineDetail.ItemRef.value === "23"
+        );
         obj.did = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
           rate: temp.SalesItemLineDetail.UnitPrice
-        }
+        };
       } catch {
-        obj.did = defaultDid
+        obj.did = defaultDid;
       }
-      obj.name = camp.name
-      array.push(obj)
-    })
+      obj.name = camp.name;
+      array.push(obj);
+    });
     try {
       temp = formState.Line.find(
-        res => res.SalesItemLineDetail.ItemRef.value === '24'
-      )
+        res => res.SalesItemLineDetail.ItemRef.value === "24"
+      );
       setLitiGator({
         amt: temp.Amount,
         qty: temp.SalesItemLineDetail.Qty,
         rate: temp.SalesItemLineDetail.UnitPrice
-      })
+      });
     } catch {
-      setLitiGator(defaultLitigator)
+      setLitiGator(defaultLitigator);
     }
     try {
       temp = formState.Line.find(
-        res => res.SalesItemLineDetail.ItemRef.value === '25'
-      )
-      setMerchant(temp.Amount)
+        res => res.SalesItemLineDetail.ItemRef.value === "25"
+      );
+      setMerchant(temp.Amount);
     } catch {
-      setMerchant(0)
+      setMerchant(0);
     }
     try {
       setTax({
         ...tax,
         percentage: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxPercent,
-        code: formState.TxnTaxDetail.TxnTaxCodeRef.value
-      })
-      setEditTax(true)
+        code: formState.TxnTaxDetail.TxnTaxCodeRef.value,
+        taxRef: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxRateRef.value
+      });
+      setEditTax(true);
     } catch {
-      setTax({ ...tax, percentage: 0, code: '' })
+      setTax({ ...tax, percentage: 0, code: "" });
     }
-    setServices({ ...array })
-  }
+    setServices({ ...array });
+  };
 
   useEffect(() => {
     if (Object.keys(formState).length > 0) {
-      setTotal(formState.Line[formState.Line.length - 1].Amount)
+      setTotal(formState.Line[formState.Line.length - 1].Amount);
       if (formState.campaigns.length === 1) {
-        setCollapsed([...collapsed, 0])
+        setCollapsed([...collapsed, 0]);
       }
-      gatherData()
+      gatherData();
     }
     return () => {
-      setCollapsed([])
-    }
+      setCollapsed([]);
+    };
     // eslint-disable-next-line
-  }, [formState])
+  }, [formState]);
 
   useEffect(() => {
     let totalAmt = 0,
-      totalQty = 0
+      totalQty = 0;
     if (Object.keys(services).length !== 0) {
       for (let i = 0; i < Object.keys(services).length; i++) {
-        totalAmt += handleAmt(services[i])
-        totalQty += handleQty(services[i])
+        totalAmt += handleAmt(services[i]);
+        totalQty += handleQty(services[i]);
       }
-      totalAmt += parseFloat(litigator.amt) + parseFloat(merchant)
-      totalQty += parseFloat(litigator.qty ? litigator.qty : 0)
+      totalAmt += parseFloat(litigator.amt) + parseFloat(merchant);
+      totalQty += parseFloat(litigator.qty ? litigator.qty : 0);
       if (tax.percentage !== 0) {
-        let taxx = totalAmt * (tax.percentage / 100) - tax.percentage / 100
-        totalAmt += taxx
-        setTax({ ...tax, amt: taxx })
+        let taxx = Math.round(totalAmt * (tax.percentage / 100) * 100) / 100;
+        totalAmt += taxx;
+        setTax({ ...tax, amt: taxx });
       }
       dispatch({
-        type: 'set-item-table',
-        payload: { itemTable: { services, litigator, merchant, tax } }
-      })
-      setTotal(totalAmt)
-      setQty(totalQty)
+        type: "set-item-table",
+        payload: {
+          itemTable: { services, litigator, merchant, tax, customerRef }
+        }
+      });
+      setTotal(totalAmt);
+      setQty(totalQty);
     }
     // eslint-disable-next-line
-  }, [services, litigator, merchant, tax.percentage])
+  }, [services, litigator, merchant, tax.percentage]);
 
   const handleChange = (e, i, change, unchange) => {
     setServices({
@@ -182,42 +195,41 @@ export default function ItemsTable() {
           amt: e.target.value * services[i][e.target.name][unchange]
         }
       }
-    })
-  }
+    });
+  };
 
   const handleBillableTime = (value, type, index) => {
-    let temp = 0
+    let temp = 0;
 
-    if (type === 'hour') {
-      temp = `${value}:${billableTime.min}`
-      setBillableTime({ ...billableTime, [type]: value })
+    if (type === "hour") {
+      temp = `${value}:${billableTime.min}`;
+      setBillableTime({ ...billableTime, [type]: value });
     } else {
-      temp = `${billableTime.hour}:${value < 59 ? value : 59}`
-      setBillableTime({ ...billableTime, [type]: value < 59 ? value : 59 })
+      temp = `${billableTime.hour}:${value < 59 ? value : 59}`;
+      setBillableTime({ ...billableTime, [type]: value < 59 ? value : 59 });
     }
-    const arr = temp.split(':')
-    const dec = parseInt((arr[1] / 6) * 10, 10)
+    const arr = temp.split(":");
+    const dec = parseInt((arr[1] / 6) * 10, 10);
     const final =
-      parseFloat(parseInt(arr[0], 10) + '.' + (dec < 10 ? '0' : '') + dec) || 0
+      parseFloat(parseInt(arr[0], 10) + "." + (dec < 10 ? "0" : "") + dec) || 0;
 
-    const obj = { target: { name: 'billable', value: final } }
+    const obj = { target: { name: "billable", value: final } };
 
-    handleChange(obj, index, 'qty', 'rate')
-  }
+    handleChange(obj, index, "qty", "rate");
+  };
 
   const handleCollapse = index => {
     if (collapsed.includes(index)) {
-      setCollapsed(collapsed.filter(c => c !== index))
+      setCollapsed(collapsed.filter(c => c !== index));
     } else {
-      setCollapsed([...collapsed, index])
+      setCollapsed([...collapsed, index]);
     }
-  }
-
+  };
   return (
     <React.Fragment>
       {Object.keys(formState).length > 0 ? (
         <>
-          <TableContainer style={{ border: 'solid 1px #F1f1f1' }}>
+          <TableContainer style={{ border: "solid 1px #F1f1f1" }}>
             <TableHeader />
             {formState.campaigns.map((camp, i) => {
               return (
@@ -227,7 +239,7 @@ export default function ItemsTable() {
                       <TableRow>
                         <TableCell className={classes.tab1}>
                           <div
-                            style={{ display: 'flex', alignItems: 'center' }}
+                            style={{ display: "flex", alignItems: "center" }}
                           >
                             <b>{camp.name}</b>
                           </div>
@@ -235,12 +247,10 @@ export default function ItemsTable() {
                         <TableCell className={classes.tab4}>
                           {services[i] && !collapsed.includes(i)
                             ? handleServices(services[i])
-                            : 'Billable hours'}
+                            : "Billable hours"}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i) ? (
-                            handleQty(services[i]).toFixed(2)
-                          ) : (
+                          {services[i] && !collapsed.includes(i) ? null : (
                             <TimeInput
                               state={billableTime}
                               handleChange={handleBillableTime}
@@ -259,14 +269,14 @@ export default function ItemsTable() {
                               placeholder="billing rate"
                               inputProps={{
                                 min: 0,
-                                style: { textAlign: 'right' }
+                                style: { textAlign: "right" }
                               }}
                               name="billable"
                               disabled={!state.editManageData}
                               value={
-                                services[i] ? services[i].billable.rate : ''
+                                services[i] ? services[i].billable.rate : ""
                               }
-                              onChange={e => handleChange(e, i, 'rate', 'qty')}
+                              onChange={e => handleChange(e, i, "rate", "qty")}
                             />
                           )}
                         </TableCell>
@@ -274,19 +284,19 @@ export default function ItemsTable() {
                           {services[i] && !collapsed.includes(i)
                             ? formatter.format(handleAmt(services[i]))
                             : formatter.format(
-                                services[i] ? services[i].billable.amt : ''
+                                services[i] ? services[i].billable.amt : ""
                               )}
                         </TableCell>
                         <TableCell className={classes.tab3}>
                           {collapsed.includes(i) ? (
                             <ExpandLess
                               onClick={() => handleCollapse(i)}
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: "pointer" }}
                             />
                           ) : (
                             <ExpandMore
                               onClick={() => handleCollapse(i)}
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: "pointer" }}
                             />
                           )}
                         </TableCell>
@@ -308,14 +318,14 @@ export default function ItemsTable() {
                               placeholder="performance quantity"
                               inputProps={{
                                 min: 0,
-                                style: { textAlign: 'right' }
+                                style: { textAlign: "right" }
                               }}
                               name="performance"
                               disabled={!state.editManageData}
                               value={
-                                services[i] ? services[i].performance.qty : ''
+                                services[i] ? services[i].performance.qty : ""
                               }
-                              onChange={e => handleChange(e, i, 'qty', 'rate')}
+                              onChange={e => handleChange(e, i, "qty", "rate")}
                             />
                           </TableCell>
                           <TableCell className={classes.tab2}>
@@ -325,19 +335,19 @@ export default function ItemsTable() {
                               placeholder="performance rate"
                               inputProps={{
                                 min: 0,
-                                style: { textAlign: 'right' }
+                                style: { textAlign: "right" }
                               }}
                               name="performance"
                               disabled={!state.editManageData}
                               value={
-                                services[i] ? services[i].performance.rate : ''
+                                services[i] ? services[i].performance.rate : ""
                               }
-                              onChange={e => handleChange(e, i, 'rate', 'qty')}
+                              onChange={e => handleChange(e, i, "rate", "qty")}
                             />
                           </TableCell>
                           <TableCell className={classes.tab2}>
                             {formatter.format(
-                              services[i] ? services[i].performance.amt : ''
+                              services[i] ? services[i].performance.amt : ""
                             )}
                           </TableCell>
                           <TableCell />
@@ -352,12 +362,12 @@ export default function ItemsTable() {
                               placeholder="DIDs used"
                               inputProps={{
                                 min: 0,
-                                style: { textAlign: 'right' }
+                                style: { textAlign: "right" }
                               }}
                               name="did"
                               disabled={!state.editManageData}
-                              value={services[i] ? services[i].did.qty : ''}
-                              onChange={e => handleChange(e, i, 'qty', 'rate')}
+                              value={services[i] ? services[i].did.qty : ""}
+                              onChange={e => handleChange(e, i, "qty", "rate")}
                             />
                           </TableCell>
                           <TableCell className={classes.tab2}>
@@ -367,17 +377,17 @@ export default function ItemsTable() {
                               placeholder="DID rate"
                               inputProps={{
                                 min: 0,
-                                style: { textAlign: 'right' }
+                                style: { textAlign: "right" }
                               }}
                               name="did"
                               disabled={!state.editManageData}
-                              value={services[i] ? services[i].did.rate : ''}
-                              onChange={e => handleChange(e, i, 'rate', 'qty')}
+                              value={services[i] ? services[i].did.rate : ""}
+                              onChange={e => handleChange(e, i, "rate", "qty")}
                             />
                           </TableCell>
                           <TableCell className={classes.tab2}>
                             {formatter.format(
-                              services[i] ? services[i].did.amt : ''
+                              services[i] ? services[i].did.amt : ""
                             )}
                           </TableCell>
                           <TableCell className={classes.tab3} />
@@ -386,19 +396,19 @@ export default function ItemsTable() {
                     </Table>
                   </Collapse>
                 </div>
-              )
+              );
             })}
             <Table>
               <TableBody>
                 <TableRow onClick={() => setAdd(!add)}>
                   <TableCell className={classes.tab1}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
                       <b>Additional fees</b>
                     </div>
                   </TableCell>
                   <TableCell className={classes.tab4}>
                     {add
-                      ? 'Litigator Scrubbing'
+                      ? "Litigator Scrubbing"
                       : handleAdditional(litigator.amt, merchant)}
                   </TableCell>
                   <TableCell className={classes.tab2}>
@@ -411,7 +421,7 @@ export default function ItemsTable() {
                         placeholder="Scrubbing quantity"
                         inputProps={{
                           min: 0,
-                          style: { textAlign: 'right' }
+                          style: { textAlign: "right" }
                         }}
                         disabled={!state.editManageData}
                         value={litigator.qty}
@@ -435,7 +445,7 @@ export default function ItemsTable() {
                         placeholder="Scrubbing rate value"
                         inputProps={{
                           min: 0,
-                          style: { textAlign: 'right' }
+                          style: { textAlign: "right" }
                         }}
                         disabled={!state.editManageData}
                         value={litigator.rate}
@@ -456,9 +466,9 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab3}>
                     {add ? (
-                      <ExpandLess style={{ cursor: 'pointer' }} />
+                      <ExpandLess style={{ cursor: "pointer" }} />
                     ) : (
-                      <ExpandMore style={{ cursor: 'pointer' }} />
+                      <ExpandMore style={{ cursor: "pointer" }} />
                     )}
                   </TableCell>
                 </TableRow>
@@ -480,10 +490,10 @@ export default function ItemsTable() {
                         type="number"
                         inputProps={{
                           min: 0,
-                          style: { textAlign: 'right' }
+                          style: { textAlign: "right" }
                         }}
                         disabled={!state.editManageData}
-                        value={merchant || ''}
+                        value={merchant || ""}
                         onChange={e =>
                           setMerchant(parseFloat(e.target.value) || 0)
                         }
@@ -507,17 +517,17 @@ export default function ItemsTable() {
                   <TableCell className={classes.tab2}>
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end'
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-end"
                       }}
                     >
                       <Checkbox
                         checked={editTax}
                         onChange={e => {
-                          setEditTax(e.target.checked)
+                          setEditTax(e.target.checked);
                           if (!e.target.checked) {
-                            setTax({ percentage: 0, amt: 0, code: '' })
+                            setTax({ percentage: 0, amt: 0, code: "" });
                           }
                         }}
                         disabled={!state.editManageData}
@@ -528,21 +538,21 @@ export default function ItemsTable() {
                         value={tax.code || 0}
                         onChange={e => {
                           if (e.target.value === 0) {
-                            setTax({ amt: 0, percentage: 0 })
+                            setTax({ amt: 0, percentage: 0 });
                           } else {
                             setTax({
                               ...tax,
                               ...mockTaxation.find(
                                 mt => mt.code === e.target.value
                               )
-                            })
+                            });
                           }
                         }}
                       >
                         <MenuItem value={0}>Select taxation</MenuItem>
                         {mockTaxation.map((mt, i) => (
                           <MenuItem key={i} value={mt.code}>
-                            {mt.name} ({mt.percentage})
+                            {mt.name} ({mt.percentage}%)
                           </MenuItem>
                         ))}
                       </InputField>
@@ -565,7 +575,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab4} />
                   <TableCell className={classes.tab2}>
-                    <b style={{ fontSize: 15 }}>{qty.toFixed(2)}</b>
+                    <b style={{ fontSize: 15 }}>{/* {qty.toFixed(2)} */}</b>
                   </TableCell>
                   <TableCell className={classes.tab2}></TableCell>
                   <TableCell className={classes.tab2}>
@@ -579,5 +589,5 @@ export default function ItemsTable() {
         </>
       ) : null}
     </React.Fragment>
-  )
+  );
 }
