@@ -11,6 +11,7 @@ export default function SimplePopover({ item }) {
     deletePendingStatus,
     state
   } = React.useContext(StateContext);
+  console.log(state);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     dispatch({ type: "set-selected-data", payload: { selectedData: item } });

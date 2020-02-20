@@ -23,7 +23,9 @@ const BillingTable = ({ duplicate }) => {
     selectedCampaign,
     state,
     campaignDetails,
-    setCampaignDetails
+    setCampaignDetails,
+    additionalFee,
+    setAdditionalFee
   } = useContext(ManualInvoiceContext);
 
   const getAllCampaignDetails = () => {
@@ -101,6 +103,47 @@ const BillingTable = ({ duplicate }) => {
   };
   useEffect(() => {
     getAllCampaignDetails();
+    if (duplicate) {
+      setAdditionalFee({
+        ...additionalFee,
+        merchantQty: Boolean(
+          duplicate.Line.slice(0, -1).filter(
+            (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+          )[0]
+        )
+          ? duplicate.Line.slice(0, -1).filter(
+              (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+            )[0].SalesItemLineDetail.Qty
+          : "",
+        merchantRate: Boolean(
+          duplicate.Line.slice(0, -1).filter(
+            (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+          )[0]
+        )
+          ? duplicate.Line.slice(0, -1).filter(
+              (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+            )[0].SalesItemLineDetail.UnitPrice
+          : "",
+        scrubbingQty: Boolean(
+          duplicate.Line.slice(0, -1).filter(
+            (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+          )[0]
+        )
+          ? duplicate.Line.slice(0, -1).filter(
+              (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+            )[0].SalesItemLineDetail.Qty
+          : "",
+        scrubbingRate: Boolean(
+          duplicate.Line.slice(0, -1).filter(
+            (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+          )[0]
+        )
+          ? duplicate.Line.slice(0, -1).filter(
+              (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+            )[0].SalesItemLineDetail.UnitPrice
+          : ""
+      });
+    }
   }, [selectedCampaign]);
 
   return (
