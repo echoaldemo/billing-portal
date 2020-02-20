@@ -1,13 +1,18 @@
 import React, { useState, useContext } from "react";
 import { RowHeader, Row } from "common-components";
-import { Checkbox, MenuItem, Collapse } from "@material-ui/core";
+import { Checkbox as TempCb, MenuItem, Collapse } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import ExpandButton from "../manual/ExpandButtton";
 import InputField from "../components/CustomInput";
 import RowForm from "./RowForm";
-
+import { CenterCont } from "./styles";
+const Checkbox = styled(TempCb)({
+  padding: 0
+});
 const rowHeaderData = [
-  { label: "Campaign", size: 3 },
+  { label: "Campaign", size: 2 },
+  { label: "Tax", size: 1 },
   { label: "Services", size: 2 },
   { label: "Quantity", size: 2, align_right: true },
   { label: "Rate", size: 2, align_right: true },
@@ -17,23 +22,17 @@ const rowHeaderData = [
 const CampaignBilling = ({ campaignDetails }) => {
   const {
     getTotal,
+    getTaxableSubtotal,
     getTax,
-    getBalance,
     formState,
     setFormState,
     addFee,
     handleAddFees,
-    mockTaxation
+    mockTaxation,
+    getBalance
   } = useContext(AutomaticInvoiceContext);
   const [rowCollapse, setRowCollapse] = useState([0]);
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
-  const [tax, setTax] = useState(false);
-  const handleTax = event => {
-    if (event.target.checked === false) {
-      setFormState({ ...formState, taxation: " " });
-    }
-    setTax(event.target.checked);
-  };
   const getAmount = label => {
     const { qty, rate } = addFee[label];
     let content;
@@ -72,8 +71,18 @@ const CampaignBilling = ({ campaignDetails }) => {
   const additionalFeesCollapse = [
     {
       label: <b>Additional Fees</b>,
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          name="merchant"
+          onChange={e => handleAddFees(e, "tax")}
+          checked={addFee.merchant.tax}
+        />
+      ),
+      size: 1
     },
     { label: "Merchant Fees", size: 2 },
     {
@@ -141,8 +150,18 @@ const CampaignBilling = ({ campaignDetails }) => {
   const additionalFeesRow2 = [
     {
       label: " ",
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          name="litigator"
+          onChange={e => handleAddFees(e, "tax")}
+          checked={addFee.litigator.tax}
+        />
+      ),
+      size: 1
     },
     { label: "Litigator Scrubbing", size: 2 },
     {
@@ -185,35 +204,18 @@ const CampaignBilling = ({ campaignDetails }) => {
   ];
   const TaxMenu = () => {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end"
-        }}
-      >
-        <Checkbox
-          checked={tax}
-          disableRipple
-          disableTouchRipple
-          disableFocusRipple
-          style={{ backgroundColor: "transparent" }}
-          onChange={handleTax}
-          value="secondary"
-        />
-        &nbsp;&nbsp;
+      <CenterCont>
         <InputField
           select
-          variant="outlined"
-          label="Taxable"
-          disabled={!tax}
-          style={{ padding: 0, width: 170 }}
+          disabled={getTaxableSubtotal() ? false : true}
+          style={{ padding: 0, width: 150 }}
           value={formState.taxation}
           onChange={e =>
             setFormState({ ...formState, taxation: e.target.value })
           }
         >
           <MenuItem value=" " disabled>
-            Select Taxation
+            Select tax rate
           </MenuItem>
           {mockTaxation.map(item => (
             <MenuItem value={item.percentage}>
@@ -221,73 +223,83 @@ const CampaignBilling = ({ campaignDetails }) => {
             </MenuItem>
           ))}
         </InputField>
-      </div>
+      </CenterCont>
     );
   };
+  const totalRow = [
+    { label: " ", size: 7 },
+    {
+      label: <CenterCont>TAXABLE SUBTOTAL</CenterCont>,
+      size: 2
+    },
+    {
+      label: (
+        <CenterCont>
+          <b> {formatter.format(getTaxableSubtotal())}</b>
+        </CenterCont>
+      ),
+      size: 1
+    },
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
+          }}
+        >
+          <span>TOTAL</span>
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: 20
+            }}
+          >
+            {formatter.format(getTotal())}
+          </span>
+        </div>
+      ),
+      size: 2
+    }
+  ];
   const taxRow = [
     { label: " ", size: 3 },
     { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
     { label: <TaxMenu />, size: 3 },
 
     {
       label: (
-        <div style={{ textAlign: "right" }}>
+        <CenterCont>
           <b>{getTax() ? formatter.format(getTax()) : " "}</b>
-        </div>
+        </CenterCont>
       ),
       size: 1
+    },
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
+          }}
+        >
+          <span>BALANCE DUE</span>
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: 20
+            }}
+          >
+            {formatter.format(getBalance())}
+          </span>
+        </div>
+      ),
+      size: 2
     }
   ];
 
-  const totalRow = [
-    { label: " ", size: 3 },
-    { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
-    {
-      label: <div style={{ textAlign: "right" }}>TOTAL</div>,
-      size: 3
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>{formatter.format(getTotal())}</b>
-        </div>
-      ),
-      size: 1
-    }
-  ];
-
-  const balanceRow = [
-    { label: " ", size: 3 },
-    { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>BALANCE DUE</b>
-        </div>
-      ),
-      size: 3
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>{formatter.format(getBalance())}</b>
-        </div>
-      ),
-      size: 1
-    }
-  ];
   return (
     <>
       <div
@@ -302,7 +314,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         />
         <div
           style={{
-            maxHeight: 442,
+            maxHeight: 476,
             overflow: "auto"
           }}
         >
@@ -339,10 +351,6 @@ const CampaignBilling = ({ campaignDetails }) => {
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
         <Row rowData={taxRow} />
-      </div>
-
-      <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
-        <Row rowData={balanceRow} />
       </div>
     </>
   );

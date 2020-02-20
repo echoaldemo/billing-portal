@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
@@ -15,27 +15,61 @@ import {
 } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
 
-export default function GeneralForm() {
+export default function GeneralForm({ duplicate }) {
   const {
     state,
     formState,
     setFormState,
     selectedCampaign,
     setSelectedCampaign,
-    billingFormState
+    billingFormState,
+    setBillingFormState
   } = useContext(ManualInvoiceContext);
-
-  const filterCampaign = uuid => {
+  const filterCampaign = (uuid) => {
     const filteredCampaign = state.campaigns.filter(
-      camp => camp.company === uuid
+      (camp) => camp.company === uuid
     );
-    setSelectedCampaign(filteredCampaign.map(item => item.uuid));
+    setSelectedCampaign(filteredCampaign.map((item) => item.uuid));
     return filteredCampaign;
   };
 
+  useEffect(() => {
+    if (duplicate) {
+      if (!state.loading) {
+        setFormState({
+          ...formState,
+          company: duplicate.company.uuid,
+          campaign: filterCampaign(duplicate.company.uuid),
+          billingType: duplicate.billingType,
+          billingPeriod: duplicate.startDate
+        });
+        const campaignsDetails = duplicate.campaigns.map((uuid) => {
+          let filteredDetails = state.campaigns.filter(
+            (item) => item.uuid === uuid
+          );
+          let billingData = {
+            billableHrsQty: "9",
+            billableHrsRate: "9",
+            billableHrsTotalAmount: "",
+
+            didQty: "",
+            didRate: "",
+            didTotalAmount: "",
+
+            performanceQty: "",
+            performanceRate: "",
+            performanceTotalAmount: ""
+          };
+          return { ...filteredDetails[0], ...billingData };
+        });
+        setBillingFormState(campaignsDetails);
+      }
+    }
+  }, [state, duplicate]);
+
   const getBalance = () => {
     let total = 0;
-    billingFormState.forEach(item => {
+    billingFormState.forEach((item) => {
       total +=
         item.billableHrsQty * item.billableHrsRate +
         item.didQty * item.didRate +
@@ -57,7 +91,7 @@ export default function GeneralForm() {
         <InputField
           label="Company"
           value={formState.company}
-          onChange={e => {
+          onChange={(e) => {
             setFormState({
               ...formState,
               company: e.target.value,
@@ -69,7 +103,7 @@ export default function GeneralForm() {
           select
         >
           <MenuItem value={false}>Select company</MenuItem>
-          {state.companies.map(item => {
+          {state.companies.map((item) => {
             return (
               <MenuItem key={item.uuid} value={item.uuid}>
                 {item.name}
@@ -86,21 +120,21 @@ export default function GeneralForm() {
           select
           SelectProps={{
             multiple: true,
-            renderValue: selected =>
+            renderValue: (selected) =>
               selected.length === 0
                 ? "Select campaign"
                 : selected.length === formState.campaign.length
                 ? "All"
                 : selected
-                    .map(s =>
+                    .map((s) =>
                       formState.campaign
-                        .filter(a => a.uuid === s)
-                        .map(data => data.name)
+                        .filter((a) => a.uuid === s)
+                        .map((data) => data.name)
                     )
                     .join(", ")
           }}
           value={selectedCampaign}
-          onChange={e => {
+          onChange={(e) => {
             setSelectedCampaign(e.target.value);
           }}
           disabled={!formState.company}
@@ -118,7 +152,7 @@ export default function GeneralForm() {
         <InputField
           label="Billing Type"
           value={formState.billingType}
-          onChange={e => {
+          onChange={(e) => {
             setFormState({
               ...formState,
               billingType: e.target.value
@@ -140,7 +174,7 @@ export default function GeneralForm() {
             variant="inline"
             format="MM/dd/yyyy"
             value={formState.billingPeriod}
-            onChange={date => {
+            onChange={(date) => {
               setFormState({ ...formState, billingPeriod: date });
             }}
           />
