@@ -1,13 +1,17 @@
 import React, { useState, useContext } from "react";
 import { RowHeader, Row } from "common-components";
-import { Checkbox, MenuItem, Collapse } from "@material-ui/core";
+import { Checkbox as TempCb, MenuItem, Collapse } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import ExpandButton from "../manual/ExpandButtton";
 import InputField from "../components/CustomInput";
 import RowForm from "./RowForm";
-
+const Checkbox = styled(TempCb)({
+  padding: 0
+});
 const rowHeaderData = [
-  { label: "Campaign", size: 3 },
+  { label: "Campaign", size: 2 },
+  { label: "Tax", size: 1 },
   { label: "Services", size: 2 },
   { label: "Quantity", size: 2, align_right: true },
   { label: "Rate", size: 2, align_right: true },
@@ -17,6 +21,7 @@ const rowHeaderData = [
 const CampaignBilling = ({ campaignDetails }) => {
   const {
     getTotal,
+    getTaxableSubtotal,
     getTax,
     getBalance,
     formState,
@@ -27,13 +32,6 @@ const CampaignBilling = ({ campaignDetails }) => {
   } = useContext(AutomaticInvoiceContext);
   const [rowCollapse, setRowCollapse] = useState([0]);
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
-  const [tax, setTax] = useState(false);
-  const handleTax = event => {
-    if (event.target.checked === false) {
-      setFormState({ ...formState, taxation: " " });
-    }
-    setTax(event.target.checked);
-  };
   const getAmount = label => {
     const { qty, rate } = addFee[label];
     let content;
@@ -72,8 +70,18 @@ const CampaignBilling = ({ campaignDetails }) => {
   const additionalFeesCollapse = [
     {
       label: <b>Additional Fees</b>,
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          name="merchant"
+          onChange={e => handleAddFees(e, "tax")}
+          checked={addFee.merchant.tax}
+        />
+      ),
+      size: 1
     },
     { label: "Merchant Fees", size: 2 },
     {
@@ -141,8 +149,18 @@ const CampaignBilling = ({ campaignDetails }) => {
   const additionalFeesRow2 = [
     {
       label: " ",
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          name="litigator"
+          onChange={e => handleAddFees(e, "tax")}
+          checked={addFee.litigator.tax}
+        />
+      ),
+      size: 1
     },
     { label: "Litigator Scrubbing", size: 2 },
     {
@@ -191,21 +209,11 @@ const CampaignBilling = ({ campaignDetails }) => {
           justifyContent: "flex-end"
         }}
       >
-        <Checkbox
-          checked={tax}
-          disableRipple
-          disableTouchRipple
-          disableFocusRipple
-          style={{ backgroundColor: "transparent" }}
-          onChange={handleTax}
-          value="secondary"
-        />
-        &nbsp;&nbsp;
         <InputField
           select
           variant="outlined"
           label="Taxable"
-          disabled={!tax}
+          disabled={getTaxableSubtotal() ? false : true}
           style={{ padding: 0, width: 170 }}
           value={formState.taxation}
           onChange={e =>
@@ -258,6 +266,27 @@ const CampaignBilling = ({ campaignDetails }) => {
       label: (
         <div style={{ textAlign: "right" }}>
           <b>{formatter.format(getTotal())}</b>
+        </div>
+      ),
+      size: 1
+    }
+  ];
+
+  const totalTaxableRow = [
+    { label: " ", size: 3 },
+    { label: " ", size: 3 },
+    {
+      label: "",
+      size: 2
+    },
+    {
+      label: <div style={{ textAlign: "right" }}>Taxable subtotal</div>,
+      size: 3
+    },
+    {
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b>{formatter.format(getTaxableSubtotal())}</b>
         </div>
       ),
       size: 1
@@ -335,6 +364,10 @@ const CampaignBilling = ({ campaignDetails }) => {
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
         <Row rowData={totalRow} />
+      </div>
+
+      <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
+        <Row rowData={totalTaxableRow} />
       </div>
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>

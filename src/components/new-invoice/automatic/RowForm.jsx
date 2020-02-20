@@ -1,10 +1,15 @@
 /* eslint-disable */
 import React, { useContext, useState, useEffect } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
-import { Collapse, IconButton } from "@material-ui/core";
+import { Collapse, IconButton, Checkbox as TempCb } from "@material-ui/core";
+import { styled } from "@material-ui/core/styles";
 import { Row, TimeInput } from "common-components";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import InputField from "../components/CustomInput";
+
+const Checkbox = styled(TempCb)({
+  padding: 0
+});
 
 const convertHourMin = value => {
   const hrs = parseInt(Number(value));
@@ -92,6 +97,15 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     });
     setFormState({ ...formState, campaign: temp });
   };
+  const handleTaxChange = (e, type) => {
+    let temp = formState.campaign;
+    temp.map((item, i) => {
+      if (i === index) {
+        item.tax[type] = e.target.checked;
+      }
+    });
+    setFormState({ ...formState, campaign: temp });
+  };
   const hourMinToDec = (value, label) => {
     if ((parseFloat(value) <= 59 && parseFloat(value) > 0) || value === "") {
       setTimeState({ ...timeState, [label]: value });
@@ -136,8 +150,17 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const rowData1 = [
     {
       label: <b>{campDetail.name}</b>,
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          onChange={e => handleTaxChange(e, "billable_hours")}
+          checked={campDetail.tax.billable_hours}
+        />
+      ),
+      size: 1
     },
     { label: "Billable Hours", size: 2 },
     {
@@ -166,6 +189,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       size: 3,
       bold: true
     },
+
     { label: getServices(), size: 2 },
     {
       label: (
@@ -180,8 +204,17 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const rowData2 = [
     {
       label: " ",
-      size: 3,
+      size: 2,
       bold: true
+    },
+    {
+      label: (
+        <Checkbox
+          onChange={e => handleTaxChange(e, "did")}
+          checked={campDetail.tax.did}
+        />
+      ),
+      size: 1
     },
     { label: "DID Billing", size: 2 },
     {
@@ -213,7 +246,16 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const rowData3 = [
     {
       label: " ",
-      size: 3
+      size: 2
+    },
+    {
+      label: (
+        <Checkbox
+          onChange={e => handleTaxChange(e, "performance")}
+          checked={campDetail.tax.performance}
+        />
+      ),
+      size: 1
     },
     { label: "Performance", size: 2 },
     {
