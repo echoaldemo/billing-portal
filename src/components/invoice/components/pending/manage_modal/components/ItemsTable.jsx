@@ -23,7 +23,8 @@ import {
   handleServices,
   handleAdditional,
   useStyles,
-  mockTaxation
+  mockTaxation,
+  handleTaxAmt
 } from '../constVar'
 import TableHeader from './TableHeader'
 
@@ -34,7 +35,6 @@ export default function ItemsTable() {
   const [merchant, setMerchant] = useState(defaultMerchant)
   const [total, setTotal] = useState(0)
   const [add, setAdd] = useState(false)
-  const [editTax, setEditTax] = useState(false)
   const [tax, setTax] = useState({
     percentage: 0,
     amt: 0,
@@ -56,10 +56,12 @@ export default function ItemsTable() {
   const gatherData = () => {
     let array = [],
       temp = {},
-      timeArray = []
+      timeArray = [],
+      checkTax = null
+    checkTax = formState.TxnTaxDetail
     setCustomer(formState.company.qb_id)
 
-    formState.campaigns.forEach((camp, i) => {
+    formState.campaigns.forEach(camp => {
       let obj = {}
       let result = formState.Line.filter(line => line.Description === camp.name)
       try {
@@ -69,18 +71,19 @@ export default function ItemsTable() {
         obj.billable = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
-          rate: temp.SalesItemLineDetail.UnitPrice
+          rate: temp.SalesItemLineDetail.UnitPrice,
+          taxed:
+            temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
         }
         const time = convertToHM(temp.SalesItemLineDetail.Qty)
         timeArray.push({
           hour: time.hours,
           min: time.minutes
         })
-        // setBillableTime({
-        //   ...billableTime,
-        //   [i]:
-        // })
       } catch {
+        if (checkTax === null) {
+          defaultBillable.taxed = false
+        }
         obj.billable = defaultBillable
         timeArray.push({
           hour: 0,
@@ -94,9 +97,14 @@ export default function ItemsTable() {
         obj.performance = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
-          rate: temp.SalesItemLineDetail.UnitPrice
+          rate: temp.SalesItemLineDetail.UnitPrice,
+          taxed:
+            temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
         }
       } catch {
+        if (checkTax === null) {
+          defaultPerformance.taxed = false
+        }
         obj.performance = defaultPerformance
       }
       try {
@@ -106,15 +114,19 @@ export default function ItemsTable() {
         obj.did = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
-          rate: temp.SalesItemLineDetail.UnitPrice
+          rate: temp.SalesItemLineDetail.UnitPrice,
+          taxed:
+            temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
         }
       } catch {
+        if (checkTax === null) {
+          defaultDid.taxed = false
+        }
         obj.did = defaultDid
       }
       obj.name = camp.name
       array.push(obj)
     })
-    console.log({ ...timeArray })
     setBillableTime({ ...timeArray })
     try {
       temp = formState.Line.find(
@@ -123,9 +135,14 @@ export default function ItemsTable() {
       setLitiGator({
         amt: temp.Amount,
         qty: temp.SalesItemLineDetail.Qty,
-        rate: temp.SalesItemLineDetail.UnitPrice
+        rate: temp.SalesItemLineDetail.UnitPrice,
+        taxed:
+          temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
       })
     } catch {
+      if (checkTax === null) {
+        defaultLitigator.taxed = false
+      }
       setLitiGator(defaultLitigator)
     }
     try {
@@ -135,9 +152,14 @@ export default function ItemsTable() {
       setMerchant({
         amt: temp.Amount,
         qty: temp.SalesItemLineDetail.Qty,
-        rate: temp.SalesItemLineDetail.UnitPrice
+        rate: temp.SalesItemLineDetail.UnitPrice,
+        taxed:
+          temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
       })
     } catch {
+      if (checkTax === null) {
+        defaultMerchant.taxed = false
+      }
       setMerchant(defaultMerchant)
     }
     try {
@@ -145,11 +167,12 @@ export default function ItemsTable() {
         ...tax,
         percentage: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxPercent,
         code: formState.TxnTaxDetail.TxnTaxCodeRef.value,
-        taxRef: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxRateRef.value
+        taxRef:
+          formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxRateRef.value,
+        edit: true
       })
-      setEditTax(true)
     } catch {
-      setTax({ ...tax, percentage: 0, code: '' })
+      setTax({ ...tax, percentage: 0, code: '', edit: false })
     }
     setServices({ ...array })
   }
@@ -169,17 +192,32 @@ export default function ItemsTable() {
   }, [formState])
 
   useEffect(() => {
-    let totalAmt = 0
+    let totalAmt = 0,
+      taxx = 0
     if (Object.keys(services).length !== 0) {
       for (let i = 0; i < Object.keys(services).length; i++) {
         totalAmt += handleAmt(services[i])
+        if (services[i].billable.taxed) {
+          taxx += handleTaxAmt(services[i].billable.amt, tax.percentage)
+        }
+        if (services[i].performance.taxed) {
+          taxx += handleTaxAmt(services[i].performance.amt, tax.percentage)
+        }
+        if (services[i].did.taxed) {
+          taxx += handleTaxAmt(services[i].did.amt, tax.percentage)
+        }
+      }
+      if (litigator.taxed) {
+        taxx += handleTaxAmt(litigator.amt, tax.percentage)
+      }
+      if (merchant.taxed) {
+        taxx += handleTaxAmt(merchant.amt, tax.percentage)
       }
       totalAmt += parseFloat(litigator.amt) + parseFloat(merchant.amt)
       if (tax.percentage !== 0) {
-        let taxx = Math.round(totalAmt * (tax.percentage / 100) * 100) / 100
         totalAmt += taxx
-        setTax({ ...tax, amt: taxx })
       }
+      setTax({ ...tax, amt: taxx })
       dispatch({
         type: 'set-item-table',
         payload: {
@@ -203,6 +241,54 @@ export default function ItemsTable() {
         }
       }
     })
+  }
+
+  const handleChangeTax = e => {
+    let obj = services
+    if (e.target.value === 0) {
+      setTax({ amt: 0, percentage: 0, code: '', edit: false })
+      for (let i = 0; i < Object.keys(obj).length; i++) {
+        obj[i].billable.taxed = false
+        obj[i].performance.taxed = false
+        obj[i].did.taxed = false
+      }
+      setLitiGator({ ...litigator, taxed: false })
+      setMerchant({ ...merchant, taxed: false })
+    } else {
+      setTax({
+        ...tax,
+        ...mockTaxation.find(mt => mt.code === e.target.value),
+        edit: true
+      })
+      for (let i = 0; i < Object.keys(obj).length; i++) {
+        obj[i].billable.taxed = true
+        obj[i].performance.taxed = true
+        obj[i].did.taxed = true
+      }
+      setLitiGator({ ...litigator, taxed: true })
+      setMerchant({ ...merchant, taxed: true })
+    }
+
+    setServices(obj)
+  }
+
+  const handleTax = (e, type, i) => {
+    if (type === 'litigator') {
+      setLitiGator({ ...litigator, taxed: e.target.checked })
+    } else if (type === 'merchant') {
+      setMerchant({ ...merchant, taxed: e.target.checked })
+    } else {
+      setServices({
+        ...services,
+        [i]: {
+          ...services[i],
+          [type]: {
+            ...services[i][type],
+            taxed: e.target.checked
+          }
+        }
+      })
+    }
   }
 
   const handleBillableTime = (value, type, index) => {
@@ -262,7 +348,13 @@ export default function ItemsTable() {
                         </TableCell>
                         <TableCell className={classes.tab5}>
                           {services[i] && !collapsed.includes(i) ? null : (
-                            <Checkbox />
+                            <Checkbox
+                              disabled={!state.editManageData || !tax.edit}
+                              checked={
+                                !!(services[i] && services[i].billable.taxed)
+                              }
+                              onChange={e => handleTax(e, 'billable', i)}
+                            />
                           )}
                         </TableCell>
                         <TableCell className={classes.tab4}>
@@ -332,7 +424,13 @@ export default function ItemsTable() {
                         <TableRow>
                           <TableCell className={classes.tab1} />
                           <TableCell className={classes.tab5}>
-                            <Checkbox />
+                            <Checkbox
+                              disabled={!state.editManageData || !tax.edit}
+                              checked={
+                                services[i] && services[i].performance.taxed
+                              }
+                              onChange={e => handleTax(e, 'performance', i)}
+                            />
                           </TableCell>
                           <TableCell className={classes.tab4}>
                             Performance
@@ -381,7 +479,11 @@ export default function ItemsTable() {
                         <TableRow>
                           <TableCell className={classes.tab1} />
                           <TableCell className={classes.tab5}>
-                            <Checkbox />
+                            <Checkbox
+                              disabled={!state.editManageData || !tax.edit}
+                              checked={services[i] && services[i].did.taxed}
+                              onChange={e => handleTax(e, 'did', i)}
+                            />
                           </TableCell>
                           <TableCell className={classes.tab4}>Did</TableCell>
                           <TableCell className={classes.tab2}>
@@ -436,7 +538,13 @@ export default function ItemsTable() {
                     </div>
                   </TableCell>
                   <TableCell className={classes.tab5}>
-                    {add && <Checkbox />}
+                    {add && (
+                      <Checkbox
+                        disabled={!state.editManageData || !tax.edit}
+                        checked={litigator.taxed}
+                        onChange={e => handleTax(e, 'litigator')}
+                      />
+                    )}
                   </TableCell>
                   <TableCell className={classes.tab4}>
                     {add
@@ -518,7 +626,11 @@ export default function ItemsTable() {
                   <TableRow>
                     <TableCell className={classes.tab1} />
                     <TableCell className={classes.tab5}>
-                      <Checkbox />
+                      <Checkbox
+                        disabled={!state.editManageData || !tax.edit}
+                        checked={merchant.taxed}
+                        onChange={e => handleTax(e, 'merchant')}
+                      />
                     </TableCell>
                     <TableCell className={classes.tab4}>
                       Merchant Fees
@@ -584,7 +696,7 @@ export default function ItemsTable() {
                         justifyContent: 'flex-end'
                       }}
                     >
-                      <Checkbox
+                      {/* <Checkbox
                         checked={editTax}
                         onChange={e => {
                           setEditTax(e.target.checked)
@@ -593,23 +705,12 @@ export default function ItemsTable() {
                           }
                         }}
                         disabled={!state.editManageData}
-                      />
+                      /> */}
                       <InputField
                         select
-                        disabled={!editTax || !state.editManageData}
+                        disabled={!state.editManageData}
                         value={tax.code || 0}
-                        onChange={e => {
-                          if (e.target.value === 0) {
-                            setTax({ amt: 0, percentage: 0 })
-                          } else {
-                            setTax({
-                              ...tax,
-                              ...mockTaxation.find(
-                                mt => mt.code === e.target.value
-                              )
-                            })
-                          }
-                        }}
+                        onChange={handleChangeTax}
                       >
                         <MenuItem value={0}>Select taxation</MenuItem>
                         {mockTaxation.map((mt, i) => (
