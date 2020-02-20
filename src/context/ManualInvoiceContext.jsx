@@ -86,8 +86,6 @@ const ManualInvoiceProvider = ({ children }) => {
         computeItemService(item.didQty, item.didRate, item.didTaxed) +
         computeItemService(item.performanceQty, item.performanceTaxed);
     });
-
-    console.log(total);
     return total;
   };
 
@@ -135,7 +133,7 @@ const ManualInvoiceProvider = ({ children }) => {
           newLine.push({
             Amount: computeInt(item[qty], item[rate]),
             SalesItemLineDetail: {
-              TaxCodeRef: { value: tax ? "TAX" : "NON" },
+              TaxCodeRef: { value: "TAX" },
               ItemRef: { name: service.name, value: service.value },
               Qty: item[qty],
               UnitPrice: item[rate]
@@ -250,9 +248,14 @@ const ManualInvoiceProvider = ({ children }) => {
   const allChecked = () => {
     const result = billingFormState.map(item => {
       return (
-        item["billableHrsTaxed"] || item["didTaxed"] || item["performanceTaxed"]
+        item["billableHrsTaxed"] ||
+        item["didTaxed"] ||
+        item["performanceTaxed"] ||
+        additionalFee.merchantTax ||
+        additionalFee.scrubbingTax
       );
     });
+
     return result.every(val => val === true);
   };
 
@@ -283,7 +286,8 @@ const ManualInvoiceProvider = ({ children }) => {
         setCampaignDetails,
         allChecked,
         taxChecked,
-        setTaxChecked
+        setTaxChecked,
+        computeItemService
       }}
     >
       {children}
