@@ -53,20 +53,23 @@ const services = [
     name: "Billable Hours",
     value: "21",
     qty: "billableHrsQty",
-    rate: "billableHrsRate"
+    rate: "billableHrsRate",
+    tax: "billableHrsTaxed"
   },
 
   {
     name: "Performance",
     value: "22",
     qty: "performanceQty",
-    rate: "performanceRate"
+    rate: "performanceRate",
+    tax: "didTaxed"
   },
   {
     name: "DID Billing",
     value: "23",
     qty: "didQty",
-    rate: "didRate"
+    rate: "didRate",
+    tax: "performanceTaxed"
   }
 ];
 
@@ -75,13 +78,15 @@ const additionalFeeDetails = [
     name: "Litigator Scrubbing",
     value: "24",
     qty: "scrubbingQty",
-    rate: "scrubbingRate"
+    rate: "scrubbingRate",
+    tax: "scrubbingTax"
   },
   {
     name: "Merchant Fee",
     value: "25",
     qty: "merchantQty",
-    rate: "merchantRate"
+    rate: "merchantRate",
+    tax: "merchantTax"
   }
 ];
 

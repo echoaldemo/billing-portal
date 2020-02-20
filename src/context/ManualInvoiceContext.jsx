@@ -128,12 +128,12 @@ const ManualInvoiceProvider = ({ children }) => {
 
     billingFormState.map((item, index) => {
       services.map((service, serviceIndex) => {
-        let { qty, rate } = service;
+        let { qty, rate, tax } = service;
         if (computeInt(item[qty], item[rate]) !== 0) {
           newLine.push({
             Amount: computeInt(item[qty], item[rate]),
             SalesItemLineDetail: {
-              TaxCodeRef: { value: "TAX" },
+              TaxCodeRef: { value: item[tax] ? "TAX" : "NON" },
               ItemRef: { name: service.name, value: service.value },
               Qty: item[qty],
               UnitPrice: item[rate]
@@ -147,13 +147,13 @@ const ManualInvoiceProvider = ({ children }) => {
       });
     });
     additionalFeeDetails.map((detail, detailIndex) => {
-      let { qty, rate } = detail;
+      let { qty, rate, tax } = detail;
 
       if (computeInt(additionalFee[qty], additionalFee[rate]) !== 0) {
         newLine.push({
           Amount: computeInt(additionalFee[qty], additionalFee[rate]),
           SalesItemLineDetail: {
-            TaxCodeRef: { value: tax ? "TAX" : "NON" },
+            TaxCodeRef: { value: additionalFee[tax] ? "TAX" : "NON" },
             ItemRef: { name: detail.name, value: detail.value },
             Qty: additionalFee[qty],
             UnitPrice: parseFloat(additionalFee[rate])
@@ -202,7 +202,6 @@ const ManualInvoiceProvider = ({ children }) => {
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
-
     setCreateLoading(true);
     post("/api/create_pending", newData)
       .then(res => {
@@ -214,6 +213,27 @@ const ManualInvoiceProvider = ({ children }) => {
       });
   };
   const createManualInvoice = (type, handleClose) => {
+    let taxDetails = {
+      TxnTaxCodeRef: {
+        value: mockTaxation[0].code
+      },
+      TotalTax: 124242,
+      TaxLine: [
+        {
+          DetailType: "TaxLineDetail",
+          Amount: tax,
+          TaxLineDetail: {
+            NetAmountTaxable: 12323,
+            TaxPercent: tax,
+            TaxRateRef: {
+              value: "11"
+            },
+            PercentBased: true
+          }
+        }
+      ]
+    };
+
     let data = {
       CustomerRef: {
         value: company(formState.company).qb_id
@@ -221,11 +241,13 @@ const ManualInvoiceProvider = ({ children }) => {
       TxnDate: formatDate(new Date(date)),
       DueDate: formatDate(new Date(formState.billingPeriod)),
       Line: generateLine(),
+      TxnTaxDetail: tax !== 0 ? taxDetails : null,
       CustomerMemo: {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
     };
 
+    console.log(data, "DATA");
     switch (type) {
       case "approve":
         sendToQuickbooks(data, handleClose);
