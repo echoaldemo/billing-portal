@@ -32,13 +32,32 @@ const CampaignBilling = ({ campaignDetails }) => {
     setBillingFormState(campaignDetails);
   }, [campaignDetails]);
 
+  const renderLessAdditional = () => {
+    let additionalServices = [];
+    Object.keys(additionalFee).map(item => {
+      if (additionalFee[item]) {
+        item === "merchantQty" && additionalServices.push("Merchant fee");
+        item === "scrubbingQty" &&
+          additionalServices.push("Litigator Scrubbing");
+      }
+    });
+    return (
+      <div>
+        {additionalServices.length > 0 ? (
+          additionalServices.join(", ")
+        ) : (
+          <i>Field not set</i>
+        )}
+      </div>
+    );
+  };
   const additionalFeeInitial = [
     {
       label: <b>Additional Fees</b>,
       size: 3,
       bold: true
     },
-    { label: <i>None</i>, size: 2 },
+    { label: renderLessAdditional(), size: 2 },
     { label: " ", size: 2 },
     { label: " ", size: 2 },
     { label: " ", size: 2 },
