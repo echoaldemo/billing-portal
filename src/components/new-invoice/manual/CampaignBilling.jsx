@@ -328,8 +328,13 @@ const CampaignBilling = ({ campaignDetails }) => {
 };
 
 const TaxMenu = () => {
-  const [taxChecked, setTaxChecked] = useState(false);
-  const { tax, setTax, mockTaxation } = React.useContext(ManualInvoiceContext);
+  const {
+    tax,
+    setTax,
+    mockTaxation,
+    taxChecked,
+    setTaxChecked
+  } = React.useContext(ManualInvoiceContext);
   return (
     <div
       style={{

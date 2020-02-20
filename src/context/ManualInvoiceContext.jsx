@@ -65,15 +65,29 @@ const ManualInvoiceProvider = ({ children }) => {
   ];
   const [tax, setTax] = useState(6.1);
 
+  const computeItemService = (qty, rate, isTaxed) => {
+    let totalServiceAmount = 0;
+    let serviceTotal = qty * rate;
+    let percentage = parseFloat(tax) / 100;
+    let taxedService = serviceTotal * percentage;
+    totalServiceAmount = serviceTotal + taxedService;
+    return isTaxed ? totalServiceAmount : serviceTotal;
+  };
+
   const getBalance = () => {
     let total = 0;
     billingFormState.map(item => {
       total +=
-        item.billableHrsQty * item.billableHrsRate +
-        item.didQty * item.didRate +
-        item.performanceQty * item.performanceRate;
+        computeItemService(
+          item.billableHrsQty,
+          item.billableHrsRate,
+          item.billableHrsTaxed
+        ) +
+        computeItemService(item.didQty, item.didRate, item.didTaxed) +
+        computeItemService(item.performanceQty, item.performanceTaxed);
     });
 
+    console.log(total);
     return total;
   };
 
