@@ -6,7 +6,6 @@ import {
   TableCell,
   TableRow,
   Collapse,
-  InputAdornment,
   MenuItem,
   Checkbox
 } from '@material-ui/core'
@@ -18,9 +17,8 @@ import {
   defaultPerformance,
   defaultDid,
   defaultLitigator,
+  defaultMerchant,
   formatter,
-  handleQty,
-  handleRate,
   handleAmt,
   handleServices,
   handleAdditional,
@@ -33,24 +31,35 @@ export default function ItemsTable() {
   const classes = useStyles()
   const { state, dispatch, formState } = useContext(StateContext)
   const [litigator, setLitiGator] = useState(defaultLitigator)
-  const [merchant, setMerchant] = useState(0)
+  const [merchant, setMerchant] = useState(defaultMerchant)
   const [total, setTotal] = useState(0)
-  const [qty, setQty] = useState(0)
   const [add, setAdd] = useState(false)
   const [editTax, setEditTax] = useState(false)
   const [tax, setTax] = useState({
     percentage: 0,
     amt: 0,
-    code: ''
+    code: '',
+    taxRef: ''
   })
   const [collapsed, setCollapsed] = useState([])
+  const [customerRef, setCustomer] = useState('')
   const [services, setServices] = useState({})
-  const [billableTime, setBillableTime] = useState({ hour: 0, min: 0 })
+  const [billableTime, setBillableTime] = useState({})
 
+  const convertToHM = decimalTime => {
+    decimalTime = decimalTime * 60 * 60
+    const hours = Math.floor(decimalTime / (60 * 60))
+    decimalTime = decimalTime - hours * 60 * 60
+    const minutes = Math.floor(decimalTime / 60)
+    return { hours, minutes }
+  }
   const gatherData = () => {
     let array = [],
-      temp = {}
-    formState.campaigns.forEach(camp => {
+      temp = {},
+      timeArray = []
+    setCustomer(formState.company.qb_id)
+
+    formState.campaigns.forEach((camp, i) => {
       let obj = {}
       let result = formState.Line.filter(line => line.Description === camp.name)
       try {
@@ -62,15 +71,21 @@ export default function ItemsTable() {
           qty: temp.SalesItemLineDetail.Qty,
           rate: temp.SalesItemLineDetail.UnitPrice
         }
-        setBillableTime({
-          hour: Math.floor(temp.SalesItemLineDetail.Qty),
-          min:
-            (temp.SalesItemLineDetail.Qty -
-              Math.floor(temp.SalesItemLineDetail.Qty)) *
-            60
+        const time = convertToHM(temp.SalesItemLineDetail.Qty)
+        timeArray.push({
+          hour: time.hours,
+          min: time.minutes
         })
+        // setBillableTime({
+        //   ...billableTime,
+        //   [i]:
+        // })
       } catch {
         obj.billable = defaultBillable
+        timeArray.push({
+          hour: 0,
+          min: 0
+        })
       }
       try {
         temp = result.find(
@@ -99,6 +114,8 @@ export default function ItemsTable() {
       obj.name = camp.name
       array.push(obj)
     })
+    console.log({ ...timeArray })
+    setBillableTime({ ...timeArray })
     try {
       temp = formState.Line.find(
         res => res.SalesItemLineDetail.ItemRef.value === '24'
@@ -115,15 +132,20 @@ export default function ItemsTable() {
       temp = formState.Line.find(
         res => res.SalesItemLineDetail.ItemRef.value === '25'
       )
-      setMerchant(temp.Amount)
+      setMerchant({
+        amt: temp.Amount,
+        qty: temp.SalesItemLineDetail.Qty,
+        rate: temp.SalesItemLineDetail.UnitPrice
+      })
     } catch {
-      setMerchant(0)
+      setMerchant(defaultMerchant)
     }
     try {
       setTax({
         ...tax,
         percentage: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxPercent,
-        code: formState.TxnTaxDetail.TxnTaxCodeRef.value
+        code: formState.TxnTaxDetail.TxnTaxCodeRef.value,
+        taxRef: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxRateRef.value
       })
       setEditTax(true)
     } catch {
@@ -147,26 +169,24 @@ export default function ItemsTable() {
   }, [formState])
 
   useEffect(() => {
-    let totalAmt = 0,
-      totalQty = 0
+    let totalAmt = 0
     if (Object.keys(services).length !== 0) {
       for (let i = 0; i < Object.keys(services).length; i++) {
         totalAmt += handleAmt(services[i])
-        totalQty += handleQty(services[i])
       }
-      totalAmt += parseFloat(litigator.amt) + parseFloat(merchant)
-      totalQty += parseFloat(litigator.qty ? litigator.qty : 0)
+      totalAmt += parseFloat(litigator.amt) + parseFloat(merchant.amt)
       if (tax.percentage !== 0) {
-        let taxx = totalAmt * (tax.percentage / 100) - tax.percentage / 100
+        let taxx = Math.round(totalAmt * (tax.percentage / 100) * 100) / 100
         totalAmt += taxx
         setTax({ ...tax, amt: taxx })
       }
       dispatch({
         type: 'set-item-table',
-        payload: { itemTable: { services, litigator, merchant, tax } }
+        payload: {
+          itemTable: { services, litigator, merchant, tax, customerRef }
+        }
       })
       setTotal(totalAmt)
-      setQty(totalQty)
     }
     // eslint-disable-next-line
   }, [services, litigator, merchant, tax.percentage])
@@ -189,11 +209,20 @@ export default function ItemsTable() {
     let temp = 0
 
     if (type === 'hour') {
-      temp = `${value}:${billableTime.min}`
-      setBillableTime({ ...billableTime, [type]: value })
+      temp = `${value}:${billableTime[index].min}`
+      setBillableTime({
+        ...billableTime,
+        [index]: { ...billableTime[index], [type]: value }
+      })
     } else {
-      temp = `${billableTime.hour}:${value < 59 ? value : 59}`
-      setBillableTime({ ...billableTime, [type]: value < 59 ? value : 59 })
+      temp = `${billableTime[index].hour}:${value < 59 ? value : 59}`
+      setBillableTime({
+        ...billableTime,
+        [index]: {
+          ...billableTime[index],
+          [type]: value < 59 ? value : 59
+        }
+      })
     }
     const arr = temp.split(':')
     const dec = parseInt((arr[1] / 6) * 10, 10)
@@ -212,7 +241,6 @@ export default function ItemsTable() {
       setCollapsed([...collapsed, index])
     }
   }
-
   return (
     <React.Fragment>
       {Object.keys(formState).length > 0 ? (
@@ -232,30 +260,31 @@ export default function ItemsTable() {
                             <b>{camp.name}</b>
                           </div>
                         </TableCell>
+                        <TableCell className={classes.tab5}>
+                          {services[i] && !collapsed.includes(i) ? null : (
+                            <Checkbox />
+                          )}
+                        </TableCell>
                         <TableCell className={classes.tab4}>
                           {services[i] && !collapsed.includes(i)
                             ? handleServices(services[i])
                             : 'Billable hours'}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i) ? (
-                            handleQty(services[i]) ? (
-                              handleQty(services[i]).toFixed(2)
-                            ) : (
-                              ''
-                            )
-                          ) : (
-                            <TimeInput
-                              state={billableTime}
-                              handleChange={handleBillableTime}
-                              index={i}
-                              disabled={!state.editManageData}
-                            />
-                          )}
+                          {services[i] && !collapsed.includes(i)
+                            ? ''
+                            : billableTime[i] && (
+                                <TimeInput
+                                  state={billableTime[i]}
+                                  handleChange={handleBillableTime}
+                                  index={i}
+                                  disabled={!state.editManageData}
+                                />
+                              )}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
                           {services[i] && !collapsed.includes(i) ? (
-                            handleRate(services[i]) || ''
+                            ''
                           ) : (
                             <InputField
                               fullWidth
@@ -302,6 +331,9 @@ export default function ItemsTable() {
                       <TableBody>
                         <TableRow>
                           <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab5}>
+                            <Checkbox />
+                          </TableCell>
                           <TableCell className={classes.tab4}>
                             Performance
                           </TableCell>
@@ -348,6 +380,9 @@ export default function ItemsTable() {
                         </TableRow>
                         <TableRow>
                           <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab5}>
+                            <Checkbox />
+                          </TableCell>
                           <TableCell className={classes.tab4}>Did</TableCell>
                           <TableCell className={classes.tab2}>
                             <InputField
@@ -400,14 +435,17 @@ export default function ItemsTable() {
                       <b>Additional fees</b>
                     </div>
                   </TableCell>
+                  <TableCell className={classes.tab5}>
+                    {add && <Checkbox />}
+                  </TableCell>
                   <TableCell className={classes.tab4}>
                     {add
                       ? 'Litigator Scrubbing'
-                      : handleAdditional(litigator.amt, merchant)}
+                      : handleAdditional(litigator.amt, merchant.amt)}
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add ? (
-                      litigator.qty || ''
+                      ''
                     ) : (
                       <InputField
                         fullWidth
@@ -431,7 +469,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add ? (
-                      litigator.rate || ''
+                      ''
                     ) : (
                       <InputField
                         fullWidth
@@ -455,7 +493,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add
-                      ? formatter.format(litigator.amt + merchant)
+                      ? formatter.format(litigator.amt + merchant.amt)
                       : formatter.format(litigator.amt)}
                   </TableCell>
                   <TableCell className={classes.tab3}>
@@ -479,30 +517,54 @@ export default function ItemsTable() {
                 <TableBody>
                   <TableRow>
                     <TableCell className={classes.tab1} />
+                    <TableCell className={classes.tab5}>
+                      <Checkbox />
+                    </TableCell>
                     <TableCell className={classes.tab4}>
                       Merchant Fees
                     </TableCell>
-                    <TableCell className={classes.tab2} />
-                    <TableCell className={classes.tab2} />
                     <TableCell className={classes.tab2}>
                       <InputField
                         fullWidth
                         type="number"
+                        placeholder="Merchant quantity"
                         inputProps={{
                           min: 0,
                           style: { textAlign: 'right' }
                         }}
                         disabled={!state.editManageData}
-                        value={merchant || ''}
+                        value={merchant.qty}
                         onChange={e =>
-                          setMerchant(parseFloat(e.target.value) || 0)
+                          setMerchant({
+                            ...merchant,
+                            qty: e.target.value,
+                            amt: e.target.value * merchant.rate
+                          })
                         }
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">$</InputAdornment>
-                          )
-                        }}
                       />
+                    </TableCell>
+                    <TableCell className={classes.tab2}>
+                      <InputField
+                        fullWidth
+                        type="number"
+                        placeholder="Rate value"
+                        inputProps={{
+                          min: 0,
+                          style: { textAlign: 'right' }
+                        }}
+                        disabled={!state.editManageData}
+                        value={merchant.rate}
+                        onChange={e =>
+                          setMerchant({
+                            ...merchant,
+                            rate: e.target.value,
+                            amt: e.target.value * merchant.qty
+                          })
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className={classes.tab2}>
+                      {formatter.format(merchant.amt)}
                     </TableCell>
                     <TableCell className={classes.tab3} />
                   </TableRow>
@@ -552,7 +614,7 @@ export default function ItemsTable() {
                         <MenuItem value={0}>Select taxation</MenuItem>
                         {mockTaxation.map((mt, i) => (
                           <MenuItem key={i} value={mt.code}>
-                            {mt.name} ({mt.percentage})
+                            {mt.name} ({mt.percentage}%)
                           </MenuItem>
                         ))}
                       </InputField>
@@ -574,9 +636,7 @@ export default function ItemsTable() {
                     <b style={{ fontSize: 15 }}>Total</b>
                   </TableCell>
                   <TableCell className={classes.tab4} />
-                  <TableCell className={classes.tab2}>
-                    <b style={{ fontSize: 15 }}>{qty.toFixed(2)}</b>
-                  </TableCell>
+                  <TableCell className={classes.tab2} />
                   <TableCell className={classes.tab2}></TableCell>
                   <TableCell className={classes.tab2}>
                     <b style={{ fontSize: 15 }}>{formatter.format(total)}</b>

@@ -26,10 +26,14 @@ const defaultLitigator = {
   qty: '',
   rate: ''
 }
+const defaultMerchant = {
+  amt: 0,
+  qty: '',
+  rate: ''
+}
 
 const mockTaxation = [
   { code: '5', taxrate: '7', name: 'Utah', percentage: 6.1 },
-  { code: '6', taxrate: '8', name: 'California', percentage: 8 },
   { code: '7', taxrate: '11', name: 'Mexico', percentage: 16 }
 ]
 
@@ -67,7 +71,7 @@ const handleServices = ({ billable, performance, did }) => {
       text.push('Performance')
     }
     if (did.amt) {
-      text.push('Did')
+      text.push('DID Billing')
     }
   } else {
     text.push('Field not set')
@@ -92,9 +96,10 @@ const handleAdditional = (litigator, merchant) => {
 
 const useStyles = makeStyles({
   tab1: { width: '20%' },
-  tab2: { width: '20%', textAlign: 'right' },
+  tab2: { width: '15%', textAlign: 'right' },
   tab3: { width: '5%', textAlign: 'right' },
   tab4: { width: '15%', textAlign: 'left' },
+  tab5: { width: '5%', textAlign: 'center' },
   right: { textAlign: 'right' }
 })
 
@@ -104,6 +109,7 @@ export {
   defaultPerformance,
   defaultDid,
   defaultLitigator,
+  defaultMerchant,
   formatter,
   handleQty,
   handleRate,

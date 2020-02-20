@@ -111,10 +111,10 @@ export default function ManagePendingInvoice() {
         }
       })
     }
-    if (litigator.amt !== 0) {
+    if (merchant.amt !== 0) {
       rest.Line.push({
         DetailType: 'SalesItemLineDetail',
-        Amount: parseFloat(merchant) || 0,
+        Amount: parseFloat(merchant.amt) || 0,
         SalesItemLineDetail: {
           ItemRef: {
             value: '25',
@@ -122,15 +122,16 @@ export default function ManagePendingInvoice() {
           },
           TaxCodeRef: {
             value: tax.code ? 'TAX' : 'NON'
-          }
+          },
+          Qty: parseFloat(merchant.qty) || 1,
+          UnitPrice: parseFloat(merchant.rate) || 0
         }
       })
     }
-    totalAmt += parseFloat(litigator.amt) + parseFloat(merchant)
+    totalAmt += parseFloat(litigator.amt) + parseFloat(merchant.amt)
     if (tax.percentage !== 0) {
       totalAmt += totalAmt * (tax.percentage / 100) - tax.percentage / 100
     }
-
     if (tax.code) {
       rest.TxnTaxDetail = {
         TxnTaxCodeRef: {
@@ -145,7 +146,7 @@ export default function ManagePendingInvoice() {
               NetAmountTaxable: totalAmt,
               TaxPercent: tax.percentage,
               TaxRateRef: {
-                value: tax.taxrate
+                value: tax.taxRef
               },
               PercentBased: true
             }
@@ -241,7 +242,7 @@ export default function ManagePendingInvoice() {
         dispatch({ type: 'set-manage-modal', payload: { openManage: false } })
       }}
       title={<b>Manage Pending Invoice</b>}
-      width="70%"
+      width="80%"
       renderEditButton={EditButton}
     >
       {modalLoading ? (

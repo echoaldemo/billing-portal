@@ -9,7 +9,8 @@ import ExpandButton from "./ExpandButtton";
 import { computeInt, formatter } from "utils/func";
 
 const rowHeaderData = [
-  { label: "Campaign", size: 3 },
+  { label: "Campaign", size: 2 },
+  { label: "Tax", size: 1 },
   { label: "Services", size: 2 },
   { label: "Quantity", size: 2, style: { textAlign: "right" } },
   { label: "Rate", size: 2, style: { textAlign: "right" } },
@@ -202,6 +203,7 @@ const CampaignBilling = ({ campaignDetails }) => {
 
   const computeTax = () => {
     let taxed = 0;
+    console.log("taxeddd");
     let totalBills = computeTotal();
     let totalTaxation = parseFloat(tax / 100);
 

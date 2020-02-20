@@ -12,7 +12,8 @@ const initialState = {
     services: {},
     litigator: {},
     tax: {},
-    merchant: 0
+    merchant: {},
+    customerRef: ''
   },
   editManageData: false,
   updateLoading: false
@@ -30,7 +31,6 @@ const StateProvider = ({ children }) => {
   const [formState, setFormState] = useState({})
   const [selectedItems, setSelectedItems] = useState([])
   const [confirmModal, setConfirmModal] = React.useState(confirmModalInitial)
-
   const setLoading = value => {
     dispatch({ type: 'set-loading', payload: { loading: value } })
   }
@@ -43,7 +43,6 @@ const StateProvider = ({ children }) => {
   const setTab = value => {
     dispatch({ type: 'set-tab', payload: { active_tab: value } })
   }
-
   const getPendingInvoicesData = () => {
     setLoading(true)
     get('/api/pending/list')

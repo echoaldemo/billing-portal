@@ -12,10 +12,10 @@ export default function SimplePopover({ item }) {
     state
   } = React.useContext(StateContext);
   const handleClick = (event) => {
-    console.log(state.selectedData);
     setAnchorEl(event.currentTarget);
     dispatch({ type: "set-selected-data", payload: { selectedData: item } });
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -69,6 +69,7 @@ export default function SimplePopover({ item }) {
             onClick={() => {
               openManageModal();
               handleClose();
+              console.log("test", state.selectedData);
             }}
           >
             Manage

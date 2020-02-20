@@ -7,17 +7,25 @@ const BillingTable = ({ duplicate }) => {
     billableHrsQty: "",
     billableHrsRate: "",
     billableHrsTotalAmount: "",
+    billableHrsTaxed: true,
 
     didQty: "",
     didRate: "",
     didTotalAmount: "",
+    didTaxed: true,
 
     performanceQty: "",
     performanceRate: "",
-    performanceTotalAmount: ""
+    performanceTotalAmount: "",
+    performanceTaxed: true
   };
-  const { selectedCampaign, state } = useContext(ManualInvoiceContext);
-  const [campaignDetails, setCampaignDetails] = useState([]);
+  const {
+    selectedCampaign,
+    state,
+    campaignDetails,
+    setCampaignDetails
+  } = useContext(ManualInvoiceContext);
+
   const getAllCampaignDetails = () => {
     const campaignsDetails = selectedCampaign.map((uuid, x) => {
       let filteredDetails = state.campaigns.filter(

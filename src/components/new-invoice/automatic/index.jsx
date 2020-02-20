@@ -23,9 +23,14 @@ const FormContent = () => {
 };
 
 const NewInvoice = ({ handleClose }) => {
-  const { state, dispatch, createInvoice, createAnother } = useContext(
-    AutomaticInvoiceContext
-  );
+  const {
+    state,
+    dispatch,
+    createInvoice,
+    createAnother,
+    getBalance,
+    formState
+  } = useContext(AutomaticInvoiceContext);
   const closeAll = () => {
     dispatch({
       type: "set-modal-type",
@@ -40,12 +45,15 @@ const NewInvoice = ({ handleClose }) => {
     });
     createAnother();
   };
+  const balanceDue = getBalance();
   return (
     <React.Fragment>
       <NewInvoiceAppbar
         createFn={createInvoice}
         handleClose={handleClose}
         type="Automatic"
+        balance={getBalance()}
+        selectedCompany={formState.company}
       />
       {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
       <Dialog

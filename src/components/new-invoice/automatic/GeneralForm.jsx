@@ -26,7 +26,6 @@ export default function GeneralForm() {
   } = useContext(AutomaticInvoiceContext);
 
   const filterCampaign = uuid => {
-    console.log(uuid, state.campaigns);
     const filteredCampaign = state.campaigns.filter(
       camp => camp.company === uuid
     );
@@ -109,11 +108,7 @@ export default function GeneralForm() {
           label="Billing Type"
           value={formState.billingType}
           onChange={e => {
-            setFormState({
-              ...formState,
-              billingType: e.target.value
-            });
-            handleBillingChange();
+            handleBillingChange(e);
           }}
           fullWidth
           select
