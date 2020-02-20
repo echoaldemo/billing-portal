@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import BillingTable from "./BillingTable";
 import NoCompanyResult from "../components/NoCompanyResult";
-const FormFields = () => {
-  return <BillingTable />;
+const FormFields = ({ duplicate }) => {
+  return <BillingTable duplicate={duplicate} />;
 };
 
-const BillingForm = () => {
+const BillingForm = ({ duplicate }) => {
   const { formState } = useContext(ManualInvoiceContext);
   return (
     <div style={{ padding: 15, paddingTop: 0, color: "#444851" }}>
@@ -14,7 +14,7 @@ const BillingForm = () => {
         <NoCompanyResult />
       ) : (
         <React.Fragment>
-          <FormFields />
+          <FormFields duplicate={duplicate} />
         </React.Fragment>
       )}
     </div>

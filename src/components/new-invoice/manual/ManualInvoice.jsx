@@ -10,16 +10,16 @@ import NewInvoiceAppbar from "../components/NewInvoiceAppbar";
 import GeneralForm from "./GeneralForm";
 import BillingForm from "./BillingForm";
 import { Dialog } from "@material-ui/core";
-const FormContent = () => {
+const FormContent = ({ duplicate }) => {
   return (
     <form>
-      <GeneralForm />
-      <BillingForm />
+      <GeneralForm duplicate={duplicate} />
+      <BillingForm duplicate={duplicate} />
     </form>
   );
 };
 
-const NewInvoice = ({ handleClose }) => {
+const NewInvoice = ({ handleClose, duplicate }) => {
   const {
     state,
     createManualInvoice,
@@ -33,12 +33,16 @@ const NewInvoice = ({ handleClose }) => {
   return (
     <React.Fragment>
       <NewInvoiceAppbar
-        createFn={type => {
+        createFn={(type) => {
           createManualInvoice(type, handleClose);
         }}
         handleClose={handleClose}
       />
-      {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
+      {!state.companies.length > 0 ? (
+        <TableLoader />
+      ) : (
+        <FormContent duplicate={duplicate} />
+      )}
 
       <LoadingModal
         open={createLoading}
@@ -68,10 +72,10 @@ const NewInvoice = ({ handleClose }) => {
   );
 };
 
-const Manual = ({ handleClose }) => {
+const Manual = ({ handleClose, duplicate }) => {
   return (
     <ManualInvoiceProvider>
-      <NewInvoice handleClose={handleClose} />
+      <NewInvoice handleClose={handleClose} duplicate={duplicate} />
     </ManualInvoiceProvider>
   );
 };
