@@ -9,9 +9,14 @@ import { compute, formatter } from "utils/func";
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const [timeState, setTimeState] = useState({ hour: "", min: "" });
 
-  const { billingFormState, setBillingFormState, tax } = useContext(
-    ManualInvoiceContext
-  );
+  const {
+    billingFormState,
+    setBillingFormState,
+    tax,
+    setTax,
+    allChecked,
+    setTaxChecked
+  } = useContext(ManualInvoiceContext);
 
   const isTaxed = tax === 0;
   const removeElement = () => {
@@ -91,6 +96,11 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     setBillingFormState(newVal);
   };
 
+  const handleCheckbox = (e, type) => {
+    handleTextField(e, type);
+
+    !allChecked() ? setTaxChecked(false) : setTaxChecked(true);
+  };
   const renderLessServices = () => {
     let services = [];
     Object.keys(campDetail).map(item => {
@@ -120,7 +130,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
         <Checkbox
           checked={isTaxed ? false : campDetail.billableHrsTaxed}
           onChange={e => {
-            handleTextField(e, "billableHrsTaxed");
+            handleCheckbox(e, "billableHrsTaxed");
           }}
           disabled={isTaxed}
         />
@@ -178,7 +188,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
         <Checkbox
           checked={isTaxed ? false : campDetail.didTaxed}
           onChange={e => {
-            handleTextField(e, "didTaxed");
+            handleCheckbox(e, "didTaxed");
           }}
           disabled={isTaxed}
         />
@@ -224,7 +234,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <Checkbox
           checked={isTaxed ? false : campDetail.performanceTaxed}
-          onChange={e => handleTextField(e, "performanceTaxed")}
+          onChange={e => handleCheckbox(e, "performanceTaxed")}
           disabled={isTaxed}
         />
       ),

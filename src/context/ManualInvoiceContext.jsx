@@ -42,8 +42,11 @@ const initialFormState = {
 const initialAdditionalFee = {
   merchantQty: "",
   merchantRate: "",
+  merchantTax: true,
+
   scrubbingQty: "",
-  scrubbingRate: ""
+  scrubbingRate: "",
+  scrubbingTax: true
 };
 
 const ManualInvoiceContext = React.createContext();
@@ -55,11 +58,12 @@ const ManualInvoiceProvider = ({ children }) => {
   const [additionalFee, setAdditionalFee] = useState(initialAdditionalFee);
   const [showCreateNew, setShowCreateNew] = useState(false);
   const [campaignDetails, setCampaignDetails] = useState([]);
+  const [taxChecked, setTaxChecked] = useState(true);
   const mockTaxation = [
     { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
   ];
-  const [tax, setTax] = useState(0);
+  const [tax, setTax] = useState(6.1);
 
   const getBalance = () => {
     let total = 0;
@@ -229,6 +233,15 @@ const ManualInvoiceProvider = ({ children }) => {
     setSelectedCampaign([]);
   };
 
+  const allChecked = () => {
+    const result = billingFormState.map(item => {
+      return (
+        item["billableHrsTaxed"] || item["didTaxed"] || item["performanceTaxed"]
+      );
+    });
+    return result.every(val => val === true);
+  };
+
   return (
     <ManualInvoiceContext.Provider
       value={{
@@ -253,7 +266,10 @@ const ManualInvoiceProvider = ({ children }) => {
         setShowCreateNew,
         resetAllFormState,
         campaignDetails,
-        setCampaignDetails
+        setCampaignDetails,
+        allChecked,
+        taxChecked,
+        setTaxChecked
       }}
     >
       {children}
