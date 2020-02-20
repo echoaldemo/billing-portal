@@ -9,27 +9,32 @@ const formatter = new Intl.NumberFormat('en-US', {
 const defaultBillable = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultPerformance = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultDid = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultLitigator = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultMerchant = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 
 const mockTaxation = [
@@ -60,6 +65,8 @@ const handleAmt = ({ billable, performance, did }) => {
     parseFloat(did.amt ? did.amt : 0)
   )
 }
+
+const handleTaxAmt = (amt, per) => Math.round(amt * (per / 100) * 100) / 100
 
 const handleServices = ({ billable, performance, did }) => {
   const text = []
@@ -114,6 +121,7 @@ export {
   handleQty,
   handleRate,
   handleAmt,
+  handleTaxAmt,
   handleServices,
   handleAdditional,
   useStyles
