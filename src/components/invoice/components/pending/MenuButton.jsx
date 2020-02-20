@@ -75,7 +75,11 @@ export default function SimplePopover({ item }) {
             Manage
           </span>
           <span
-            className="menu-item"
+            className={
+              state.selectedData.invoiceType === 'Automatic'
+                ? 'menu-item span-disabled'
+                : 'menu-item'
+            }
             onClick={() =>
               dispatch({
                 type: 'set-duplicate-modal',

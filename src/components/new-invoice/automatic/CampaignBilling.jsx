@@ -6,6 +6,7 @@ import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import ExpandButton from "../manual/ExpandButtton";
 import InputField from "../components/CustomInput";
 import RowForm from "./RowForm";
+import { CenterCont } from "./styles";
 const Checkbox = styled(TempCb)({
   padding: 0
 });
@@ -23,12 +24,12 @@ const CampaignBilling = ({ campaignDetails }) => {
     getTotal,
     getTaxableSubtotal,
     getTax,
-    getBalance,
     formState,
     setFormState,
     addFee,
     handleAddFees,
-    mockTaxation
+    mockTaxation,
+    getBalance
   } = useContext(AutomaticInvoiceContext);
   const [rowCollapse, setRowCollapse] = useState([0]);
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
@@ -203,25 +204,18 @@ const CampaignBilling = ({ campaignDetails }) => {
   ];
   const TaxMenu = () => {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end"
-        }}
-      >
+      <CenterCont>
         <InputField
           select
-          variant="outlined"
-          label="Taxable"
           disabled={getTaxableSubtotal() ? false : true}
-          style={{ padding: 0, width: 170 }}
+          style={{ padding: 0, width: 150 }}
           value={formState.taxation}
           onChange={e =>
             setFormState({ ...formState, taxation: e.target.value })
           }
         >
           <MenuItem value=" " disabled>
-            Select Taxation
+            Select tax rate
           </MenuItem>
           {mockTaxation.map(item => (
             <MenuItem value={item.percentage}>
@@ -229,94 +223,83 @@ const CampaignBilling = ({ campaignDetails }) => {
             </MenuItem>
           ))}
         </InputField>
-      </div>
+      </CenterCont>
     );
   };
+  const totalRow = [
+    { label: " ", size: 7 },
+    {
+      label: <CenterCont>TAXABLE SUBTOTAL</CenterCont>,
+      size: 2
+    },
+    {
+      label: (
+        <CenterCont>
+          <b> {formatter.format(getTaxableSubtotal())}</b>
+        </CenterCont>
+      ),
+      size: 1
+    },
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
+          }}
+        >
+          <span>TOTAL</span>
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: 20
+            }}
+          >
+            {formatter.format(getTotal())}
+          </span>
+        </div>
+      ),
+      size: 2
+    }
+  ];
   const taxRow = [
     { label: " ", size: 3 },
     { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
     { label: <TaxMenu />, size: 3 },
 
     {
       label: (
-        <div style={{ textAlign: "right" }}>
+        <CenterCont>
           <b>{getTax() ? formatter.format(getTax()) : " "}</b>
-        </div>
+        </CenterCont>
       ),
       size: 1
+    },
+    {
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
+          }}
+        >
+          <span>BALANCE DUE</span>
+          <span
+            style={{
+              fontWeight: 600,
+              fontSize: 20
+            }}
+          >
+            {formatter.format(getBalance())}
+          </span>
+        </div>
+      ),
+      size: 2
     }
   ];
 
-  const totalRow = [
-    { label: " ", size: 3 },
-    { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
-    {
-      label: <div style={{ textAlign: "right" }}>TOTAL</div>,
-      size: 3
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>{formatter.format(getTotal())}</b>
-        </div>
-      ),
-      size: 1
-    }
-  ];
-
-  const totalTaxableRow = [
-    { label: " ", size: 3 },
-    { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
-    {
-      label: <div style={{ textAlign: "right" }}>Taxable subtotal</div>,
-      size: 3
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>{formatter.format(getTaxableSubtotal())}</b>
-        </div>
-      ),
-      size: 1
-    }
-  ];
-
-  const balanceRow = [
-    { label: " ", size: 3 },
-    { label: " ", size: 3 },
-    {
-      label: "",
-      size: 2
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>BALANCE DUE</b>
-        </div>
-      ),
-      size: 3
-    },
-    {
-      label: (
-        <div style={{ textAlign: "right" }}>
-          <b>{formatter.format(getBalance())}</b>
-        </div>
-      ),
-      size: 1
-    }
-  ];
   return (
     <>
       <div
@@ -331,7 +314,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         />
         <div
           style={{
-            maxHeight: 442,
+            maxHeight: 476,
             overflow: "auto"
           }}
         >
@@ -367,15 +350,7 @@ const CampaignBilling = ({ campaignDetails }) => {
       </div>
 
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
-        <Row rowData={totalTaxableRow} />
-      </div>
-
-      <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
         <Row rowData={taxRow} />
-      </div>
-
-      <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
-        <Row rowData={balanceRow} />
       </div>
     </>
   );
