@@ -25,7 +25,9 @@ const BillingTable = ({ duplicate }) => {
     campaignDetails,
     setCampaignDetails,
     additionalFee,
-    setAdditionalFee
+    setAdditionalFee,
+    setTaxChecked,
+    setTax
   } = useContext(ManualInvoiceContext);
 
   const getAllCampaignDetails = () => {
@@ -104,6 +106,12 @@ const BillingTable = ({ duplicate }) => {
   useEffect(() => {
     getAllCampaignDetails();
     if (duplicate) {
+      const taxed = Boolean(duplicate.TxnTaxDetail);
+      setTaxChecked(taxed);
+      if (taxed) {
+        setTax(duplicate.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxPercent);
+      }
+
       setAdditionalFee({
         ...additionalFee,
         merchantQty: Boolean(
