@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
 import { Collapse, IconButton } from "@material-ui/core";
 import { Row, TimeInput, CustomCheckbox as Checkbox } from "common-components";
@@ -8,7 +8,20 @@ import { compute, formatter } from "utils/func";
 
 const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const [timeState, setTimeState] = useState({ hour: "", min: "" });
-
+  useEffect(() => {
+    if (campDetail.billableHrsQty) {
+      convertHourMin(campDetail.billableHrsQty);
+    }
+  }, []);
+  const convertHourMin = (value) => {
+    const hrs = parseInt(Number(value));
+    const min = Math.round((Number(value) - hrs) * 60);
+    setTimeState({
+      ...timeState,
+      hour: hrs,
+      min
+    });
+  };
   const {
     billingFormState,
     setBillingFormState,
@@ -20,7 +33,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
   const isTaxed = tax === 0;
   const removeElement = () => {
-    const newEl = rowCollapse.filter(item => item !== index);
+    const newEl = rowCollapse.filter((item) => item !== index);
     return newEl;
   };
 
@@ -103,7 +116,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   };
   const renderLessServices = () => {
     let services = [];
-    Object.keys(campDetail).map(item => {
+    Object.keys(campDetail).map((item) => {
       if (campDetail[item]) {
         item === "billableHrsQty" && services.push("Billable Hours");
         item === "didQty" && services.push("DID Billing");
@@ -129,7 +142,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <Checkbox
           checked={isTaxed ? false : campDetail.billableHrsTaxed}
-          onChange={e => {
+          onChange={(e) => {
             handleCheckbox(e, "billableHrsTaxed");
           }}
           disabled={isTaxed}
@@ -146,7 +159,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={campDetail.billableHrsRate}
-          onChange={e => {
+          onChange={(e) => {
             handleTextField(e, "billableHrsRate");
           }}
           placeholder="Rate value"
@@ -187,7 +200,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <Checkbox
           checked={isTaxed ? false : campDetail.didTaxed}
-          onChange={e => {
+          onChange={(e) => {
             handleCheckbox(e, "didTaxed");
           }}
           disabled={isTaxed}
@@ -200,7 +213,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={campDetail.didQty}
-          onChange={e => handleTextField(e, "didQty")}
+          onChange={(e) => handleTextField(e, "didQty")}
           placeholder="DID Quantity"
           type="number"
         />
@@ -211,7 +224,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={campDetail.didRate}
-          onChange={e => handleTextField(e, "didRate")}
+          onChange={(e) => handleTextField(e, "didRate")}
           placeholder="DID rate"
           type="number"
         />
@@ -234,7 +247,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <Checkbox
           checked={isTaxed ? false : campDetail.performanceTaxed}
-          onChange={e => handleCheckbox(e, "performanceTaxed")}
+          onChange={(e) => handleCheckbox(e, "performanceTaxed")}
           disabled={isTaxed}
         />
       ),
@@ -245,7 +258,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={campDetail.performanceQty}
-          onChange={e => handleTextField(e, "performanceQty")}
+          onChange={(e) => handleTextField(e, "performanceQty")}
           placeholder="Performance quantity"
           type="number"
         />
@@ -256,7 +269,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: (
         <InputField
           value={campDetail.performanceRate}
-          onChange={e => handleTextField(e, "performanceRate")}
+          onChange={(e) => handleTextField(e, "performanceRate")}
           placeholder="Performance rate"
           type="number"
         />
