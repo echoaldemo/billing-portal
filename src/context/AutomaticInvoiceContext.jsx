@@ -232,28 +232,31 @@ const AutomaticInvoiceProvider = ({ children }) => {
           qty: billable_hours,
           rate: bill_rate,
           itemName: "Billable Hours",
-          itemId: "21"
+          itemId: "21",
+          tax: campaign.tax.billable_hours ? "TAX" : "NON"
         });
       if (performance * performance_rate)
         temp.push({
           qty: performance,
           rate: performance_rate,
           itemName: "Performance",
-          itemId: "22"
+          itemId: "22",
+          tax: campaign.tax.performance ? "TAX" : "NON"
         });
       if (did * did_rate)
         temp.push({
           qty: did,
           rate: did_rate,
           itemName: "DID Billing",
-          itemId: "23"
+          itemId: "23",
+          tax: campaign.tax.did ? "TAX" : "NON"
         });
       temp.forEach(item => {
         temp2.push({
           Amount: item.qty * item.rate,
           SalesItemLineDetail: {
             TaxCodeRef: {
-              value: tax ? "TAX" : "NON"
+              value: item.tax
             },
             ItemRef: {
               name: item.itemName,
@@ -313,7 +316,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
         Amount: litigator.qty * litigator.rate,
         SalesItemLineDetail: {
           TaxCodeRef: {
-            value: tax ? "TAX" : "NON"
+            value: litigator.tax ? "TAX" : "NON"
           },
           ItemRef: {
             name: "Litigator Scrubbing",
@@ -334,7 +337,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
         Amount: merchant.qty * merchant.rate,
         SalesItemLineDetail: {
           TaxCodeRef: {
-            value: tax ? "TAX" : "NON"
+            value: merchant.tax ? "TAX" : "NON"
           },
           ItemRef: {
             name: "Merchant Fees",
