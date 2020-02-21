@@ -24,6 +24,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     getTotal,
     getTaxableSubtotal,
     getTax,
+    getTaxStatus,
     formState,
     setFormState,
     addFee,
@@ -207,7 +208,7 @@ const CampaignBilling = ({ campaignDetails }) => {
       <CenterCont>
         <InputField
           select
-          disabled={getTaxableSubtotal() ? false : true}
+          disabled={getTaxStatus() ? false : true}
           style={{ padding: 0, width: 150 }}
           value={formState.taxation}
           onChange={e =>
