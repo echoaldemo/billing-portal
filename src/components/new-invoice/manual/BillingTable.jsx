@@ -106,6 +106,7 @@ const BillingTable = ({ duplicate }) => {
   useEffect(() => {
     getAllCampaignDetails();
     if (duplicate) {
+      console.log(duplicate);
       const taxed = Boolean(duplicate.TxnTaxDetail);
       setTaxChecked(taxed);
       if (taxed) {

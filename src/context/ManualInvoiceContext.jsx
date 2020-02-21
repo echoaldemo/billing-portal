@@ -88,6 +88,41 @@ const ManualInvoiceProvider = ({ children }) => {
     });
     return total;
   };
+  const computeBalanceDue = () => {
+    let newBalanceDue = 0;
+
+    newBalanceDue = parseFloat(computeTax()) + parseFloat(computeTotal());
+
+    return newBalanceDue;
+  };
+  const computeTax = () => {
+    let taxed = 0;
+    if (taxChecked) {
+      let totalBills = parseFloat(computeTotal());
+      let totalTaxation = parseFloat(tax / 100);
+
+      taxed = totalBills * totalTaxation;
+    }
+    return parseFloat(taxed);
+  };
+  const computeTotal = () => {
+    let total = 0;
+    let balanceTotal = parseFloat(getBalance());
+
+    let totalAdditionalFee =
+      computeItemService(
+        additionalFee.merchantQty,
+        additionalFee.merchantRate,
+        additionalFee.merchantTax
+      ) +
+      computeItemService(
+        additionalFee.scrubbingQty,
+        additionalFee.scrubbingRate,
+        additionalFee.scrubbingTax
+      );
+    total = parseFloat(balanceTotal) + parseFloat(totalAdditionalFee);
+    return parseFloat(total);
+  };
 
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
@@ -198,7 +233,7 @@ const ManualInvoiceProvider = ({ children }) => {
       campaigns: campaignDetails,
       startDate: formatDate(getStartDate()),
       dueDate: formatDate(new Date(formState.billingPeriod)),
-      total: getBalance(),
+      total: computeBalanceDue(),
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
@@ -241,7 +276,7 @@ const ManualInvoiceProvider = ({ children }) => {
       TxnDate: formatDate(new Date(date)),
       DueDate: formatDate(new Date(formState.billingPeriod)),
       Line: generateLine(),
-      TxnTaxDetail: tax !== 0 ? taxDetails : null,
+      TxnTaxDetail: taxChecked ? taxDetails : null,
       CustomerMemo: {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
