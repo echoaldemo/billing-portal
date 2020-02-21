@@ -30,9 +30,12 @@ const CampaignBilling = ({ campaignDetails }) => {
     allChecked,
     taxChecked,
     setTaxChecked,
-    computeItemService
+    computeItemService,
+    getTaxableServices,
+    getTaxableAdditionalFees
   } = React.useContext(ManualInvoiceContext);
   useEffect(() => {
+    console.log("campaignDetails", campaignDetails);
     setBillingFormState(campaignDetails);
   }, [campaignDetails]);
 
@@ -245,17 +248,24 @@ const CampaignBilling = ({ campaignDetails }) => {
     total = parseFloat(balanceTotal) + parseFloat(totalAdditionalFee);
     return parseFloat(total);
   };
+  const taxableTotal = () => {
+    return getTaxableAdditionalFees() + getTaxableServices();
+  };
 
   const totalRow = [
-    { label: " ", size: 3 },
-    { label: " ", size: 3 },
+    { label: " ", size: 7 },
+    { label: "TAXABLE SUBTOTAL", size: 2 },
     {
-      label: "",
-      size: 2
+      label: (
+        <div style={{ textAlign: "right" }}>
+          <b> {formatter.format(taxableTotal())}</b>
+        </div>
+      ),
+      size: 1
     },
     {
       label: <div style={{ textAlign: "right" }}>TOTAL</div>,
-      size: 3
+      size: 1
     },
     {
       label: (
@@ -270,7 +280,7 @@ const CampaignBilling = ({ campaignDetails }) => {
   const computeTax = () => {
     let taxed = 0;
     if (taxChecked) {
-      let totalBills = parseFloat(computeTotal());
+      let totalBills = parseFloat(taxableTotal());
       let totalTaxation = parseFloat(tax / 100);
 
       taxed = totalBills * totalTaxation;
@@ -409,6 +419,7 @@ const TaxMenu = () => {
         value={taxChecked ? tax : 0}
         disabled={!taxChecked}
         onChange={(e) => {
+          console.log("object", tax);
           setTax(e.target.value);
         }}
       >
