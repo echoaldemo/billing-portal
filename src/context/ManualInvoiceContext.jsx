@@ -248,9 +248,10 @@ const ManualInvoiceProvider = ({ children }) => {
       });
   };
   const createManualInvoice = (type, handleClose) => {
+    const taxDetail = mockTaxation.find(item => item.percentage === tax);
     let taxDetails = {
       TxnTaxCodeRef: {
-        value: mockTaxation[0].code
+        value: taxDetail.code
       },
       TotalTax: 124242,
       TaxLine: [
