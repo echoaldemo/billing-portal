@@ -30,68 +30,66 @@ const BillingTable = ({ duplicate }) => {
 
   const getAllCampaignDetails = () => {
     const campaignsDetails = selectedCampaign.map((uuid, x) => {
-      let filteredDetails = state.campaigns.filter(
-        (item) => item.uuid === uuid
-      );
+      let filteredDetails = state.campaigns.filter(item => item.uuid === uuid);
       if (duplicate) {
         return {
           ...filteredDetails[0],
           billableHrsQty: Boolean(
             duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "21"
+              l => l.SalesItemLineDetail.ItemRef.value === "21"
             )[x]
           )
             ? duplicate.Line.slice(0, -1).filter(
-                (l) => l.SalesItemLineDetail.ItemRef.value === "21"
+                l => l.SalesItemLineDetail.ItemRef.value === "21"
               )[x].SalesItemLineDetail.Qty
             : "",
           billableHrsRate: Boolean(
             duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "21"
+              l => l.SalesItemLineDetail.ItemRef.value === "21"
             )[x]
           )
             ? duplicate.Line.slice(0, -1).filter(
-                (l) => l.SalesItemLineDetail.ItemRef.value === "21"
+                l => l.SalesItemLineDetail.ItemRef.value === "21"
               )[x].SalesItemLineDetail.UnitPrice
             : "",
           billableHrsTotalAmount: "",
 
           didQty: Boolean(
             duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "23"
+              l => l.SalesItemLineDetail.ItemRef.value === "23"
             )[x]
           )
             ? duplicate.Line.slice(0, -1).filter(
-                (l) => l.SalesItemLineDetail.ItemRef.value === "23"
+                l => l.SalesItemLineDetail.ItemRef.value === "23"
               )[x].SalesItemLineDetail.Qty
             : "",
           didRate: Boolean(
             duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "23"
+              l => l.SalesItemLineDetail.ItemRef.value === "23"
             )[x]
           )
             ? duplicate.Line.slice(0, -1).filter(
-                (l) => l.SalesItemLineDetail.ItemRef.value === "23"
+                l => l.SalesItemLineDetail.ItemRef.value === "23"
               )[x].SalesItemLineDetail.UnitPrice
             : "",
           didTotalAmount: "",
 
           performanceQty: Boolean(
             duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "22"
+              l => l.SalesItemLineDetail.ItemRef.value === "22"
             )[x]
           )
             ? duplicate.Line.slice(0, -1).filter(
-                (l) => l.SalesItemLineDetail.ItemRef.value === "22"
+                l => l.SalesItemLineDetail.ItemRef.value === "22"
               )[x].SalesItemLineDetail.Qty
             : "",
           performanceRate: Boolean(
             duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "22"
+              l => l.SalesItemLineDetail.ItemRef.value === "22"
             )[x]
           )
             ? duplicate.Line.slice(0, -1).filter(
-                (l) => l.SalesItemLineDetail.ItemRef.value === "22"
+                l => l.SalesItemLineDetail.ItemRef.value === "22"
               )[x].SalesItemLineDetail.UnitPrice
             : "",
           performanceTotalAmount: ""
@@ -108,38 +106,38 @@ const BillingTable = ({ duplicate }) => {
         ...additionalFee,
         merchantQty: Boolean(
           duplicate.Line.slice(0, -1).filter(
-            (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+            l => l.SalesItemLineDetail.ItemRef.value === "25"
           )[0]
         )
           ? duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+              l => l.SalesItemLineDetail.ItemRef.value === "25"
             )[0].SalesItemLineDetail.Qty
           : "",
         merchantRate: Boolean(
           duplicate.Line.slice(0, -1).filter(
-            (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+            l => l.SalesItemLineDetail.ItemRef.value === "25"
           )[0]
         )
           ? duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "25"
+              l => l.SalesItemLineDetail.ItemRef.value === "25"
             )[0].SalesItemLineDetail.UnitPrice
           : "",
         scrubbingQty: Boolean(
           duplicate.Line.slice(0, -1).filter(
-            (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+            l => l.SalesItemLineDetail.ItemRef.value === "24"
           )[0]
         )
           ? duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+              l => l.SalesItemLineDetail.ItemRef.value === "24"
             )[0].SalesItemLineDetail.Qty
           : "",
         scrubbingRate: Boolean(
           duplicate.Line.slice(0, -1).filter(
-            (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+            l => l.SalesItemLineDetail.ItemRef.value === "24"
           )[0]
         )
           ? duplicate.Line.slice(0, -1).filter(
-              (l) => l.SalesItemLineDetail.ItemRef.value === "24"
+              l => l.SalesItemLineDetail.ItemRef.value === "24"
             )[0].SalesItemLineDetail.UnitPrice
           : ""
       });
@@ -150,7 +148,6 @@ const BillingTable = ({ duplicate }) => {
     <div>
       {campaignDetails.length > 0 ? (
         <React.Fragment>
-          <h3>Items</h3>
           <div style={{ paddingTop: 0 }}>
             <CampaignBilling campaignDetails={campaignDetails} />
           </div>
