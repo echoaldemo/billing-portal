@@ -183,7 +183,14 @@ input[type='number'] {
 .Mui-checked {
   color: #0f97fc !important;
 }
-
+.date-label {
+  font-size: 13px !important;
+  font-weight: bold !important;
+  padding-bottom: 0px !important;
+}
+.date-picker-custom {
+  border-bottom: solid 1px #f1f1f1 !important;
+}
 .section-title-text {
   font-size: 16px;
   font-weight: normal;
@@ -270,6 +277,17 @@ input[type='number'] {
   color: rgba(0, 0, 0, 0.5);
 }
 
+/* date range */
+/* .rdrDateDisplayWrapper {
+  width: 420px;
+}
+
+.rdrMonthAndYearWrapper {
+  display: none !important;
+}
+.rdrMonths {
+  display: none !important;
+} */
 @media screen and (min-device-width: 1440px) and (max-device-width: 1600px) {
   .tab-panel-container {
     width: 70% !important;
