@@ -3,8 +3,17 @@ import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
 import { getMock, post } from "utils/api";
 import { StateContext } from "context/StateContext";
 
+const appendLeadingZeroes = n => {
+  if (n <= 9) {
+    return "0" + n;
+  }
+  return n;
+};
 const today = new Date();
-const date =
+const start =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+today.setMonth(today.getMonth() + 1);
+const end =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
 const initialState = {
@@ -18,7 +27,7 @@ const initialFormState = {
   company: false,
   campaign: [],
   billingType: "1",
-  billingPeriod: date,
+  billingPeriod: { start, end },
   total: " ",
   taxation: " "
 };
@@ -32,14 +41,6 @@ const mockTaxation = [
   { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
   { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
 ];
-
-const appendLeadingZeroes = n => {
-  if (n <= 9) {
-    return "0" + n;
-  }
-  return n;
-};
-
 const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { getPendingInvoicesData } = useContext(StateContext);
@@ -63,6 +64,20 @@ const AutomaticInvoiceProvider = ({ children }) => {
   useEffect(() => {
     getGeneralData();
   }, []);
+  useEffect(() => {
+    const { start } = formState.billingPeriod;
+    let dt = new Date(start);
+    if (formState.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+    else dt.setDate(dt.getDate() + 7);
+
+    const dueDate =
+      dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
+
+    setFormState({
+      ...formState,
+      billingPeriod: { ...formState.billingPeriod, end: dueDate }
+    });
+  }, [formState.billingType, formState.billingPeriod.start]);
   const setActiveCampaigns = uuid => {
     const filteredCampaigns = state.campaigns.filter(c => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
@@ -159,6 +174,21 @@ const AutomaticInvoiceProvider = ({ children }) => {
     });
     return total;
   };
+  const getTaxStatus = () => {
+    const { merchant, litigator } = addFee;
+    let temp = formState.campaign.filter(
+      item => selectedCampaign.indexOf(item.uuid) !== -1
+    );
+    let total = 0;
+    if (merchant.tax) total += 1;
+    if (litigator.tax) total += 1;
+    temp.map(item => {
+      if (item.tax.billable_hours) total += 1;
+      if (item.tax.performance) total += 1;
+      if (item.tax.did) total += 1;
+    });
+    return total;
+  };
   const getTax = () => {
     const tax =
       formState.taxation !== " "
@@ -177,24 +207,23 @@ const AutomaticInvoiceProvider = ({ children }) => {
       payload: { modalType: "loading" }
     });
     const { litigator, merchant } = addFee;
-    let dt = new Date(formState.billingPeriod);
 
-    let startDate =
-      dt.getFullYear() +
-      "-" +
-      appendLeadingZeroes(dt.getMonth() + 1) +
-      "-" +
-      appendLeadingZeroes(dt.getDate());
+    let start = new Date(formState.billingPeriod.start),
+      end = new Date(formState.billingPeriod.end);
 
-    if (formState.billingType === "1") dt.setMonth(dt.getMonth() + 1);
-    else dt.setDate(dt.getDate() + 7);
+    const startDate =
+      start.getFullYear() +
+      "-" +
+      appendLeadingZeroes(start.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(start.getDate());
 
     const dueDate =
-      dt.getFullYear() +
+      end.getFullYear() +
       "-" +
-      appendLeadingZeroes(dt.getMonth() + 1) +
+      appendLeadingZeroes(end.getMonth() + 1) +
       "-" +
-      appendLeadingZeroes(dt.getDate());
+      appendLeadingZeroes(end.getDate());
 
     const company = state.companies.filter(
       item => item.uuid === formState.company
@@ -406,6 +435,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
         getTotal,
         getTaxableSubtotal,
         getTax,
+        getTaxStatus,
         mockTaxation,
         getBalance,
         createInvoice,
