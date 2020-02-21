@@ -180,13 +180,19 @@ export default function ItemsTable() {
   useEffect(() => {
     if (Object.keys(formState).length > 0) {
       setTotal(formState.Line[formState.Line.length - 1].Amount)
-      if (formState.campaigns.length === 1) {
-        setCollapsed([...collapsed, 0])
-      }
+      // if (formState.campaigns.length === 1) {
+      //   setCollapsed([...collapsed, 0])
+      // }
       gatherData()
     }
     return () => {
       setCollapsed([])
+      setTax({
+        percentage: 0,
+        amt: 0,
+        code: '',
+        taxRef: ''
+      })
     }
     // eslint-disable-next-line
   }, [formState])
