@@ -25,7 +25,7 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 function getSorting(order, orderBy) {
   return order === "desc"
@@ -62,14 +62,14 @@ const services = [
     value: "22",
     qty: "performanceQty",
     rate: "performanceRate",
-    tax: "didTaxed"
+    tax: "performanceTaxed"
   },
   {
     name: "DID Billing",
     value: "23",
     qty: "didQty",
     rate: "didRate",
-    tax: "performanceTaxed"
+    tax: "didTaxed"
   }
 ];
 
@@ -90,14 +90,14 @@ const additionalFeeDetails = [
   }
 ];
 
-const appendLeadingZeroes = n => {
+const appendLeadingZeroes = (n) => {
   if (n <= 9) {
     return "0" + n;
   }
   return n;
 };
 
-const formatDate = date => {
+const formatDate = (date) => {
   return `${date.getFullYear()}-${appendLeadingZeroes(
     date.getMonth() + 1
   )}-${appendLeadingZeroes(date.getDate())}`;

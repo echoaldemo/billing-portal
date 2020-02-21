@@ -64,19 +64,12 @@ const ManualInvoiceProvider = ({ children }) => {
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
   ];
   const [tax, setTax] = useState(6.1);
-
   const computeItemService = (qty = 0, rate = 0, isTaxed) => {
-    let totalServiceAmount = 0;
-    let serviceTotal = qty * rate;
-    let percentage = parseFloat(tax) / 100;
-    let taxedService = serviceTotal * percentage;
-    totalServiceAmount = serviceTotal + taxedService;
-    return isTaxed ? totalServiceAmount : serviceTotal;
+    return qty * rate;
   };
-
   const getBalance = () => {
     let total = 0;
-    billingFormState.map((item) => {
+    billingFormState.forEach((item) => {
       total +=
         computeItemService(
           item.billableHrsQty,
@@ -88,17 +81,58 @@ const ManualInvoiceProvider = ({ children }) => {
     });
     return total;
   };
+  const getTaxableServices = () => {
+    let total = 0;
+    billingFormState.forEach((item) => {
+      if (item.billableHrsTaxed) {
+        total += computeItemService(
+          item.billableHrsQty,
+          item.billableHrsRate,
+          item.billableHrsTaxed
+        );
+      }
+      if (item.didTaxed) {
+        total += computeItemService(item.didQty, item.didRate, item.didTaxed);
+      }
+      if (item.performanceTaxed) {
+        total += computeItemService(item.performanceQty, item.performanceTaxed);
+      }
+    });
+    return total;
+  };
+  const getTaxableAdditionalFees = () => {
+    let total = 0;
+    if (additionalFee.merchantTax) {
+      total += computeItemService(
+        additionalFee.merchantQty,
+        additionalFee.merchantRate,
+        additionalFee.merchantTax
+      );
+    }
+    if (additionalFee.scrubbingTax) {
+      total += computeItemService(
+        additionalFee.scrubbingQty,
+        additionalFee.scrubbingRate,
+        additionalFee.scrubbingTax
+      );
+    }
+    return total;
+  };
   const computeBalanceDue = () => {
     let newBalanceDue = 0;
+    console.log(computeTax(), computeTotal());
 
     newBalanceDue = parseFloat(computeTax()) + parseFloat(computeTotal());
 
     return newBalanceDue;
   };
+  const taxableTotal = () => {
+    return getTaxableAdditionalFees() + getTaxableServices();
+  };
   const computeTax = () => {
     let taxed = 0;
     if (taxChecked) {
-      let totalBills = parseFloat(computeTotal());
+      let totalBills = parseFloat(taxableTotal());
       let totalTaxation = parseFloat(tax / 100);
 
       taxed = totalBills * totalTaxation;
@@ -203,7 +237,7 @@ const ManualInvoiceProvider = ({ children }) => {
 
     newLine.push({
       DetailType: "SubTotalLineDetail",
-      Amount: 1454.29,
+      Amount: computeBalanceDue(),
       SubTotalLineDetail: {}
     });
 
@@ -248,7 +282,7 @@ const ManualInvoiceProvider = ({ children }) => {
       });
   };
   const createManualInvoice = (type, handleClose) => {
-    const taxDetail = mockTaxation.find(item => item.percentage === tax);
+    const taxDetail = mockTaxation.find((item) => item.percentage === tax);
     let taxDetails = {
       TxnTaxCodeRef: {
         value: taxDetail.code
@@ -314,7 +348,7 @@ const ManualInvoiceProvider = ({ children }) => {
       );
     });
 
-    return result.every((val) => val === true);
+    return result.some((val) => val === true);
   };
 
   return (
@@ -345,7 +379,11 @@ const ManualInvoiceProvider = ({ children }) => {
         allChecked,
         taxChecked,
         setTaxChecked,
-        computeItemService
+        computeItemService,
+        getTaxableServices,
+        getTaxableAdditionalFees,
+        computeBalanceDue,
+        taxableTotal
       }}
     >
       {children}
