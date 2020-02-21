@@ -65,7 +65,7 @@ const ManualInvoiceProvider = ({ children }) => {
   ];
   const [tax, setTax] = useState(6.1);
 
-  const computeItemService = (qty, rate, isTaxed) => {
+  const computeItemService = (qty = 0, rate = 0, isTaxed) => {
     let totalServiceAmount = 0;
     let serviceTotal = qty * rate;
     let percentage = parseFloat(tax) / 100;
@@ -76,7 +76,7 @@ const ManualInvoiceProvider = ({ children }) => {
 
   const getBalance = () => {
     let total = 0;
-    billingFormState.map(item => {
+    billingFormState.map((item) => {
       total +=
         computeItemService(
           item.billableHrsQty,
@@ -87,6 +87,41 @@ const ManualInvoiceProvider = ({ children }) => {
         computeItemService(item.performanceQty, item.performanceTaxed);
     });
     return total;
+  };
+  const computeBalanceDue = () => {
+    let newBalanceDue = 0;
+
+    newBalanceDue = parseFloat(computeTax()) + parseFloat(computeTotal());
+
+    return newBalanceDue;
+  };
+  const computeTax = () => {
+    let taxed = 0;
+    if (taxChecked) {
+      let totalBills = parseFloat(computeTotal());
+      let totalTaxation = parseFloat(tax / 100);
+
+      taxed = totalBills * totalTaxation;
+    }
+    return parseFloat(taxed);
+  };
+  const computeTotal = () => {
+    let total = 0;
+    let balanceTotal = parseFloat(getBalance());
+
+    let totalAdditionalFee =
+      computeItemService(
+        additionalFee.merchantQty,
+        additionalFee.merchantRate,
+        additionalFee.merchantTax
+      ) +
+      computeItemService(
+        additionalFee.scrubbingQty,
+        additionalFee.scrubbingRate,
+        additionalFee.scrubbingTax
+      );
+    total = parseFloat(balanceTotal) + parseFloat(totalAdditionalFee);
+    return parseFloat(total);
   };
 
   const [state, dispatch] = useReducer((state, action) => {
@@ -104,8 +139,8 @@ const ManualInvoiceProvider = ({ children }) => {
   useEffect(() => {
     getGeneralData();
   }, []);
-  const setActiveCampaigns = uuid => {
-    const filteredCampaigns = state.campaigns.filter(c => c.company === uuid);
+  const setActiveCampaigns = (uuid) => {
+    const filteredCampaigns = state.campaigns.filter((c) => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
   };
   const getGeneralData = () => {
@@ -175,14 +210,14 @@ const ManualInvoiceProvider = ({ children }) => {
     return newLine;
   };
 
-  const sendToQuickbooks = data => {
+  const sendToQuickbooks = (data) => {
     setCreateLoading(true);
     post("/api/invoice", data)
-      .then(res => {
+      .then((res) => {
         setCreateLoading(false);
         setShowCreateNew(true);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -190,7 +225,7 @@ const ManualInvoiceProvider = ({ children }) => {
   const getStartDate = () => {
     return new Date(formState.billingType === "1" ? addMonth : addWeek);
   };
-  const saveAsDraft = data => {
+  const saveAsDraft = (data) => {
     let newData = {
       ...data,
       invoiceType: "Manual",
@@ -198,17 +233,17 @@ const ManualInvoiceProvider = ({ children }) => {
       campaigns: campaignDetails,
       startDate: formatDate(getStartDate()),
       dueDate: formatDate(new Date(formState.billingPeriod)),
-      total: getBalance(),
+      total: computeBalanceDue(),
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
     setCreateLoading(true);
     post("/api/create_pending", newData)
-      .then(res => {
+      .then((res) => {
         setCreateLoading(false);
         setShowCreateNew(true);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -242,7 +277,7 @@ const ManualInvoiceProvider = ({ children }) => {
       TxnDate: formatDate(new Date(date)),
       DueDate: formatDate(new Date(formState.billingPeriod)),
       Line: generateLine(),
-      TxnTaxDetail: tax !== 0 ? taxDetails : null,
+      TxnTaxDetail: taxChecked ? taxDetails : null,
       CustomerMemo: {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
@@ -269,7 +304,7 @@ const ManualInvoiceProvider = ({ children }) => {
   };
 
   const allChecked = () => {
-    const result = billingFormState.map(item => {
+    const result = billingFormState.map((item) => {
       return (
         item["billableHrsTaxed"] ||
         item["didTaxed"] ||
@@ -279,7 +314,7 @@ const ManualInvoiceProvider = ({ children }) => {
       );
     });
 
-    return result.every(val => val === true);
+    return result.every((val) => val === true);
   };
 
   return (

@@ -28,6 +28,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     setAdditionalFee,
     tax,
     allChecked,
+    taxChecked,
     setTaxChecked,
     computeItemService
   } = React.useContext(ManualInvoiceContext);
@@ -96,7 +97,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <CustomCheckbox
           disabled={isTaxed}
           checked={isTaxed ? false : additionalFee.merchantTax}
-          onChange={e => {
+          onChange={(e) => {
             CustomChange(e, "merchantTax");
           }}
         />
@@ -166,7 +167,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <CustomCheckbox
           disabled={isTaxed}
           checked={isTaxed ? false : additionalFee.scrubbingTax}
-          onChange={e => {
+          onChange={(e) => {
             CustomChange(e, "scrubbingTax");
           }}
         />
@@ -268,10 +269,12 @@ const CampaignBilling = ({ campaignDetails }) => {
 
   const computeTax = () => {
     let taxed = 0;
-    let totalBills = parseFloat(computeTotal());
-    let totalTaxation = parseFloat(tax / 100);
+    if (taxChecked) {
+      let totalBills = parseFloat(computeTotal());
+      let totalTaxation = parseFloat(tax / 100);
 
-    taxed = totalBills * totalTaxation;
+      taxed = totalBills * totalTaxation;
+    }
     return parseFloat(taxed);
   };
 
