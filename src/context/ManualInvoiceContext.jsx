@@ -77,7 +77,11 @@ const ManualInvoiceProvider = ({ children }) => {
           item.billableHrsTaxed
         ) +
         computeItemService(item.didQty, item.didRate, item.didTaxed) +
-        computeItemService(item.performanceQty, item.performanceTaxed);
+        computeItemService(
+          item.performanceQty,
+          item.performanceRate,
+          item.performanceTaxed
+        );
     });
     return total;
   };

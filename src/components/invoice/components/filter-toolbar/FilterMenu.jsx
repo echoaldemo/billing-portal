@@ -47,7 +47,7 @@ const FilterMenu = () => {
         item
         xs={4}
         md={4}
-        lg={3}
+        lg={6}
         style={{
           justifyContent: "flex-end"
         }}
@@ -74,7 +74,7 @@ const FilterMenu = () => {
         item
         xs={4}
         md={4}
-        lg={3}
+        lg={6}
         style={{
           display: "flex",
           justifyContent: "flex-end"
