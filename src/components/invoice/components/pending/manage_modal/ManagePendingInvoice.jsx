@@ -6,7 +6,7 @@ import { Divider, Button } from '@material-ui/core'
 import InvoiceDetails from './InvoiceDetails'
 import ManagePendingFooter from './components/ManagePendingFooter'
 import { patch } from 'utils/api'
-import { handleAmt } from './constVar'
+import { handleAmt, handleTaxAmt } from './constVar'
 export default function ManagePendingInvoice() {
   const {
     state,
@@ -44,13 +44,16 @@ export default function ManagePendingInvoice() {
               name: 'Billable hours'
             },
             TaxCodeRef: {
-              value: tax.code ? 'TAX' : 'NON'
+              value: billable.taxed ? 'TAX' : 'NON'
             },
             Qty: parseFloat(billable.qty) || 1,
             UnitPrice: parseFloat(billable.rate) || 0
           },
           Description: name
         })
+        if (billable.taxed) {
+          totalAmt += handleTaxAmt(billable.amt, tax.percentage)
+        }
       }
       if (performance.amt !== 0) {
         rest.Line.push({
@@ -62,13 +65,16 @@ export default function ManagePendingInvoice() {
               name: 'Performance'
             },
             TaxCodeRef: {
-              value: tax.code ? 'TAX' : 'NON'
+              value: performance.taxed ? 'TAX' : 'NON'
             },
             Qty: parseFloat(performance.qty) || 1,
             UnitPrice: parseFloat(performance.rate) || 0
           },
           Description: name
         })
+        if (performance.taxed) {
+          totalAmt += handleTaxAmt(performance.amt, tax.percentage)
+        }
       }
       if (did.amt !== 0) {
         rest.Line.push({
@@ -80,13 +86,16 @@ export default function ManagePendingInvoice() {
               name: 'Did'
             },
             TaxCodeRef: {
-              value: tax.code ? 'TAX' : 'NON'
+              value: did.taxed ? 'TAX' : 'NON'
             },
             Qty: parseFloat(did.qty) || 1,
             UnitPrice: parseFloat(did.rate) || 0
           },
           Description: name
         })
+        if (did.taxed) {
+          totalAmt += handleTaxAmt(did.amt, tax.percentage)
+        }
       }
 
       if (handleAmt(services[i]) === 0) {
@@ -104,12 +113,15 @@ export default function ManagePendingInvoice() {
             name: 'Litigator scrubbing'
           },
           TaxCodeRef: {
-            value: tax.code ? 'TAX' : 'NON'
+            value: litigator.taxed ? 'TAX' : 'NON'
           },
           Qty: parseFloat(litigator.qty) || 1,
           UnitPrice: parseFloat(litigator.rate) || 0
         }
       })
+      if (litigator.taxed) {
+        totalAmt += handleTaxAmt(litigator.amt, tax.percentage)
+      }
     }
     if (merchant.amt !== 0) {
       rest.Line.push({
@@ -121,17 +133,20 @@ export default function ManagePendingInvoice() {
             name: 'Merchant fees'
           },
           TaxCodeRef: {
-            value: tax.code ? 'TAX' : 'NON'
+            value: merchant.taxed ? 'TAX' : 'NON'
           },
           Qty: parseFloat(merchant.qty) || 1,
           UnitPrice: parseFloat(merchant.rate) || 0
         }
       })
+      if (merchant.taxed) {
+        totalAmt += handleTaxAmt(merchant.amt, tax.percentage)
+      }
     }
     totalAmt += parseFloat(litigator.amt) + parseFloat(merchant.amt)
-    if (tax.percentage !== 0) {
-      totalAmt += totalAmt * (tax.percentage / 100) - tax.percentage / 100
-    }
+    // if (tax.percentage !== 0) {
+    //   totalAmt += totalAmt * (tax.percentage / 100) - tax.percentage / 100
+    // }
     if (tax.code) {
       rest.TxnTaxDetail = {
         TxnTaxCodeRef: {
@@ -159,21 +174,19 @@ export default function ManagePendingInvoice() {
     last.Amount = totalAmt
     rest.total = totalAmt
     rest.Line.push(last)
-
-    patch(`/api/pending/edit/${id}`, rest)
-      .then(res => {
-        dispatch({
-          type: 'set-update-loading',
-          payload: { updateLoading: false }
-        })
-        dispatch({
-          type: 'set-selected-data',
-          payload: { selectedData: res.data }
-        })
+    // setModalLoading(true)
+    patch(`/api/pending/edit/${id}`, rest).then(res => {
+      dispatch({
+        type: 'set-update-loading',
+        payload: { updateLoading: false }
       })
-      .then(() => {
-        getPendingInvoicesData()
+      dispatch({
+        type: 'set-selected-data',
+        payload: { selectedData: res.data }
       })
+      getPendingInvoicesData()
+      // setModalLoading(false)
+    })
   }
 
   const EditButton = () => {
@@ -240,6 +253,7 @@ export default function ManagePendingInvoice() {
       // open={true}
       onClose={() => {
         dispatch({ type: 'set-manage-modal', payload: { openManage: false } })
+        setFormState({})
       }}
       title={<b>Manage Pending Invoice</b>}
       width="80%"
