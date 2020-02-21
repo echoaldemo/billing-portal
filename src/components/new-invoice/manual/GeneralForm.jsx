@@ -83,11 +83,11 @@ export default function GeneralForm({ duplicate }) {
       style={{
         display: "flex",
         padding: 15,
-        justifyContent: "space-between",
+        justifyContent: "space-evenly",
         alignItems: "center"
       }}
     >
-      <Grid item xs={3}>
+      <Grid item xs={2}>
         <InputField
           label="Company"
           value={formState.company}
@@ -165,6 +165,7 @@ export default function GeneralForm({ duplicate }) {
           <MenuItem value="2">Weekly</MenuItem>
         </InputField>
       </Grid>
+
       <Grid item xs={2}>
         <InputLabel id="label1">Billing Period</InputLabel>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -181,6 +182,22 @@ export default function GeneralForm({ duplicate }) {
         </MuiPickersUtilsProvider>
       </Grid>
       <Grid item xs={2}>
+        <InputLabel id="label1">Billing Period</InputLabel>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            name="billingPeriod"
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            value={formState.billingPeriod}
+            onChange={date => {
+              setFormState({ ...formState, billingPeriod: date });
+            }}
+          />
+        </MuiPickersUtilsProvider>
+      </Grid>
+
+      <Grid item xs={1}>
         <div
           style={{
             display: "flex",
