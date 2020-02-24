@@ -83,7 +83,7 @@ const ManualInvoiceProvider = ({ children }) => {
           item.performanceTaxed
         );
     });
-    return total;
+    return total.toFixed(2);
   };
   const getTaxableServices = () => {
     let total = 0;
@@ -102,7 +102,7 @@ const ManualInvoiceProvider = ({ children }) => {
         total += computeItemService(item.performanceQty, item.performanceTaxed);
       }
     });
-    return total;
+    return total.toFixed(2);
   };
   const getTaxableAdditionalFees = () => {
     let total = 0;
@@ -141,7 +141,7 @@ const ManualInvoiceProvider = ({ children }) => {
 
       taxed = totalBills * totalTaxation;
     }
-    return parseFloat(taxed);
+    return parseFloat(taxed).toFixed(2);
   };
   const computeTotal = () => {
     let total = 0;
@@ -159,7 +159,7 @@ const ManualInvoiceProvider = ({ children }) => {
         additionalFee.scrubbingTax
       );
     total = parseFloat(balanceTotal) + parseFloat(totalAdditionalFee);
-    return parseFloat(total);
+    return parseFloat(total).toFixed(2);
   };
 
   const [state, dispatch] = useReducer((state, action) => {
@@ -291,16 +291,16 @@ const ManualInvoiceProvider = ({ children }) => {
       TxnTaxCodeRef: {
         value: taxDetail.code
       },
-      TotalTax: 124242,
+      TotalTax: computeTax(),
       TaxLine: [
         {
           DetailType: "TaxLineDetail",
-          Amount: tax,
+          Amount: computeTax(),
           TaxLineDetail: {
-            NetAmountTaxable: 12323,
+            NetAmountTaxable: taxableTotal(),
             TaxPercent: tax,
             TaxRateRef: {
-              value: "11"
+              value: taxDetail.taxrate
             },
             PercentBased: true
           }
@@ -321,7 +321,6 @@ const ManualInvoiceProvider = ({ children }) => {
       }
     };
 
-    console.log(data, "DATA");
     switch (type) {
       case "approve":
         sendToQuickbooks(data, handleClose);
