@@ -155,34 +155,53 @@ export default function GeneralForm({ duplicate }) {
         </InputField>
       </Grid>
 
-      <Grid item xs={2}>
-        <InputLabel id="label1">Start Date</InputLabel>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <KeyboardDatePicker
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            value={formState.startDate}
-            onChange={date => {
-              setFormState({ ...formState, startDate: date });
-            }}
-          />
-        </MuiPickersUtilsProvider>
-      </Grid>
-      <Grid item xs={2}>
-        <InputLabel id="label1">Billing Period</InputLabel>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <KeyboardDatePicker
-            name="billingPeriod"
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            value={formState.billingPeriod}
-            onChange={date => {
-              setFormState({ ...formState, billingPeriod: date });
-            }}
-          />
-        </MuiPickersUtilsProvider>
+      <Grid item xs={3}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridGap: 20
+          }}
+        >
+          <div>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                TextFieldComponent={InputField}
+                label="Start of Period"
+                name="billingPeriod"
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                value={formState.billingPeriod.start}
+                onChange={date => {
+                  setFormState({
+                    ...formState,
+                    billingPeriod: { ...formState.billingPeriod, start: date }
+                  });
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </div>
+          <div>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                TextFieldComponent={InputField}
+                label="End of Period"
+                name="billingPeriod"
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                value={formState.billingPeriod.end}
+                onChange={date => {
+                  setFormState({
+                    ...formState,
+                    billingPeriod: { ...formState.billingPeriod, end: date }
+                  });
+                }}
+              />
+            </MuiPickersUtilsProvider>
+          </div>
+        </div>
       </Grid>
 
       <Grid item xs={1}>
