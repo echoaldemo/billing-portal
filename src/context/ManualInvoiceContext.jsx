@@ -15,6 +15,11 @@ import { post } from "utils/api";
 const today = new Date();
 const date =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+const start =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+today.setMonth(today.getMonth() + 1);
+const end =
+  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
 const addMonth =
   today.getFullYear() + "-" + (today.getMonth() + 2) + "-" + today.getDate();
@@ -35,7 +40,7 @@ const initialFormState = {
   company: false,
   campaign: [],
   billingType: "1",
-  billingPeriod: date,
+  billingPeriod: { start, end },
   taxation: " "
 };
 
@@ -177,6 +182,20 @@ const ManualInvoiceProvider = ({ children }) => {
   useEffect(() => {
     getGeneralData();
   }, []);
+  useEffect(() => {
+    const { start } = formState.billingPeriod;
+    let dt = new Date(start);
+    if (formState.billingType === "1") dt.setMonth(dt.getMonth() + 1);
+    else dt.setDate(dt.getDate() + 7);
+
+    const dueDate =
+      dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
+
+    setFormState({
+      ...formState,
+      billingPeriod: { ...formState.billingPeriod, end: dueDate }
+    });
+  }, [formState.billingType, formState.billingPeriod.start]);
   const setActiveCampaigns = (uuid) => {
     const filteredCampaigns = state.campaigns.filter((c) => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
