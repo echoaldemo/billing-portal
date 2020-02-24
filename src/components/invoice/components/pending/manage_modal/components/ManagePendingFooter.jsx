@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from '@material-ui/core'
 import { StateContext } from 'context/StateContext'
 import { patch, post } from 'utils/api'
-import { handleAmt } from '../constVar'
+import { handleAmt, handleTaxAmt } from '../constVar'
 import { remove } from 'utils/api'
 
 export default function ManagePendingFooter() {
@@ -54,13 +54,16 @@ export default function ManagePendingFooter() {
               name: 'Billable hours'
             },
             TaxCodeRef: {
-              value: tax.code ? 'TAX' : 'NON'
+              value: billable.taxed ? 'TAX' : 'NON'
             },
             Qty: parseFloat(billable.qty) || 1,
             UnitPrice: parseFloat(billable.rate) || 0
           },
           Description: name
         })
+        if (billable.taxed) {
+          totalAmt += handleTaxAmt(billable.amt, tax.percentage)
+        }
       }
       if (performance.amt !== 0) {
         rest.Line.push({
@@ -72,13 +75,16 @@ export default function ManagePendingFooter() {
               name: 'Performance'
             },
             TaxCodeRef: {
-              value: tax.code ? 'TAX' : 'NON'
+              value: performance.taxed ? 'TAX' : 'NON'
             },
             Qty: parseFloat(performance.qty) || 1,
             UnitPrice: parseFloat(performance.rate) || 0
           },
           Description: name
         })
+        if (performance.taxed) {
+          totalAmt += handleTaxAmt(performance.amt, tax.percentage)
+        }
       }
       if (did.amt !== 0) {
         rest.Line.push({
@@ -90,18 +96,18 @@ export default function ManagePendingFooter() {
               name: 'Did'
             },
             TaxCodeRef: {
-              value: tax.code ? 'TAX' : 'NON'
+              value: did.taxed ? 'TAX' : 'NON'
             },
             Qty: parseFloat(did.qty) || 1,
             UnitPrice: parseFloat(did.rate) || 0
           },
           Description: name
         })
+        if (did.taxed) {
+          totalAmt += handleTaxAmt(did.amt, tax.percentage)
+        }
       }
 
-      if (handleAmt(services[i]) === 0) {
-        rest.campaigns.splice(i, 1)
-      }
       totalAmt += handleAmt(services[i])
     }
     if (litigator.amt !== 0) {
@@ -114,27 +120,35 @@ export default function ManagePendingFooter() {
             name: 'Litigator scrubbing'
           },
           TaxCodeRef: {
-            value: tax.code ? 'TAX' : 'NON'
+            value: litigator.taxed ? 'TAX' : 'NON'
           },
           Qty: parseFloat(litigator.qty) || 1,
           UnitPrice: parseFloat(litigator.rate) || 0
         }
       })
+      if (litigator.taxed) {
+        totalAmt += handleTaxAmt(litigator.amt, tax.percentage)
+      }
     }
-    if (litigator.amt !== 0) {
+    if (merchant.amt !== 0) {
       rest.Line.push({
         DetailType: 'SalesItemLineDetail',
-        Amount: parseFloat(merchant) || 0,
+        Amount: parseFloat(merchant.amt) || 0,
         SalesItemLineDetail: {
           ItemRef: {
             value: '25',
             name: 'Merchant fees'
           },
           TaxCodeRef: {
-            value: tax.code ? 'TAX' : 'NON'
-          }
+            value: merchant.taxed ? 'TAX' : 'NON'
+          },
+          Qty: parseFloat(merchant.qty) || 1,
+          UnitPrice: parseFloat(merchant.rate) || 0
         }
       })
+      if (merchant.taxed) {
+        totalAmt += handleTaxAmt(merchant.amt, tax.percentage)
+      }
     }
     totalAmt += parseFloat(litigator.amt) + parseFloat(merchant)
     if (tax.percentage !== 0) {
@@ -186,9 +200,9 @@ export default function ManagePendingFooter() {
       'status'
     ].map(label => delete rest[label])
 
-    post('/api/invoice', rest).then(res => {
+    post('/api/invoice', rest).then(() => {
       remove(`/api/pending/delete/${id}`)
-        .then(res => {
+        .then(() => {
           dispatch({
             type: 'set-update-loading',
             payload: { updateLoading: false }
