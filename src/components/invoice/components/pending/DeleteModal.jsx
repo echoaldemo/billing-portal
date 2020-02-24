@@ -1,6 +1,9 @@
 import React from "react";
-import { Button, Divider } from "@material-ui/core";
-import { Modal, LoadingModal } from "common-components";
+import { Dialog } from "@material-ui/core";
+import {
+  WarningModal,
+  LoadingNoDialog as LoadingModal
+} from "common-components";
 import { StateContext } from "context/StateContext";
 import { remove } from "utils/api";
 
@@ -20,64 +23,47 @@ const DeleteModal = () => {
   };
 
   const deleteSelectedInvoices = async () => {
-    handleModalClose();
     setLoading(true);
     for (let i = 0; i < selectedItems.length; i++) {
       await remove(`/api/pending/delete/${selectedItems[i].id}`).then(() => {
         setDeleteCount(i + 1);
       });
     }
-
-    setLoading(false);
-    setSelectedItems([]);
-    getPendingInvoicesData();
+    setTimeout(() => {
+      setLoading(false);
+      handleModalClose();
+      setSelectedItems([]);
+      getPendingInvoicesData();
+    }, 500);
   };
+  let content = "Are you sure want to delete";
+  if (selectedItems.length === 1) content += " this invoice";
+  else content += " these invoices";
+  content += "? This process is irreversible.";
   return (
     <React.Fragment>
-      <Modal
-        title={<b>Confirmation</b>}
+      <Dialog
         open={confirmModal.delete}
-        onClose={handleModalClose}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "column",
-          alignItems: "center"
-        }}
-        renderEditButton={false}
+        disableBackdropClick
+        disableEscapeKeyDown
       >
-        <div>
-          <h4>
-            Are you sure want to delete this <b> {selectedItems.length} </b>
-            {selectedItems.length > 1 ? "Invoices" : "Invoice"}?
-          </h4>
-          <Divider />
-          <br />
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={deleteSelectedInvoices}
-          >
-            YES
-          </Button>
-          &emsp;
-          <Button
-            color="default"
-            variant="contained"
-            onClick={handleModalClose}
-          >
-            NO
-          </Button>
-        </div>
-      </Modal>
-
-      <LoadingModal
-        open={loading}
-        text={`Deleting ${deleteCount} of ${selectedItems.length}`}
-        cancelFn={() => {
-          setLoading(false);
-        }}
-      />
+        {!loading ? (
+          <WarningModal
+            text="Confirmation"
+            content={content}
+            closeFn={handleModalClose}
+            secondaryFn={deleteSelectedInvoices}
+            btnText="Continue"
+          />
+        ) : (
+          <LoadingModal
+            text={`Deleting ${deleteCount} of ${selectedItems.length}`}
+            cancelFn={() => {
+              setLoading(false);
+            }}
+          />
+        )}
+      </Dialog>
     </React.Fragment>
   );
 };

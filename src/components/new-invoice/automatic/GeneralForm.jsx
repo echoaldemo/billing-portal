@@ -5,13 +5,7 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
-import {
-  Grid,
-  MenuItem,
-  ListItemText,
-  Checkbox,
-  InputLabel
-} from "@material-ui/core";
+import { Grid, MenuItem, ListItemText, Checkbox } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
 
 export default function GeneralForm() {
@@ -57,7 +51,9 @@ export default function GeneralForm() {
           fullWidth
           select
         >
-          <MenuItem value={false}>Select company</MenuItem>
+          <MenuItem value={false} disabled>
+            Select company
+          </MenuItem>
           {state.companies.map(item => {
             return (
               <MenuItem key={item.uuid} value={item.uuid}>
