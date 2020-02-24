@@ -172,7 +172,7 @@ export default function ItemsTable() {
         edit: true
       })
     } catch {
-      setTax({ ...tax, percentage: 0, code: '', edit: false })
+      setTax({ ...tax, amt: 0, percentage: 0, code: '', edit: false })
     }
     setServices({ ...array })
   }

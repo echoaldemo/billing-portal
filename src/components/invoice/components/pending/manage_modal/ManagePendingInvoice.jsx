@@ -250,9 +250,12 @@ export default function ManagePendingInvoice() {
     <Modal
       square={true}
       open={state.openManage}
-      // open={true}
       onClose={() => {
         dispatch({ type: 'set-manage-modal', payload: { openManage: false } })
+        dispatch({
+          type: 'set-edit-manage-data',
+          payload: { editManageData: false }
+        })
         setFormState({})
       }}
       title={<b>Manage Pending Invoice</b>}
