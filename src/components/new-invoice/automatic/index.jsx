@@ -8,7 +8,8 @@ import {
 import {
   TableLoader,
   LoadingNoDialog as LoadingModal,
-  SuccessModal
+  SuccessModal,
+  WarningModal
 } from "common-components";
 import NewInvoiceAppbar from "../components/NewInvoiceAppbar";
 import GeneralForm from "./GeneralForm";
@@ -45,12 +46,28 @@ const NewInvoice = ({ handleClose }) => {
     });
     createAnother();
   };
-  const balanceDue = getBalance();
+  const openWarning = () => {
+    if (getBalance()) {
+      dispatch({
+        type: "set-modal-type",
+        payload: { modalType: "warning" }
+      });
+    } else {
+      handleClose();
+    }
+  };
+  const closePopUp = () => {
+    dispatch({
+      type: "set-modal-type",
+      payload: { modalType: "" }
+    });
+  };
   return (
     <React.Fragment>
       <NewInvoiceAppbar
         createFn={createInvoice}
         handleClose={handleClose}
+        openWarning={openWarning}
         type="Automatic"
         balance={getBalance()}
         selectedCompany={formState.company}
@@ -63,7 +80,15 @@ const NewInvoice = ({ handleClose }) => {
       >
         {state.modalType === "loading" ? (
           <LoadingModal text={`One moment. We're saving the invoice...`} />
-        ) : (
+        ) : state.modalType === "warning" ? (
+          <WarningModal
+            text="Confirmation"
+            content="Are you sure you want to close this dialog? Your progress will not be saved."
+            closeFn={closePopUp}
+            secondaryFn={closeAll}
+            btnText="Close"
+          />
+        ) : state.modalType === "success" ? (
           <SuccessModal
             text="Success"
             content="Invoice successfully saved."
@@ -71,16 +96,16 @@ const NewInvoice = ({ handleClose }) => {
             secondaryFn={create}
             btnText="Create another"
           />
-        )}
+        ) : null}
       </Dialog>
     </React.Fragment>
   );
 };
 
-const Automatic = ({ handleClose }) => {
+const Automatic = ({ handleClose, openWarning }) => {
   return (
     <AutomaticInvoiceProvider>
-      <NewInvoice handleClose={handleClose} />
+      <NewInvoice handleClose={handleClose} openWarning={openWarning} />
     </AutomaticInvoiceProvider>
   );
 };

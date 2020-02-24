@@ -13,34 +13,43 @@ export default function Navlinks() {
     {
       link: "/overview",
       icon: <Timeline className="tab-icon" />,
-      name: "Overview"
+      name: "Overview",
+      disabled: false
     },
     {
       link: "/invoices",
       icon: <RecordVoiceOver className="tab-icon" />,
-      name: "Manage Invoices"
+      name: "Manage Invoices",
+      disabled: false
     },
     {
       link: "/settings",
       icon: <Settings className="tab-icon" />,
-      name: "System Settings"
+      name: "System Settings",
+      disabled: false
     },
     {
       link: "/profile",
       icon: <AccountCircle className="tab-icon" />,
-      name: "Profile"
+      name: "Profile",
+      disabled: true
     },
     {
       link: "/about-us",
       icon: <Settings className="tab-icon" />,
-      name: "About Us"
+      name: "About Us",
+      disabled: true
     },
     {
       link: "/support",
       icon: <ContactSupport className="tab-icon" />,
-      name: "Contact Support"
+      name: "Contact Support",
+      disabled: true
     }
   ];
+  const handleClick = (e, disabled) => {
+    if (disabled) e.preventDefault();
+  };
 
   return (
     <div className="tabs-container">
@@ -48,9 +57,10 @@ export default function Navlinks() {
         return (
           <NavLink
             key={i}
-            to={item.link}
+            to={item.disabled ? " " : item.link}
             className="tab-item"
             activeClassName="active-link"
+            onClick={(e) => handleClick(e, item.disabled)}
           >
             <div className="tab-text">
               <div className="tab-text-container">

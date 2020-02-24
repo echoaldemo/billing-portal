@@ -16,7 +16,8 @@ export default function NewInvoiceAppbar({
   handleClose,
   type,
   balance,
-  selectedCompany
+  selectedCompany,
+  openWarning
 }) {
   const classes = useStyles();
 
@@ -42,7 +43,7 @@ export default function NewInvoiceAppbar({
         <IconButton
           edge="start"
           color="inherit"
-          onClick={handleClose}
+          onClick={openWarning}
           aria-label="close"
         >
           <Close />
