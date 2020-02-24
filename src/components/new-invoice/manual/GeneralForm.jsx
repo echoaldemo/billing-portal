@@ -25,11 +25,11 @@ export default function GeneralForm({ duplicate }) {
     computeBalanceDue,
     setBillingFormState
   } = useContext(ManualInvoiceContext);
-  const filterCampaign = (uuid) => {
+  const filterCampaign = uuid => {
     const filteredCampaign = state.campaigns.filter(
-      (camp) => camp.company === uuid
+      camp => camp.company === uuid
     );
-    setSelectedCampaign(filteredCampaign.map((item) => item.uuid));
+    setSelectedCampaign(filteredCampaign.map(item => item.uuid));
     return filteredCampaign;
   };
 
@@ -43,9 +43,9 @@ export default function GeneralForm({ duplicate }) {
           billingType: duplicate.billingType,
           billingPeriod: duplicate.startDate
         });
-        const campaignsDetails = duplicate.campaigns.map((uuid) => {
+        const campaignsDetails = duplicate.campaigns.map(uuid => {
           let filteredDetails = state.campaigns.filter(
-            (item) => item.uuid === uuid
+            item => item.uuid === uuid
           );
           let billingData = {
             billableHrsQty: "9",
@@ -80,7 +80,7 @@ export default function GeneralForm({ duplicate }) {
         <InputField
           label="Company"
           value={formState.company}
-          onChange={(e) => {
+          onChange={e => {
             setFormState({
               ...formState,
               company: e.target.value,
@@ -92,7 +92,7 @@ export default function GeneralForm({ duplicate }) {
           select
         >
           <MenuItem value={false}>Select company</MenuItem>
-          {state.companies.map((item) => {
+          {state.companies.map(item => {
             return (
               <MenuItem key={item.uuid} value={item.uuid}>
                 {item.name}
@@ -109,21 +109,21 @@ export default function GeneralForm({ duplicate }) {
           select
           SelectProps={{
             multiple: true,
-            renderValue: (selected) =>
+            renderValue: selected =>
               selected.length === 0
                 ? "Select campaign"
                 : selected.length === formState.campaign.length
                 ? "All"
                 : selected
-                    .map((s) =>
+                    .map(s =>
                       formState.campaign
-                        .filter((a) => a.uuid === s)
-                        .map((data) => data.name)
+                        .filter(a => a.uuid === s)
+                        .map(data => data.name)
                     )
                     .join(", ")
           }}
           value={selectedCampaign}
-          onChange={(e) => {
+          onChange={e => {
             setSelectedCampaign(e.target.value);
           }}
           disabled={!formState.company}
@@ -141,7 +141,7 @@ export default function GeneralForm({ duplicate }) {
         <InputField
           label="Billing Type"
           value={formState.billingType}
-          onChange={(e) => {
+          onChange={e => {
             setFormState({
               ...formState,
               billingType: e.target.value
@@ -173,7 +173,7 @@ export default function GeneralForm({ duplicate }) {
                 variant="inline"
                 format="MM/dd/yyyy"
                 value={formState.billingPeriod.start}
-                onChange={(date) => {
+                onChange={date => {
                   setFormState({
                     ...formState,
                     billingPeriod: { ...formState.billingPeriod, start: date }
@@ -192,7 +192,7 @@ export default function GeneralForm({ duplicate }) {
                 variant="inline"
                 format="MM/dd/yyyy"
                 value={formState.billingPeriod.end}
-                onChange={(date) => {
+                onChange={date => {
                   setFormState({
                     ...formState,
                     billingPeriod: { ...formState.billingPeriod, end: date }

@@ -70,6 +70,7 @@ const StateProvider = ({ children }) => {
         setLoading(false);
       });
   };
+
   const deletePendingStatus = id => {
     dispatch({
       type: "set-update-loading",

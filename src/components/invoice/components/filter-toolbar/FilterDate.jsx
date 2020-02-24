@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Grid, InputLabel } from "@material-ui/core";
 import {
   MuiPickersUtilsProvider,
@@ -7,21 +7,34 @@ import {
 
 import DateFnsUtils from "@date-io/date-fns";
 import { StateContext } from "context/StateContext";
+import { formatDate } from "utils/func";
+import Moment from "moment";
+import { extendMoment } from "moment-range";
 
+const moment = extendMoment(Moment);
 const FilterDate = () => {
   const { dateRange, setDateRange, setData, state, originalData } = useContext(
     StateContext
   );
 
-  const filterDateByDate = (date, type) => {
-    setDateRange({ ...dateRange, [type]: date });
+  useEffect(() => {
+    filterDataByDate();
+  }, [dateRange]);
 
-    var result = originalData.filter(function(item) {
-      var itemTime = new Date(item.startDate).getTime();
-      return itemTime >= dateRange.startDate && itemTime <= dateRange.endDate;
+  const filterDataByDate = () => {
+    let startDate = moment(dateRange.startDate).subtract(1, "days");
+    let endDate = moment(dateRange.endDate).add(1, "days");
+    const range = moment().range(startDate, endDate);
+    const result = originalData.filter(item => {
+      return (
+        range.contains(new Date(item.startDate)) ||
+        range.contains(new Date(item.endDate))
+      );
     });
     setData(result);
-    console.log(result);
+  };
+  const handleDateChange = (date, type) => {
+    setDateRange({ ...dateRange, [type]: formatDate(date) });
   };
 
   return (
@@ -36,7 +49,7 @@ const FilterDate = () => {
             format="MM/dd/yyyy"
             value={dateRange.startDate}
             onChange={date => {
-              filterDateByDate(date, "startDate");
+              handleDateChange(date, "startDate");
             }}
           />
         </MuiPickersUtilsProvider>
@@ -51,7 +64,7 @@ const FilterDate = () => {
             format="MM/dd/yyyy"
             value={dateRange.endDate}
             onChange={date => {
-              filterDateByDate(date, "endDate");
+              handleDateChange(date, "endDate");
             }}
           />
         </MuiPickersUtilsProvider>
