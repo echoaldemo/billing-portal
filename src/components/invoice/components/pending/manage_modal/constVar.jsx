@@ -9,27 +9,36 @@ const formatter = new Intl.NumberFormat('en-US', {
 const defaultBillable = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultPerformance = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultDid = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
 }
 const defaultLitigator = {
   amt: 0,
   qty: '',
-  rate: ''
+  rate: '',
+  taxed: true
+}
+const defaultMerchant = {
+  amt: 0,
+  qty: '',
+  rate: '',
+  taxed: true
 }
 
 const mockTaxation = [
   { code: '5', taxrate: '7', name: 'Utah', percentage: 6.1 },
-  { code: '6', taxrate: '8', name: 'California', percentage: 8 },
   { code: '7', taxrate: '11', name: 'Mexico', percentage: 16 }
 ]
 
@@ -57,6 +66,8 @@ const handleAmt = ({ billable, performance, did }) => {
   )
 }
 
+const handleTaxAmt = (amt, per) => Math.round(amt * (per / 100) * 100) / 100
+
 const handleServices = ({ billable, performance, did }) => {
   const text = []
   if (handleAmt({ billable, performance, did })) {
@@ -67,7 +78,7 @@ const handleServices = ({ billable, performance, did }) => {
       text.push('Performance')
     }
     if (did.amt) {
-      text.push('Did')
+      text.push('DID Billing')
     }
   } else {
     text.push('Field not set')
@@ -92,9 +103,10 @@ const handleAdditional = (litigator, merchant) => {
 
 const useStyles = makeStyles({
   tab1: { width: '20%' },
-  tab2: { width: '20%', textAlign: 'right' },
+  tab2: { width: '15%', textAlign: 'right' },
   tab3: { width: '5%', textAlign: 'right' },
   tab4: { width: '15%', textAlign: 'left' },
+  tab5: { width: '5%', textAlign: 'center' },
   right: { textAlign: 'right' }
 })
 
@@ -104,10 +116,12 @@ export {
   defaultPerformance,
   defaultDid,
   defaultLitigator,
+  defaultMerchant,
   formatter,
   handleQty,
   handleRate,
   handleAmt,
+  handleTaxAmt,
   handleServices,
   handleAdditional,
   useStyles

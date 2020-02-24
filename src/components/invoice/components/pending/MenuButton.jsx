@@ -12,7 +12,6 @@ export default function SimplePopover({ item }) {
     state
   } = React.useContext(StateContext)
   const handleClick = event => {
-    console.log(state.selectedData)
     setAnchorEl(event.currentTarget)
     dispatch({ type: 'set-selected-data', payload: { selectedData: item } })
   }
@@ -70,12 +69,17 @@ export default function SimplePopover({ item }) {
             onClick={() => {
               openManageModal()
               handleClose()
+              console.log('test', state.selectedData)
             }}
           >
             Manage
           </span>
           <span
-            className="menu-item"
+            className={
+              state.selectedData.invoiceType === 'Automatic'
+                ? 'menu-item span-disabled'
+                : 'menu-item'
+            }
             onClick={() =>
               dispatch({
                 type: 'set-duplicate-modal',

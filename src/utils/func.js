@@ -25,7 +25,7 @@ function stableSort(array, cmp) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 function getSorting(order, orderBy) {
   return order === "desc"
@@ -53,20 +53,23 @@ const services = [
     name: "Billable Hours",
     value: "21",
     qty: "billableHrsQty",
-    rate: "billableHrsRate"
+    rate: "billableHrsRate",
+    tax: "billableHrsTaxed"
   },
 
   {
     name: "Performance",
     value: "22",
     qty: "performanceQty",
-    rate: "performanceRate"
+    rate: "performanceRate",
+    tax: "performanceTaxed"
   },
   {
     name: "DID Billing",
     value: "23",
     qty: "didQty",
-    rate: "didRate"
+    rate: "didRate",
+    tax: "didTaxed"
   }
 ];
 
@@ -75,24 +78,26 @@ const additionalFeeDetails = [
     name: "Litigator Scrubbing",
     value: "24",
     qty: "scrubbingQty",
-    rate: "scrubbingRate"
+    rate: "scrubbingRate",
+    tax: "scrubbingTax"
   },
   {
     name: "Merchant Fee",
     value: "25",
     qty: "merchantQty",
-    rate: "merchantRate"
+    rate: "merchantRate",
+    tax: "merchantTax"
   }
 ];
 
-const appendLeadingZeroes = n => {
+const appendLeadingZeroes = (n) => {
   if (n <= 9) {
     return "0" + n;
   }
   return n;
 };
 
-const formatDate = date => {
+const formatDate = (date) => {
   return `${date.getFullYear()}-${appendLeadingZeroes(
     date.getMonth() + 1
   )}-${appendLeadingZeroes(date.getDate())}`;

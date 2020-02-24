@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
@@ -15,49 +15,72 @@ import {
 } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
 
-export default function GeneralForm() {
+export default function GeneralForm({ duplicate }) {
   const {
     state,
     formState,
     setFormState,
     selectedCampaign,
     setSelectedCampaign,
-    billingFormState
+    computeBalanceDue,
+    setBillingFormState
   } = useContext(ManualInvoiceContext);
-
-  const filterCampaign = uuid => {
+  const filterCampaign = (uuid) => {
     const filteredCampaign = state.campaigns.filter(
-      camp => camp.company === uuid
+      (camp) => camp.company === uuid
     );
-    setSelectedCampaign(filteredCampaign.map(item => item.uuid));
+    setSelectedCampaign(filteredCampaign.map((item) => item.uuid));
     return filteredCampaign;
   };
 
-  const getBalance = () => {
-    let total = 0;
-    billingFormState.forEach(item => {
-      total +=
-        item.billableHrsQty * item.billableHrsRate +
-        item.didQty * item.didRate +
-        item.performanceQty * item.performanceRate;
-    });
+  useEffect(() => {
+    if (duplicate) {
+      if (!state.loading) {
+        setFormState({
+          ...formState,
+          company: duplicate.company.uuid,
+          campaign: filterCampaign(duplicate.company.uuid),
+          billingType: duplicate.billingType,
+          billingPeriod: duplicate.startDate
+        });
+        const campaignsDetails = duplicate.campaigns.map((uuid) => {
+          let filteredDetails = state.campaigns.filter(
+            (item) => item.uuid === uuid
+          );
+          let billingData = {
+            billableHrsQty: "9",
+            billableHrsRate: "9",
+            billableHrsTotalAmount: "",
 
-    return total;
-  };
+            didQty: "",
+            didRate: "",
+            didTotalAmount: "",
+
+            performanceQty: "",
+            performanceRate: "",
+            performanceTotalAmount: ""
+          };
+          return { ...filteredDetails[0], ...billingData };
+        });
+        setBillingFormState(campaignsDetails);
+      }
+    }
+  }, [state, duplicate]);
+
   return (
     <div
       style={{
         display: "flex",
         padding: 15,
-        justifyContent: "space-between",
+        justifyContent: "space-evenly",
         alignItems: "center"
       }}
     >
-      <Grid item xs={3}>
+      <Grid item xs={2}>
         <InputField
           label="Company"
           value={formState.company}
-          onChange={e => {
+          onChange={(e) => {
             setFormState({
               ...formState,
               company: e.target.value,
@@ -69,7 +92,7 @@ export default function GeneralForm() {
           select
         >
           <MenuItem value={false}>Select company</MenuItem>
-          {state.companies.map(item => {
+          {state.companies.map((item) => {
             return (
               <MenuItem key={item.uuid} value={item.uuid}>
                 {item.name}
@@ -86,21 +109,21 @@ export default function GeneralForm() {
           select
           SelectProps={{
             multiple: true,
-            renderValue: selected =>
+            renderValue: (selected) =>
               selected.length === 0
                 ? "Select campaign"
                 : selected.length === formState.campaign.length
                 ? "All"
                 : selected
-                    .map(s =>
+                    .map((s) =>
                       formState.campaign
-                        .filter(a => a.uuid === s)
-                        .map(data => data.name)
+                        .filter((a) => a.uuid === s)
+                        .map((data) => data.name)
                     )
                     .join(", ")
           }}
           value={selectedCampaign}
-          onChange={e => {
+          onChange={(e) => {
             setSelectedCampaign(e.target.value);
           }}
           disabled={!formState.company}
@@ -118,7 +141,7 @@ export default function GeneralForm() {
         <InputField
           label="Billing Type"
           value={formState.billingType}
-          onChange={e => {
+          onChange={(e) => {
             setFormState({
               ...formState,
               billingType: e.target.value
@@ -130,6 +153,22 @@ export default function GeneralForm() {
           <MenuItem value="1">Monthly</MenuItem>
           <MenuItem value="2">Weekly</MenuItem>
         </InputField>
+      </Grid>
+
+      <Grid item xs={2}>
+        <InputLabel id="label1">Billing Period</InputLabel>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            name="billingPeriod"
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            value={formState.billingPeriod}
+            onChange={(date) => {
+              setFormState({ ...formState, billingPeriod: date });
+            }}
+          />
+        </MuiPickersUtilsProvider>
       </Grid>
       <Grid item xs={2}>
         <InputLabel id="label1">Billing Period</InputLabel>
@@ -146,7 +185,8 @@ export default function GeneralForm() {
           />
         </MuiPickersUtilsProvider>
       </Grid>
-      <Grid item xs={2}>
+
+      <Grid item xs={1}>
         <div
           style={{
             display: "flex",
@@ -161,7 +201,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            SERVICE BILL
+            BALANCE DUE
           </span>
           <span
             style={{
@@ -170,7 +210,7 @@ export default function GeneralForm() {
               color: "#444851"
             }}
           >
-            {formatter.format(parseFloat(getBalance()))}
+            {formatter.format(parseFloat(computeBalanceDue()))}
           </span>
         </div>
       </Grid>

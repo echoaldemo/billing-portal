@@ -6,7 +6,6 @@ import {
   TableCell,
   TableRow,
   Collapse,
-  InputAdornment,
   MenuItem,
   Checkbox
 } from '@material-ui/core'
@@ -18,14 +17,14 @@ import {
   defaultPerformance,
   defaultDid,
   defaultLitigator,
+  defaultMerchant,
   formatter,
-  handleQty,
-  handleRate,
   handleAmt,
   handleServices,
   handleAdditional,
   useStyles,
-  mockTaxation
+  mockTaxation,
+  handleTaxAmt
 } from '../constVar'
 import TableHeader from './TableHeader'
 
@@ -33,23 +32,35 @@ export default function ItemsTable() {
   const classes = useStyles()
   const { state, dispatch, formState } = useContext(StateContext)
   const [litigator, setLitiGator] = useState(defaultLitigator)
-  const [merchant, setMerchant] = useState(0)
+  const [merchant, setMerchant] = useState(defaultMerchant)
   const [total, setTotal] = useState(0)
-  const [qty, setQty] = useState(0)
   const [add, setAdd] = useState(false)
-  const [editTax, setEditTax] = useState(false)
   const [tax, setTax] = useState({
     percentage: 0,
     amt: 0,
-    code: ''
+    code: '',
+    taxRef: ''
   })
   const [collapsed, setCollapsed] = useState([])
+  const [customerRef, setCustomer] = useState('')
   const [services, setServices] = useState({})
-  const [billableTime, setBillableTime] = useState({ hour: 0, min: 0 })
+  const [billableTime, setBillableTime] = useState({})
 
+  const convertToHM = decimalTime => {
+    decimalTime = decimalTime * 60 * 60
+    const hours = Math.floor(decimalTime / (60 * 60))
+    decimalTime = decimalTime - hours * 60 * 60
+    const minutes = Math.floor(decimalTime / 60)
+    return { hours, minutes }
+  }
   const gatherData = () => {
     let array = [],
-      temp = {}
+      temp = {},
+      timeArray = [],
+      checkTax = null
+    checkTax = formState.TxnTaxDetail
+    setCustomer(formState.company.qb_id)
+
     formState.campaigns.forEach(camp => {
       let obj = {}
       let result = formState.Line.filter(line => line.Description === camp.name)
@@ -60,17 +71,24 @@ export default function ItemsTable() {
         obj.billable = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
-          rate: temp.SalesItemLineDetail.UnitPrice
+          rate: temp.SalesItemLineDetail.UnitPrice,
+          taxed:
+            temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
         }
-        setBillableTime({
-          hour: Math.floor(temp.SalesItemLineDetail.Qty),
-          min:
-            (temp.SalesItemLineDetail.Qty -
-              Math.floor(temp.SalesItemLineDetail.Qty)) *
-            60
+        const time = convertToHM(temp.SalesItemLineDetail.Qty)
+        timeArray.push({
+          hour: time.hours,
+          min: time.minutes
         })
       } catch {
+        if (checkTax === null) {
+          defaultBillable.taxed = false
+        }
         obj.billable = defaultBillable
+        timeArray.push({
+          hour: 0,
+          min: 0
+        })
       }
       try {
         temp = result.find(
@@ -79,9 +97,14 @@ export default function ItemsTable() {
         obj.performance = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
-          rate: temp.SalesItemLineDetail.UnitPrice
+          rate: temp.SalesItemLineDetail.UnitPrice,
+          taxed:
+            temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
         }
       } catch {
+        if (checkTax === null) {
+          defaultPerformance.taxed = false
+        }
         obj.performance = defaultPerformance
       }
       try {
@@ -91,14 +114,20 @@ export default function ItemsTable() {
         obj.did = {
           amt: temp.Amount,
           qty: temp.SalesItemLineDetail.Qty,
-          rate: temp.SalesItemLineDetail.UnitPrice
+          rate: temp.SalesItemLineDetail.UnitPrice,
+          taxed:
+            temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
         }
       } catch {
+        if (checkTax === null) {
+          defaultDid.taxed = false
+        }
         obj.did = defaultDid
       }
       obj.name = camp.name
       array.push(obj)
     })
+    setBillableTime({ ...timeArray })
     try {
       temp = formState.Line.find(
         res => res.SalesItemLineDetail.ItemRef.value === '24'
@@ -106,28 +135,44 @@ export default function ItemsTable() {
       setLitiGator({
         amt: temp.Amount,
         qty: temp.SalesItemLineDetail.Qty,
-        rate: temp.SalesItemLineDetail.UnitPrice
+        rate: temp.SalesItemLineDetail.UnitPrice,
+        taxed:
+          temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
       })
     } catch {
+      if (checkTax === null) {
+        defaultLitigator.taxed = false
+      }
       setLitiGator(defaultLitigator)
     }
     try {
       temp = formState.Line.find(
         res => res.SalesItemLineDetail.ItemRef.value === '25'
       )
-      setMerchant(temp.Amount)
+      setMerchant({
+        amt: temp.Amount,
+        qty: temp.SalesItemLineDetail.Qty,
+        rate: temp.SalesItemLineDetail.UnitPrice,
+        taxed:
+          temp.SalesItemLineDetail.TaxCodeRef.value === 'TAX' ? true : false
+      })
     } catch {
-      setMerchant(0)
+      if (checkTax === null) {
+        defaultMerchant.taxed = false
+      }
+      setMerchant(defaultMerchant)
     }
     try {
       setTax({
         ...tax,
         percentage: formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxPercent,
-        code: formState.TxnTaxDetail.TxnTaxCodeRef.value
+        code: formState.TxnTaxDetail.TxnTaxCodeRef.value,
+        taxRef:
+          formState.TxnTaxDetail.TaxLine[0].TaxLineDetail.TaxRateRef.value,
+        edit: true
       })
-      setEditTax(true)
     } catch {
-      setTax({ ...tax, percentage: 0, code: '' })
+      setTax({ ...tax, percentage: 0, code: '', edit: false })
     }
     setServices({ ...array })
   }
@@ -135,38 +180,57 @@ export default function ItemsTable() {
   useEffect(() => {
     if (Object.keys(formState).length > 0) {
       setTotal(formState.Line[formState.Line.length - 1].Amount)
-      if (formState.campaigns.length === 1) {
-        setCollapsed([...collapsed, 0])
-      }
+      // if (formState.campaigns.length === 1) {
+      //   setCollapsed([...collapsed, 0])
+      // }
       gatherData()
     }
     return () => {
       setCollapsed([])
+      setTax({
+        percentage: 0,
+        amt: 0,
+        code: '',
+        taxRef: ''
+      })
     }
     // eslint-disable-next-line
   }, [formState])
 
   useEffect(() => {
     let totalAmt = 0,
-      totalQty = 0
+      taxx = 0
     if (Object.keys(services).length !== 0) {
       for (let i = 0; i < Object.keys(services).length; i++) {
         totalAmt += handleAmt(services[i])
-        totalQty += handleQty(services[i])
+        if (services[i].billable.taxed) {
+          taxx += handleTaxAmt(services[i].billable.amt, tax.percentage)
+        }
+        if (services[i].performance.taxed) {
+          taxx += handleTaxAmt(services[i].performance.amt, tax.percentage)
+        }
+        if (services[i].did.taxed) {
+          taxx += handleTaxAmt(services[i].did.amt, tax.percentage)
+        }
       }
-      totalAmt += parseFloat(litigator.amt) + parseFloat(merchant)
-      totalQty += parseFloat(litigator.qty ? litigator.qty : 0)
+      if (litigator.taxed) {
+        taxx += handleTaxAmt(litigator.amt, tax.percentage)
+      }
+      if (merchant.taxed) {
+        taxx += handleTaxAmt(merchant.amt, tax.percentage)
+      }
+      totalAmt += parseFloat(litigator.amt) + parseFloat(merchant.amt)
       if (tax.percentage !== 0) {
-        let taxx = totalAmt * (tax.percentage / 100) - tax.percentage / 100
         totalAmt += taxx
-        setTax({ ...tax, amt: taxx })
       }
+      setTax({ ...tax, amt: taxx })
       dispatch({
         type: 'set-item-table',
-        payload: { itemTable: { services, litigator, merchant, tax } }
+        payload: {
+          itemTable: { services, litigator, merchant, tax, customerRef }
+        }
       })
       setTotal(totalAmt)
-      setQty(totalQty)
     }
     // eslint-disable-next-line
   }, [services, litigator, merchant, tax.percentage])
@@ -185,15 +249,72 @@ export default function ItemsTable() {
     })
   }
 
+  const handleChangeTax = e => {
+    let obj = services
+    if (e.target.value === 0) {
+      setTax({ amt: 0, percentage: 0, code: '', edit: false })
+      for (let i = 0; i < Object.keys(obj).length; i++) {
+        obj[i].billable.taxed = false
+        obj[i].performance.taxed = false
+        obj[i].did.taxed = false
+      }
+      setLitiGator({ ...litigator, taxed: false })
+      setMerchant({ ...merchant, taxed: false })
+    } else {
+      setTax({
+        ...tax,
+        ...mockTaxation.find(mt => mt.code === e.target.value),
+        edit: true
+      })
+      for (let i = 0; i < Object.keys(obj).length; i++) {
+        obj[i].billable.taxed = true
+        obj[i].performance.taxed = true
+        obj[i].did.taxed = true
+      }
+      setLitiGator({ ...litigator, taxed: true })
+      setMerchant({ ...merchant, taxed: true })
+    }
+
+    setServices(obj)
+  }
+
+  const handleTax = (e, type, i) => {
+    if (type === 'litigator') {
+      setLitiGator({ ...litigator, taxed: e.target.checked })
+    } else if (type === 'merchant') {
+      setMerchant({ ...merchant, taxed: e.target.checked })
+    } else {
+      setServices({
+        ...services,
+        [i]: {
+          ...services[i],
+          [type]: {
+            ...services[i][type],
+            taxed: e.target.checked
+          }
+        }
+      })
+    }
+  }
+
   const handleBillableTime = (value, type, index) => {
     let temp = 0
 
     if (type === 'hour') {
-      temp = `${value}:${billableTime.min}`
-      setBillableTime({ ...billableTime, [type]: value })
+      temp = `${value}:${billableTime[index].min}`
+      setBillableTime({
+        ...billableTime,
+        [index]: { ...billableTime[index], [type]: value }
+      })
     } else {
-      temp = `${billableTime.hour}:${value < 59 ? value : 59}`
-      setBillableTime({ ...billableTime, [type]: value < 59 ? value : 59 })
+      temp = `${billableTime[index].hour}:${value < 59 ? value : 59}`
+      setBillableTime({
+        ...billableTime,
+        [index]: {
+          ...billableTime[index],
+          [type]: value < 59 ? value : 59
+        }
+      })
     }
     const arr = temp.split(':')
     const dec = parseInt((arr[1] / 6) * 10, 10)
@@ -212,7 +333,6 @@ export default function ItemsTable() {
       setCollapsed([...collapsed, index])
     }
   }
-
   return (
     <React.Fragment>
       {Object.keys(formState).length > 0 ? (
@@ -232,30 +352,37 @@ export default function ItemsTable() {
                             <b>{camp.name}</b>
                           </div>
                         </TableCell>
+                        <TableCell className={classes.tab5}>
+                          {services[i] && !collapsed.includes(i) ? null : (
+                            <Checkbox
+                              disabled={!state.editManageData || !tax.edit}
+                              checked={
+                                !!(services[i] && services[i].billable.taxed)
+                              }
+                              onChange={e => handleTax(e, 'billable', i)}
+                            />
+                          )}
+                        </TableCell>
                         <TableCell className={classes.tab4}>
                           {services[i] && !collapsed.includes(i)
                             ? handleServices(services[i])
                             : 'Billable hours'}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
-                          {services[i] && !collapsed.includes(i) ? (
-                            handleQty(services[i]) ? (
-                              handleQty(services[i]).toFixed(2)
-                            ) : (
-                              ''
-                            )
-                          ) : (
-                            <TimeInput
-                              state={billableTime}
-                              handleChange={handleBillableTime}
-                              index={i}
-                              disabled={!state.editManageData}
-                            />
-                          )}
+                          {services[i] && !collapsed.includes(i)
+                            ? ''
+                            : billableTime[i] && (
+                                <TimeInput
+                                  state={billableTime[i]}
+                                  handleChange={handleBillableTime}
+                                  index={i}
+                                  disabled={!state.editManageData}
+                                />
+                              )}
                         </TableCell>
                         <TableCell align="right" className={classes.tab2}>
                           {services[i] && !collapsed.includes(i) ? (
-                            handleRate(services[i]) || ''
+                            ''
                           ) : (
                             <InputField
                               fullWidth
@@ -302,6 +429,15 @@ export default function ItemsTable() {
                       <TableBody>
                         <TableRow>
                           <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab5}>
+                            <Checkbox
+                              disabled={!state.editManageData || !tax.edit}
+                              checked={
+                                services[i] && services[i].performance.taxed
+                              }
+                              onChange={e => handleTax(e, 'performance', i)}
+                            />
+                          </TableCell>
                           <TableCell className={classes.tab4}>
                             Performance
                           </TableCell>
@@ -348,6 +484,13 @@ export default function ItemsTable() {
                         </TableRow>
                         <TableRow>
                           <TableCell className={classes.tab1} />
+                          <TableCell className={classes.tab5}>
+                            <Checkbox
+                              disabled={!state.editManageData || !tax.edit}
+                              checked={services[i] && services[i].did.taxed}
+                              onChange={e => handleTax(e, 'did', i)}
+                            />
+                          </TableCell>
                           <TableCell className={classes.tab4}>Did</TableCell>
                           <TableCell className={classes.tab2}>
                             <InputField
@@ -400,14 +543,23 @@ export default function ItemsTable() {
                       <b>Additional fees</b>
                     </div>
                   </TableCell>
+                  <TableCell className={classes.tab5}>
+                    {add && (
+                      <Checkbox
+                        disabled={!state.editManageData || !tax.edit}
+                        checked={litigator.taxed}
+                        onChange={e => handleTax(e, 'litigator')}
+                      />
+                    )}
+                  </TableCell>
                   <TableCell className={classes.tab4}>
                     {add
                       ? 'Litigator Scrubbing'
-                      : handleAdditional(litigator.amt, merchant)}
+                      : handleAdditional(litigator.amt, merchant.amt)}
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add ? (
-                      litigator.qty || ''
+                      ''
                     ) : (
                       <InputField
                         fullWidth
@@ -431,7 +583,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add ? (
-                      litigator.rate || ''
+                      ''
                     ) : (
                       <InputField
                         fullWidth
@@ -455,7 +607,7 @@ export default function ItemsTable() {
                   </TableCell>
                   <TableCell className={classes.tab2}>
                     {!add
-                      ? formatter.format(litigator.amt + merchant)
+                      ? formatter.format(litigator.amt + merchant.amt)
                       : formatter.format(litigator.amt)}
                   </TableCell>
                   <TableCell className={classes.tab3}>
@@ -479,30 +631,58 @@ export default function ItemsTable() {
                 <TableBody>
                   <TableRow>
                     <TableCell className={classes.tab1} />
+                    <TableCell className={classes.tab5}>
+                      <Checkbox
+                        disabled={!state.editManageData || !tax.edit}
+                        checked={merchant.taxed}
+                        onChange={e => handleTax(e, 'merchant')}
+                      />
+                    </TableCell>
                     <TableCell className={classes.tab4}>
                       Merchant Fees
                     </TableCell>
-                    <TableCell className={classes.tab2} />
-                    <TableCell className={classes.tab2} />
                     <TableCell className={classes.tab2}>
                       <InputField
                         fullWidth
                         type="number"
+                        placeholder="Merchant quantity"
                         inputProps={{
                           min: 0,
                           style: { textAlign: 'right' }
                         }}
                         disabled={!state.editManageData}
-                        value={merchant || ''}
+                        value={merchant.qty}
                         onChange={e =>
-                          setMerchant(parseFloat(e.target.value) || 0)
+                          setMerchant({
+                            ...merchant,
+                            qty: e.target.value,
+                            amt: e.target.value * merchant.rate
+                          })
                         }
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">$</InputAdornment>
-                          )
-                        }}
                       />
+                    </TableCell>
+                    <TableCell className={classes.tab2}>
+                      <InputField
+                        fullWidth
+                        type="number"
+                        placeholder="Rate value"
+                        inputProps={{
+                          min: 0,
+                          style: { textAlign: 'right' }
+                        }}
+                        disabled={!state.editManageData}
+                        value={merchant.rate}
+                        onChange={e =>
+                          setMerchant({
+                            ...merchant,
+                            rate: e.target.value,
+                            amt: e.target.value * merchant.qty
+                          })
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className={classes.tab2}>
+                      {formatter.format(merchant.amt)}
                     </TableCell>
                     <TableCell className={classes.tab3} />
                   </TableRow>
@@ -522,7 +702,7 @@ export default function ItemsTable() {
                         justifyContent: 'flex-end'
                       }}
                     >
-                      <Checkbox
+                      {/* <Checkbox
                         checked={editTax}
                         onChange={e => {
                           setEditTax(e.target.checked)
@@ -531,28 +711,17 @@ export default function ItemsTable() {
                           }
                         }}
                         disabled={!state.editManageData}
-                      />
+                      /> */}
                       <InputField
                         select
-                        disabled={!editTax || !state.editManageData}
+                        disabled={!state.editManageData}
                         value={tax.code || 0}
-                        onChange={e => {
-                          if (e.target.value === 0) {
-                            setTax({ amt: 0, percentage: 0 })
-                          } else {
-                            setTax({
-                              ...tax,
-                              ...mockTaxation.find(
-                                mt => mt.code === e.target.value
-                              )
-                            })
-                          }
-                        }}
+                        onChange={handleChangeTax}
                       >
                         <MenuItem value={0}>Select taxation</MenuItem>
                         {mockTaxation.map((mt, i) => (
                           <MenuItem key={i} value={mt.code}>
-                            {mt.name} ({mt.percentage})
+                            {mt.name} ({mt.percentage}%)
                           </MenuItem>
                         ))}
                       </InputField>
@@ -574,9 +743,7 @@ export default function ItemsTable() {
                     <b style={{ fontSize: 15 }}>Total</b>
                   </TableCell>
                   <TableCell className={classes.tab4} />
-                  <TableCell className={classes.tab2}>
-                    <b style={{ fontSize: 15 }}>{qty.toFixed(2)}</b>
-                  </TableCell>
+                  <TableCell className={classes.tab2} />
                   <TableCell className={classes.tab2}></TableCell>
                   <TableCell className={classes.tab2}>
                     <b style={{ fontSize: 15 }}>{formatter.format(total)}</b>

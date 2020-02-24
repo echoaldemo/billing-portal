@@ -29,7 +29,7 @@ export default function SearchData() {
     <React.Fragment>
       <InputField
         fullWidth
-        label="Search by Invoice number or Company name"
+        label="Search by number or company"
         InputProps={{
           endAdornment: <Search style={{ color: "#CCC" }} />
         }}
