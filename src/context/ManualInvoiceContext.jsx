@@ -83,7 +83,7 @@ const ManualInvoiceProvider = ({ children }) => {
           item.performanceTaxed
         );
     });
-    return total.toFixed(2);
+    return total;
   };
   const getTaxableServices = () => {
     let total = 0;
@@ -102,7 +102,7 @@ const ManualInvoiceProvider = ({ children }) => {
         total += computeItemService(item.performanceQty, item.performanceTaxed);
       }
     });
-    return total.toFixed(2);
+    return total;
   };
   const getTaxableAdditionalFees = () => {
     let total = 0;
