@@ -1,82 +1,79 @@
-import React, { useState, useEffect } from "react";
-import { InputField } from "common-components";
+import React, { useState, useEffect } from 'react'
+import { InputField } from 'common-components'
 import {
   Grid,
   MenuItem,
   Checkbox,
   ListItemText,
   InputLabel
-} from "@material-ui/core";
+} from '@material-ui/core'
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import ItemsTable from "./components/ItemsTable";
-import { StateContext } from "context/StateContext";
-import { mockCompanies, mockCampaigns } from "../../../../new-invoice/mock";
+} from '@material-ui/pickers'
+import DateFnsUtils from '@date-io/date-fns'
+import moment from 'moment'
+import ItemsTable from './components/ItemsTable'
+import { StateContext } from 'context/StateContext'
+import { mockCampaigns } from '../../../../new-invoice/mock'
 
 export default function InvoiceDetails() {
-  const { state, setFormState, formState } = React.useContext(StateContext);
-  const [companyId, setCompanyId] = useState("");
-  const [companies, setCompanies] = useState([]); // eslint-disable-line
-  const [campaigns, setCampaigns] = useState([]);
-  const [selectedCampaigns, setSelectedCampaigns] = useState([]);
+  const { state, setFormState, formState } = React.useContext(StateContext)
+  const [companyId, setCompanyId] = useState('')
+  // const [companies, setCompanies] = useState([])
+  const [campaigns, setCampaigns] = useState([])
+  const [selectedCampaigns, setSelectedCampaigns] = useState([])
 
   useEffect(() => {
-    setCompanies(mockCompanies);
+    // setCompanies(mockCompanies)
     setCampaigns(
       mockCampaigns.filter(
         camp => camp.company === state.selectedData.company.uuid
       )
-    );
-    setFormState(state.selectedData);
-    setCompanyId(state.selectedData.company.uuid);
-    setSelectedCampaigns(state.selectedData.campaigns.map(camp => camp.uuid));
+    )
+    setFormState(state.selectedData)
+    setCompanyId(state.selectedData.company.uuid)
+    setSelectedCampaigns(state.selectedData.campaigns.map(camp => camp.uuid))
     // eslint-disable-next-line
-  }, []);
+  }, [])
 
   useEffect(() => {
-    setCampaigns(mockCampaigns.filter(camp => camp.company === companyId));
+    setCampaigns(mockCampaigns.filter(camp => camp.company === companyId))
     // eslint-disable-next-line
-  }, [companyId]);
+  }, [companyId])
+
+  const handleStartDate = date => {
+    setFormState({
+      ...formState,
+      startDate: date,
+      dueDate:
+        formState.billingType === '1'
+          ? moment(date).add(1, 'months')
+          : moment(date).add(1, 'weeks')
+    })
+  }
+
+  const handleBillingType = e => {
+    setFormState({
+      ...formState,
+      billingType: e.target.value,
+      dueDate:
+        e.target.value === '1'
+          ? moment(formState.startDate).add(1, 'months')
+          : moment(formState.startDate).add(1, 'weeks')
+    })
+  }
+
   return (
     <div className="modal-details-container">
-      <Grid container spacing={3}>
-        <Grid item lg={3} xs={3} md={3}>
+      <Grid container justify="space-between">
+        <Grid item lg={2} xs={2} md={2}>
           <InputLabel>Company</InputLabel>
-          <b style={{ position: "relative", top: 10 }}>
-            {formState.company ? formState.company.name : ""}
+          <b style={{ position: 'relative', top: 10 }}>
+            {formState.company ? formState.company.name : ''}
           </b>
-          {/* <InputField
-            select
-            value={formState.company ? companyId : ""}
-            disabled={!state.editManageData}
-            fullWidth
-            onChange={e => {
-              setFormState({
-                ...formState,
-                company: mockCompanies.find(
-                  comp => comp.uuid === e.target.value
-                ),
-                campaigns: []
-              });
-              setCompanyId(e.target.value);
-              setSelectedCampaigns(
-                mockCampaigns
-                  .filter(camp => camp.company === e.target.value)
-                  .map(camp => camp.uuid)
-              );
-            }}
-          >
-            {companies.map((comp, i) => (
-              <MenuItem key={i} value={comp.uuid}>
-                {comp.name}
-              </MenuItem>
-            ))}
-          </InputField> */}
         </Grid>
-        <Grid item lg={3} xs={3} md={3}>
+        <Grid item lg={2} xs={2} md={2}>
           <InputLabel>Campaign</InputLabel>
           <InputField
             fullWidth
@@ -87,25 +84,25 @@ export default function InvoiceDetails() {
               displayEmpty: true,
               renderValue: selected =>
                 selected.length === 0
-                  ? "Select campaign"
+                  ? 'Select campaign'
                   : selected.length === campaigns.length
-                  ? "All"
+                  ? 'All'
                   : selected
                       .map(s =>
                         campaigns
                           .filter(a => a.uuid === s)
                           .map(data => data.name)
                       )
-                      .join(", ")
+                      .join(', ')
             }}
             onChange={e => {
-              setSelectedCampaigns(e.target.value);
+              setSelectedCampaigns(e.target.value)
               setFormState({
                 ...formState,
                 campaigns: e.target.value.map(sel =>
                   campaigns.find(a => a.uuid === sel)
                 )
-              });
+              })
             }}
             disabled={!state.editManageData}
           >
@@ -117,24 +114,35 @@ export default function InvoiceDetails() {
             ))}
           </InputField>
         </Grid>
-        <Grid item lg={3} xs={3} md={3}>
+        <Grid item lg={2} xs={2} md={2}>
           <InputLabel>Billing Type</InputLabel>
           <InputField
             fullWidth
-            value={formState.billingType || " "}
+            value={formState.billingType || ' '}
             select
             disabled={!state.editManageData}
-            onChange={e =>
-              setFormState({ ...formState, billingType: e.target.value })
-            }
+            onChange={handleBillingType}
           >
-            <MenuItem value=" ">Select billing type</MenuItem>
             <MenuItem value="1">Monthly</MenuItem>
             <MenuItem value="2">Weekly</MenuItem>
           </InputField>
         </Grid>
-        <Grid item lg={3} xs={3} md={3}>
-          <InputLabel id="label1">Billing Period</InputLabel>
+        <Grid item lg={2} xs={2} md={2}>
+          <InputLabel id="label1">Start of Period</InputLabel>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              name="billingPeriod"
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              value={formState.startDate}
+              onChange={date => handleStartDate(date)}
+              disabled={!state.editManageData}
+            />
+          </MuiPickersUtilsProvider>
+        </Grid>
+        <Grid item lg={2} xs={2} md={2}>
+          <InputLabel id="label1">End of Period</InputLabel>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               name="billingPeriod"
@@ -151,5 +159,5 @@ export default function InvoiceDetails() {
       <br />
       <ItemsTable campaigns={campaigns} selectedCampaigns={selectedCampaigns} />
     </div>
-  );
+  )
 }
