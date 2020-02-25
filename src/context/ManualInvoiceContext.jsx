@@ -64,6 +64,7 @@ const ManualInvoiceProvider = ({ children }) => {
   const [showCreateNew, setShowCreateNew] = useState(false);
   const [campaignDetails, setCampaignDetails] = useState([]);
   const [taxChecked, setTaxChecked] = useState(true);
+  const [openWarningModal, setOpenWarningModal] = useState(false);
   const mockTaxation = [
     { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
@@ -402,7 +403,9 @@ const ManualInvoiceProvider = ({ children }) => {
         getTaxableServices,
         getTaxableAdditionalFees,
         computeBalanceDue,
-        taxableTotal
+        taxableTotal,
+        openWarningModal,
+        setOpenWarningModal
       }}
     >
       {children}
