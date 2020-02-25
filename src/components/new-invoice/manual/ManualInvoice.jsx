@@ -5,7 +5,12 @@ import {
   ManualInvoiceProvider
 } from "context/ManualInvoiceContext";
 import { StateContext } from "context/StateContext";
-import { TableLoader, LoadingModal, SuccessModal } from "common-components";
+import {
+  TableLoader,
+  LoadingModal,
+  SuccessModal,
+  WarningModal
+} from "common-components";
 import NewInvoiceAppbar from "../components/NewInvoiceAppbar";
 import GeneralForm from "./GeneralForm";
 import BillingForm from "./BillingForm";
@@ -28,17 +33,26 @@ const NewInvoice = ({ handleClose, duplicate }) => {
     setShowCreateNew,
     resetAllFormState,
     formState,
-    getBalance
+    getBalance,
+    openWarningModal,
+    setOpenWarningModal
   } = useContext(ManualInvoiceContext);
   const { getPendingInvoicesData } = useContext(StateContext);
-
+  const openWarning = () => {
+    if (getBalance()) {
+      setOpenWarningModal(true);
+    } else {
+      handleClose();
+    }
+  };
   return (
     <React.Fragment>
       <NewInvoiceAppbar
-        createFn={(type) => {
+        createFn={type => {
           createManualInvoice(type, handleClose);
         }}
         handleClose={handleClose}
+        openWarning={openWarning}
         type="manual"
         balance={getBalance()}
         selectedCompany={formState.company}
@@ -48,7 +62,6 @@ const NewInvoice = ({ handleClose, duplicate }) => {
       ) : (
         <FormContent duplicate={duplicate} />
       )}
-
       <LoadingModal
         open={createLoading}
         text={`Creating new manual invoice`}
@@ -56,7 +69,20 @@ const NewInvoice = ({ handleClose, duplicate }) => {
           setLoading(false);
         }}
       />
-
+      <Dialog open={openWarningModal}>
+        <WarningModal
+          text="Confirmation"
+          content="Are you sure you want to close this dialog? Your progress will not be saved."
+          closeFn={() => {
+            setOpenWarningModal(false);
+          }}
+          secondaryFn={() => {
+            setOpenWarningModal(false);
+            handleClose();
+          }}
+          btnText="Close"
+        />
+      </Dialog>
       <Dialog open={showCreateNew}>
         <SuccessModal
           text="Success"
@@ -73,6 +99,7 @@ const NewInvoice = ({ handleClose, duplicate }) => {
           btnText="Create another"
         />
       </Dialog>
+      )}
     </React.Fragment>
   );
 };
