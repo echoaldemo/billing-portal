@@ -41,7 +41,10 @@ export default function GeneralForm({ duplicate }) {
           company: duplicate.company.uuid,
           campaign: filterCampaign(duplicate.company.uuid),
           billingType: duplicate.billingType,
-          billingPeriod: duplicate.startDate
+          billingPeriod: {
+            ...formState.billingPeriod,
+            start: duplicate.startDate
+          }
         });
         const campaignsDetails = duplicate.campaigns.map((uuid) => {
           let filteredDetails = state.campaigns.filter(

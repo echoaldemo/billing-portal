@@ -20,7 +20,6 @@ const start =
 today.setMonth(today.getMonth() + 1);
 const end =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-
 const addMonth =
   today.getFullYear() + "-" + (today.getMonth() + 2) + "-" + today.getDate();
 const addWeek =
@@ -64,6 +63,7 @@ const ManualInvoiceProvider = ({ children }) => {
   const [showCreateNew, setShowCreateNew] = useState(false);
   const [campaignDetails, setCampaignDetails] = useState([]);
   const [taxChecked, setTaxChecked] = useState(true);
+  const [openWarningModal, setOpenWarningModal] = useState(false);
   const mockTaxation = [
     { code: "5", taxrate: "7", name: "Utah", percentage: 6.1 },
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
@@ -279,17 +279,14 @@ const ManualInvoiceProvider = ({ children }) => {
       });
   };
 
-  const getStartDate = () => {
-    return new Date(formState.billingType === "1" ? addMonth : addWeek);
-  };
   const saveAsDraft = (data) => {
     let newData = {
       ...data,
       invoiceType: "Manual",
       company: company(formState.company),
       campaigns: campaignDetails,
-      startDate: formatDate(getStartDate()),
-      dueDate: formatDate(new Date(formState.billingPeriod)),
+      startDate: formatDate(new Date(formState.billingPeriod.start)),
+      dueDate: formatDate(new Date(formState.billingPeriod.end)),
       total: computeBalanceDue(),
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
@@ -332,7 +329,7 @@ const ManualInvoiceProvider = ({ children }) => {
         value: company(formState.company).qb_id
       },
       TxnDate: formatDate(new Date(date)),
-      DueDate: formatDate(new Date(formState.billingPeriod)),
+      DueDate: formatDate(new Date(formState.billingPeriod.end)),
       Line: generateLine(),
       TxnTaxDetail: taxChecked ? taxDetails : null,
       CustomerMemo: {
@@ -405,7 +402,9 @@ const ManualInvoiceProvider = ({ children }) => {
         getTaxableServices,
         getTaxableAdditionalFees,
         computeBalanceDue,
-        taxableTotal
+        taxableTotal,
+        openWarningModal,
+        setOpenWarningModal
       }}
     >
       {children}
