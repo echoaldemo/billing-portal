@@ -61,7 +61,7 @@ const InvoiceTableToolbar = props => {
   };
 
   return (
-    <Toolbar>
+    <div>
       <Tooltip title="Add new invoice">
         <Button className="add-btn" onClick={handleOpenMenu}>
           <Add /> New Invoice
@@ -106,7 +106,7 @@ const InvoiceTableToolbar = props => {
       >
         <div>{renderModal()}</div>
       </Dialog>
-    </Toolbar>
+    </div>
   );
 };
 

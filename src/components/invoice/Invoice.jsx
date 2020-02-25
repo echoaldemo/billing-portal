@@ -5,12 +5,15 @@ import {
   EditInvoice,
   TableTabs,
   PendingTable,
-  FilterToolbar
+  FilterToolbar,
+  InvoiceTableToolbar
 } from "./components";
-import { Typography, Box, Paper } from "@material-ui/core";
+import PendingCheckboxToolbar from "./components/pending/PendingCheckboxToolbar";
+import SearchData from "./components/filter-toolbar/SearchData";
+import { Typography, Box, Paper, Divider, Grid } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
 const Invoice = () => {
-  const { state } = React.useContext(StateContext);
+  const { selectedItems } = React.useContext(StateContext);
 
   return (
     <React.Fragment>
@@ -18,19 +21,47 @@ const Invoice = () => {
         title="Invoices"
         subTitle="Manage all pending and approved invoices from quickbooks site."
       />
+      <Grid container>
+        <Grid
+          item
+          lg={4}
+          style={{
+            display: "flex",
+            alignItems: "center"
+          }}
+        >
+          <SearchData />
+        </Grid>
+        <Grid
+          item
+          lg={8}
+          style={{
+            display: "flex",
+            flexDirection: "row-reverse",
+            alignItems: "center"
+          }}
+        >
+          {selectedItems.length > 0 ? (
+            <PendingCheckboxToolbar />
+          ) : (
+            <InvoiceTableToolbar />
+          )}
+        </Grid>
+      </Grid>
+      <br />
 
-      <FilterToolbar />
-      <Paper className="mt-normal" square={true}>
-        <TableTabs />
-
-        {/* Pending */}
-        <TabPanel value={state.active_tab} index={0}>
-          <PendingTable />
-        </TabPanel>
-        {/* Approved */}
-        <TabPanel value={state.active_tab} index={1}>
-          <InvoiceTable />
-        </TabPanel>
+      <Paper square={true}>
+        {/* <Grid container className="p-normal">
+          <Grid item lg={4}>
+            <SearchData />
+          </Grid>
+        </Grid>
+        <Divider /> */}
+        <div style={{ padding: 15 }}>
+          <FilterToolbar />
+        </div>
+        <Divider />
+        <PendingTable />
       </Paper>
 
       <EditInvoice />
