@@ -286,8 +286,8 @@ const ManualInvoiceProvider = ({ children }) => {
       invoiceType: "Manual",
       company: company(formState.company),
       campaigns: campaignDetails,
-      startDate: formatDate(new Date(formState.startDate)),
-      dueDate: formatDate(new Date(formState.billingPeriod)),
+      startDate: formatDate(new Date(formState.billingPeriod.start)),
+      dueDate: formatDate(new Date(formState.billingPeriod.end)),
       total: computeBalanceDue(),
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
@@ -330,7 +330,7 @@ const ManualInvoiceProvider = ({ children }) => {
         value: company(formState.company).qb_id
       },
       TxnDate: formatDate(new Date(date)),
-      DueDate: formatDate(new Date(formState.billingPeriod)),
+      DueDate: formatDate(new Date(formState.billingPeriod.end)),
       Line: generateLine(),
       TxnTaxDetail: taxChecked ? taxDetails : null,
       CustomerMemo: {

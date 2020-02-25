@@ -62,7 +62,6 @@ const NewInvoice = ({ handleClose, duplicate }) => {
       ) : (
         <FormContent duplicate={duplicate} />
       )}
-
       <LoadingModal
         open={createLoading}
         text={`Creating new manual invoice`}
@@ -70,38 +69,36 @@ const NewInvoice = ({ handleClose, duplicate }) => {
           setLoading(false);
         }}
       />
-      {getBalance() ? (
-        <Dialog open={openWarningModal}>
-          <WarningModal
-            text="Confirmation"
-            content="Are you sure you want to close this dialog? Your progress will not be saved."
-            closeFn={() => {
-              setOpenWarningModal(false);
-            }}
-            secondaryFn={() => {
-              setOpenWarningModal(false);
-              handleClose();
-            }}
-            btnText="Close"
-          />
-        </Dialog>
-      ) : (
-        <Dialog open={showCreateNew}>
-          <SuccessModal
-            text="Success"
-            content="Invoice successfully saved."
-            closeFn={() => {
-              setShowCreateNew(false);
-              handleClose();
-              getPendingInvoicesData();
-            }}
-            secondaryFn={() => {
-              setShowCreateNew(false);
-              resetAllFormState();
-            }}
-            btnText="Create another"
-          />
-        </Dialog>
+      <Dialog open={openWarningModal}>
+        <WarningModal
+          text="Confirmation"
+          content="Are you sure you want to close this dialog? Your progress will not be saved."
+          closeFn={() => {
+            setOpenWarningModal(false);
+          }}
+          secondaryFn={() => {
+            setOpenWarningModal(false);
+            handleClose();
+          }}
+          btnText="Close"
+        />
+      </Dialog>
+      <Dialog open={showCreateNew}>
+        <SuccessModal
+          text="Success"
+          content="Invoice successfully saved."
+          closeFn={() => {
+            setShowCreateNew(false);
+            handleClose();
+            getPendingInvoicesData();
+          }}
+          secondaryFn={() => {
+            setShowCreateNew(false);
+            resetAllFormState();
+          }}
+          btnText="Create another"
+        />
+      </Dialog>
       )}
     </React.Fragment>
   );
