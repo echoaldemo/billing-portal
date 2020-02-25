@@ -11,7 +11,8 @@ export default function ManagePendingFooter() {
     dispatch,
     formState,
     getPendingInvoicesData,
-    deletePendingStatus
+    deletePendingStatus,
+    setFormState
   } = React.useContext(StateContext)
 
   const updateStateStatus = status => {
@@ -207,6 +208,12 @@ export default function ManagePendingFooter() {
             type: 'set-update-loading',
             payload: { updateLoading: false }
           })
+          dispatch({ type: 'set-manage-modal', payload: { openManage: false } })
+          dispatch({
+            type: 'set-edit-manage-data',
+            payload: { editManageData: false }
+          })
+          setFormState({})
         })
         .then(() => {
           getPendingInvoicesData()
