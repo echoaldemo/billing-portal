@@ -38,7 +38,6 @@ const PendingTable = () => {
 
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -96,7 +95,7 @@ const PendingTable = () => {
       ) : (
         <React.Fragment>
           {state.data.length > 0 ? (
-            <TableContainer style={{ height: 480 }}>
+            <TableContainer>
               <Table>
                 <InvoiceTableHeader
                   headCells={headCells}
@@ -109,22 +108,11 @@ const PendingTable = () => {
                   }}
                   check={checked()}
                 />
-                <PendingTableBody data={sortData(state.data)} />
-                <TableBody>
-                  <TableRow>
-                    <TableCell colSpan={10} style={{ borderBottom: 0 }}>
-                      <h3
-                        style={{
-                          padding: 0,
-                          textAlign: "center",
-                          color: "#444851"
-                        }}
-                      >
-                        End of result
-                      </h3>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
+                <PendingTableBody
+                  data={sortData(state.data)}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                />
               </Table>
             </TableContainer>
           ) : (
