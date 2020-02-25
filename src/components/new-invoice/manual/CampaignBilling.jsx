@@ -42,7 +42,7 @@ const CampaignBilling = ({ campaignDetails }) => {
   const isTaxed = tax === 0;
   const renderLessAdditional = () => {
     let additionalServices = [];
-    Object.keys(additionalFee).map((item) => {
+    Object.keys(additionalFee).map(item => {
       if (additionalFee[item]) {
         item === "merchantQty" && additionalServices.push("Merchant Fees");
         item === "scrubbingQty" &&
@@ -100,7 +100,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <CustomCheckbox
           disabled={isTaxed}
           checked={isTaxed ? false : additionalFee.merchantTax}
-          onChange={(e) => {
+          onChange={e => {
             CustomChange(e, "merchantTax");
           }}
         />
@@ -110,15 +110,7 @@ const CampaignBilling = ({ campaignDetails }) => {
 
     { label: "Merchant Fees", size: 2 },
     {
-      label: (
-        <InputField
-          placeholder="Merchant quantity"
-          value={additionalFee.merchantQty}
-          onChange={(e) => {
-            setAdditionalFee({ ...additionalFee, merchantQty: e.target.value });
-          }}
-        />
-      ),
+      label: " ",
       size: 2
     },
     {
@@ -126,7 +118,14 @@ const CampaignBilling = ({ campaignDetails }) => {
         <InputField
           placeholder="Rate value"
           value={additionalFee.merchantRate}
-          onChange={(e) => {
+          InputProps={{
+            endAdornment: (
+              <React.Fragment>
+                &nbsp; <span style={{ color: "#a7a7a7" }}>%</span>
+              </React.Fragment>
+            )
+          }}
+          onChange={e => {
             setAdditionalFee({
               ...additionalFee,
               merchantRate: e.target.value
@@ -141,7 +140,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <b>
           {formatter.format(
             parseFloat(
-              computeInt(additionalFee.merchantQty, additionalFee.merchantRate)
+              computeInt(additionalFee.merchantRate / 100, getBalance())
             )
           )}
         </b>
@@ -170,7 +169,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <CustomCheckbox
           disabled={isTaxed}
           checked={isTaxed ? false : additionalFee.scrubbingTax}
-          onChange={(e) => {
+          onChange={e => {
             CustomChange(e, "scrubbingTax");
           }}
         />
@@ -183,7 +182,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <InputField
           placeholder="Scrubbing quantity"
           value={additionalFee.scrubbingQty}
-          onChange={(e) => {
+          onChange={e => {
             setAdditionalFee({
               ...additionalFee,
               scrubbingQty: e.target.value
@@ -198,7 +197,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         <InputField
           placeholder="Scrubbing rate value"
           value={additionalFee.scrubbingRate}
-          onChange={(e) => {
+          onChange={e => {
             setAdditionalFee({
               ...additionalFee,
               scrubbingRate: e.target.value
@@ -404,7 +403,7 @@ const TaxMenu = () => {
       <Checkbox
         checked={taxChecked}
         style={{ padding: 0 }}
-        onChange={(e) => {
+        onChange={e => {
           if (!e.target.checked) {
             setTax(0);
           }
@@ -418,7 +417,7 @@ const TaxMenu = () => {
         style={{ padding: 0, width: 150 }}
         value={taxChecked ? tax : 0}
         disabled={!taxChecked}
-        onChange={(e) => {
+        onChange={e => {
           console.log("object", tax);
           setTax(e.target.value);
         }}
