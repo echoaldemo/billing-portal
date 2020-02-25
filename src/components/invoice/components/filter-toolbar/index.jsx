@@ -1,15 +1,15 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 import FilterDate from "./FilterDate";
-import SearchData from "./SearchData";
 import FilterMenu from "./FilterMenu";
+import FilterStatus from "./FilterStatus";
 export default function FilterToolbar() {
   return (
     <Grid container spacing={5}>
-      <Grid item lg={3} sm={12}>
-        <SearchData />
+      <Grid item lg={2} md={4} sm={4}>
+        <FilterStatus />
       </Grid>
-      <Grid item lg={5} md={6} sm={6}>
+      <Grid item lg={4} md={4} sm={4}>
         <FilterMenu />
       </Grid>
       <Grid item lg={4} md={6} sm={6}>

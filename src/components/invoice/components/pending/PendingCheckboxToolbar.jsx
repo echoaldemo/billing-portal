@@ -31,41 +31,39 @@ export default function PendingCheckboxToolbar() {
     setSelectedItems([]);
   };
   return (
-    <div className="display-space-between p-normal">
-      <div>
-        <Button
-          style={{
-            textTransform: "none",
-            border: "solid 1px #F1F1F1",
-            paddingLeft: 10,
-            paddingRight: 10
-          }}
-          color="default"
-          onClick={() => {
-            setConfirmModal({ ...confirmModal, approve: true });
-          }}
-        >
-          <b>Mark as Approved</b>
-        </Button>
-        &emsp;
-        <Button
-          style={{
-            textTransform: "none",
-            border: "solid 1px #F1F1F1",
-            paddingLeft: 10,
-            paddingRight: 10
-          }}
-          color="default"
-          onClick={() => {
-            duplicateSelectedItems();
-          }}
-        >
-          <b>Duplicate Items</b>
-        </Button>
-      </div>
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <Button
+        style={{
+          textTransform: "none",
+          border: "solid 1px #F1F1F1",
+          paddingLeft: 10,
+          paddingRight: 10
+        }}
+        color="default"
+        onClick={() => {
+          setConfirmModal({ ...confirmModal, approve: true });
+        }}
+      >
+        <b>Mark as Approved</b>
+      </Button>
+      &emsp;
+      <Button
+        style={{
+          textTransform: "none",
+          border: "solid 1px #F1F1F1",
+          paddingLeft: 10,
+          paddingRight: 10
+        }}
+        color="default"
+        onClick={() => {
+          duplicateSelectedItems();
+        }}
+      >
+        <b>Duplicate Items</b>
+      </Button>
+      &emsp;
       <Tooltip title="Delete Marked Invoices" placement="top">
         <IconButton
-          style={{ padding: 5 }}
           onClick={() => {
             setConfirmModal({ ...confirmModal, delete: true });
           }}
@@ -73,7 +71,6 @@ export default function PendingCheckboxToolbar() {
           <Delete />
         </IconButton>
       </Tooltip>
-
       <DeleteModal />
       <ApproveModal />
       <DuplicateItems

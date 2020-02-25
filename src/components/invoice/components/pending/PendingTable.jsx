@@ -7,7 +7,10 @@ import {
   Table,
   TableContainer,
   TablePagination,
-  Divider
+  Divider,
+  TableRow,
+  TableCell,
+  TableBody
 } from "@material-ui/core";
 
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
@@ -93,7 +96,7 @@ const PendingTable = () => {
       ) : (
         <React.Fragment>
           {state.data.length > 0 ? (
-            <TableContainer>
+            <TableContainer style={{ height: 480 }}>
               <Table>
                 <InvoiceTableHeader
                   headCells={headCells}
@@ -107,6 +110,21 @@ const PendingTable = () => {
                   check={checked()}
                 />
                 <PendingTableBody data={sortData(state.data)} />
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={10} style={{ borderBottom: 0 }}>
+                      <h3
+                        style={{
+                          padding: 0,
+                          textAlign: "center",
+                          color: "#444851"
+                        }}
+                      >
+                        End of result
+                      </h3>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               </Table>
             </TableContainer>
           ) : (
