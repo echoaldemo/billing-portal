@@ -1,6 +1,11 @@
 import React, { useState, useContext } from "react";
 import { RowHeader, Row } from "common-components";
-import { Checkbox as TempCb, MenuItem, Collapse } from "@material-ui/core";
+import {
+  Checkbox as TempCb,
+  MenuItem,
+  Collapse,
+  InputAdornment
+} from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import ExpandButton from "../manual/ExpandButtton";
@@ -25,6 +30,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     getTaxableSubtotal,
     getTax,
     getTaxStatus,
+    getAddFees,
     formState,
     setFormState,
     addFee,
@@ -36,8 +42,16 @@ const CampaignBilling = ({ campaignDetails }) => {
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
   const getAmount = label => {
     const { qty, rate } = addFee[label];
-    let content;
-    if (qty && rate)
+    let content, merchantTotal;
+    if (label === "merchant" && rate) {
+      merchantTotal =
+        Math.round((parseFloat(rate) / 100) * getTotal() * 100) / 100;
+      content = (
+        <div style={{ textAlign: "right", width: "100%" }}>
+          <b>{formatter.format(merchantTotal)}</b>
+        </div>
+      );
+    } else if (qty && rate)
       content = (
         <div style={{ textAlign: "right", width: "100%" }}>
           <b>{formatter.format(parseFloat(qty) * parseFloat(rate))}</b>
@@ -62,7 +76,7 @@ const CampaignBilling = ({ campaignDetails }) => {
   const getServices = () => {
     const { litigator, merchant } = addFee;
     let label = [];
-    if (merchant.qty * merchant.rate) label.push("Merchant Fees");
+    if (merchant.rate) label.push("Merchant Fees");
     if (litigator.qty * litigator.rate) label.push("Litigator Scrubbing");
 
     if (!label.length) return <i>None</i>;
@@ -87,17 +101,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     },
     { label: "Merchant Fees", size: 2 },
     {
-      label: (
-        <InputField
-          value={addFee.merchant.qty}
-          name="merchant"
-          onChange={e => handleAddFees(e, "qty")}
-          placeholder="Merchant quantity"
-          inputProps={{
-            style: { textAlign: "right" }
-          }}
-        />
-      ),
+      label: "",
       size: 2
     },
     {
@@ -106,9 +110,11 @@ const CampaignBilling = ({ campaignDetails }) => {
           name="merchant"
           onChange={e => handleAddFees(e, "rate")}
           value={addFee.merchant.rate}
-          placeholder="Rate value"
           inputProps={{
             style: { textAlign: "right" }
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">%</InputAdornment>
           }}
         />
       ),
@@ -257,7 +263,7 @@ const CampaignBilling = ({ campaignDetails }) => {
               fontSize: 20
             }}
           >
-            {formatter.format(getTotal())}
+            {formatter.format(getTotal() + getAddFees())}
           </span>
         </div>
       ),
