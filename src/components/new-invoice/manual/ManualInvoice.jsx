@@ -35,7 +35,8 @@ const NewInvoice = ({ handleClose, duplicate }) => {
     formState,
     getBalance,
     openWarningModal,
-    setOpenWarningModal
+    setOpenWarningModal,
+    additionalFee
   } = useContext(ManualInvoiceContext);
   const { getPendingInvoicesData } = useContext(StateContext);
   const openWarning = () => {
@@ -56,6 +57,7 @@ const NewInvoice = ({ handleClose, duplicate }) => {
         type="manual"
         balance={getBalance()}
         selectedCompany={formState.company}
+        merchantInvalid={additionalFee.merchantInvalid}
       />
       {!state.companies.length > 0 ? (
         <TableLoader />

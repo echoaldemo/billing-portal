@@ -40,6 +40,7 @@ const CampaignBilling = ({ campaignDetails }) => {
   }, [campaignDetails]);
 
   const isTaxed = tax === 0;
+
   const renderLessAdditional = () => {
     let additionalServices = [];
     Object.keys(additionalFee).map(item => {
@@ -89,6 +90,12 @@ const CampaignBilling = ({ campaignDetails }) => {
       size: 1
     }
   ];
+
+  const isMerchantInvalid = () => {
+    return additionalFee.merchantRate < 0 || additionalFee.merchantRate > 100
+      ? true
+      : false;
+  };
   const additionalFeesRow1 = [
     {
       label: <b>Additional Fees</b>,
@@ -116,19 +123,29 @@ const CampaignBilling = ({ campaignDetails }) => {
     {
       label: (
         <InputField
+          type="number"
+          error={additionalFee.merchantInvalid}
           placeholder="Rate value"
           value={additionalFee.merchantRate}
           InputProps={{
             endAdornment: (
               <React.Fragment>
-                &nbsp; <span style={{ color: "#a7a7a7" }}>%</span>
+                &nbsp;{" "}
+                <span
+                  style={{
+                    color: isMerchantInvalid() ? "#f44336" : "#a7a7a7"
+                  }}
+                >
+                  %
+                </span>
               </React.Fragment>
             )
           }}
           onChange={e => {
             setAdditionalFee({
               ...additionalFee,
-              merchantRate: e.target.value
+              merchantRate: e.target.value,
+              merchantInvalid: e.target.value > 100 || e.target.value < 0
             });
           }}
         />
@@ -371,6 +388,7 @@ const CampaignBilling = ({ campaignDetails }) => {
           }
           style={{ border: "solid 1px #F1F1F1" }}
         />
+
         <Collapse in={additionalCollapse}>
           <Row
             rowData={additionalFeesRow2}
