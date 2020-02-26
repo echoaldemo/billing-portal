@@ -6,11 +6,17 @@ const ShowValidations = props => {
 
   return (
     <Collapse {...rest}>
-      <ul style={{ listStyle: "none" }}>
+      <ul style={{ listStyle: "none", paddingLeft: 15 }}>
         {errorList.map((item, i) => {
           if (item.error) {
             return (
-              <li key={i} style={{ display: "flex", alignItems: "center" }}>
+              <li
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center"
+                }}
+              >
                 <WarningIcon style={{ fontSize: 16, color: "ff504d" }} />
                 &emsp;
                 <span style={{ color: "#ff504d", fontSize: 16 }}>
