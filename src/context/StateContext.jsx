@@ -15,6 +15,7 @@ const initialState = {
     merchant: {},
     customerRef: ''
   },
+  userProfile: {},
   editManageData: false,
   updateLoading: false
 }
@@ -26,8 +27,6 @@ const confirmModalInitial = {
 const StateContext = React.createContext()
 
 const today = new Date()
-const date =
-  today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
 const dateRangeInitial = {
   startDate:
     today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(),
@@ -111,6 +110,8 @@ const StateProvider = ({ children }) => {
         return { ...state, editManageData: action.payload.editManageData }
       case 'set-update-loading':
         return { ...state, updateLoading: action.payload.updateLoading }
+      case 'set-user-profile':
+        return { ...state, userProfile: action.payload.userProfile }
       default:
         return null
     }

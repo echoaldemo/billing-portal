@@ -14,8 +14,7 @@ export default function Routes() {
   return (
     <BrowserRouter>
       <Switch>
-        <Route exact path="/" component={() => <SignIn />} />
-        <Route exact path="/callback" />
+        <Route exact path="/" component={SignIn} />
         <PrivateRoutes />
       </Switch>
     </BrowserRouter>
