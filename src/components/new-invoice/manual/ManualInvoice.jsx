@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   ManualInvoiceContext,
   ManualInvoiceProvider
@@ -12,6 +12,7 @@ import {
   WarningModal
 } from "common-components";
 import NewInvoiceAppbar from "../components/NewInvoiceAppbar";
+import ShowValidations from "../components/ShowValidations";
 import GeneralForm from "./GeneralForm";
 import BillingForm from "./BillingForm";
 import { Dialog } from "@material-ui/core";
@@ -39,12 +40,26 @@ const NewInvoice = ({ handleClose, duplicate }) => {
     additionalFee
   } = useContext(ManualInvoiceContext);
   const { getPendingInvoicesData } = useContext(StateContext);
+  const [errorList, setErrorList] = useState([]);
+
+  useEffect(() => {
+    setErrorList([
+      {
+        errorMsg: "Merchant fee's rate value should be 0-100 only",
+        error: additionalFee.merchantInvalid
+      }
+    ]);
+  }, [additionalFee]);
   const openWarning = () => {
     if (getBalance()) {
       setOpenWarningModal(true);
     } else {
       handleClose();
     }
+  };
+
+  const isError = () => {
+    return additionalFee.merchantInvalid;
   };
   return (
     <React.Fragment>
@@ -58,6 +73,11 @@ const NewInvoice = ({ handleClose, duplicate }) => {
         balance={getBalance()}
         selectedCompany={formState.company}
         merchantInvalid={additionalFee.merchantInvalid}
+      />
+      {console.log(errorList)}
+      <ShowValidations
+        in={additionalFee.merchantInvalid}
+        errorList={errorList}
       />
       {!state.companies.length > 0 ? (
         <TableLoader />
