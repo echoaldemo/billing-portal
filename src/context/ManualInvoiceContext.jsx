@@ -47,6 +47,7 @@ const initialAdditionalFee = {
   merchantQty: "",
   merchantRate: "",
   merchantTax: true,
+  merchantInvalid: false,
 
   scrubbingQty: "",
   scrubbingRate: "",

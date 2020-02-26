@@ -17,6 +17,9 @@ export const SelectField = styled(TextField)`
   .Mui-error {
     color: #f44336 !important;
   }
+  .MuiInput-underline.Mui-error:after {
+    border-bottom-color: #f44336 !important;
+  }
   .MuiInput-underline {
     &::before {
       border-bottom: solid 1px rgba(238, 238, 238, 0.99);
