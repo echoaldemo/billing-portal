@@ -61,17 +61,14 @@ const CampaignBilling = ({ campaignDetails }) => {
     return content;
   };
   const getTotalAdd = () => {
-    const { litigator, merchant } = addFee;
-    let content;
-    const total = merchant.qty * merchant.rate + litigator.qty * litigator.rate;
+    const total = getAddFees();
     if (total)
-      content = (
+      return (
         <div style={{ textAlign: "right", width: "100%" }}>
           <b>{formatter.format(total)}</b>
         </div>
       );
-    else content = "";
-    return content;
+    else return "";
   };
   const getServices = () => {
     const { litigator, merchant } = addFee;
@@ -205,7 +202,19 @@ const CampaignBilling = ({ campaignDetails }) => {
     },
 
     {
-      label: " ",
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            marginTop: "-2px"
+          }}
+        >
+          <span style={{ fontSize: 12 }}>SUBTOTAL</span>
+          <span>{formatter.format(getAddFees())}</span>
+        </div>
+      ),
       size: 1
     }
   ];
@@ -270,6 +279,21 @@ const CampaignBilling = ({ campaignDetails }) => {
       size: 2
     }
   ];
+  const serviceSubtotal = [
+    { label: " ", size: 9 },
+    {
+      label: <CenterCont>SERVICE SUBTOTAL</CenterCont>,
+      size: 2
+    },
+    {
+      label: (
+        <CenterCont>
+          <b>{formatter.format(getTotal())}</b>
+        </CenterCont>
+      ),
+      size: 1
+    }
+  ];
   const taxRow = [
     { label: " ", size: 3 },
     { label: " ", size: 3 },
@@ -321,7 +345,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         />
         <div
           style={{
-            maxHeight: 476,
+            maxHeight: 450,
             overflow: "auto"
           }}
         >
@@ -338,7 +362,11 @@ const CampaignBilling = ({ campaignDetails }) => {
           })}
         </div>
       </div>
-      <br />
+      <div
+        style={{ border: "solid 1px #F1F1F1", borderTop: 0, borderBottom: 0 }}
+      >
+        <Row rowData={serviceSubtotal} />
+      </div>
       <Row
         rowData={
           additionalCollapse ? additionalFeesCollapse : additionalFeesRow

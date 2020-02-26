@@ -136,7 +136,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const value = label === "tax" ? e.target.checked : e.target.value;
     if (
       (e.target.name === "merchant" &&
-        parseFloat(value) >= 1 &&
+        parseFloat(value) >= 0 &&
         parseFloat(value) <= 100) ||
       value === "" ||
       e.target.name === "litigator" ||

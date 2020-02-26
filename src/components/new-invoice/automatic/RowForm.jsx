@@ -282,31 +282,21 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       label: compute(performance, performance_rate),
       size: 2
     },
-    { label: " ", size: 1 }
-  ];
-  const totalRow = [
     {
       label: (
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-end"
+            alignItems: "flex-end",
+            marginTop: "-2px"
           }}
         >
-          <span>SUBTOTAL</span>
-          <span
-            style={{
-              fontWeight: 600,
-              fontSize: 20
-            }}
-          >
-            {formatter.format(getSubTotal())}
-          </span>
+          <span style={{ fontSize: 12 }}>SUBTOTAL</span>
+          <span>{formatter.format(getSubTotal())}</span>
         </div>
       ),
-      size: 12,
-      border: true
+      size: 1
     }
   ];
   return (
@@ -317,7 +307,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
       <Collapse in={rowCollapse.includes(index)}>
         <Row rowData={rowData2} />
         <Row rowData={rowData3} />
-        <Row rowData={totalRow} />
       </Collapse>
     </div>
   );
