@@ -134,18 +134,25 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
   const handleAddFees = (e, label) => {
     const value = label === "tax" ? e.target.checked : e.target.value;
-    setAddFee({
-      ...addFee,
-      [e.target.name]: { ...addFee[e.target.name], [label]: value }
-    });
+    if (
+      (e.target.name === "merchant" &&
+        parseFloat(value) >= 1 &&
+        parseFloat(value) <= 100) ||
+      value === "" ||
+      e.target.name === "litigator" ||
+      label === "tax"
+    ) {
+      setAddFee({
+        ...addFee,
+        [e.target.name]: { ...addFee[e.target.name], [label]: value }
+      });
+    }
   };
   const getTotal = () => {
-    const { merchant, litigator } = addFee;
     let temp = formState.campaign.filter(
       item => selectedCampaign.indexOf(item.uuid) !== -1
     );
     let total = 0;
-    total += merchant.qty * merchant.rate + litigator.qty * litigator.rate;
     temp.map(item => {
       total +=
         item.content.billable_hours * item.content.bill_rate +
@@ -154,15 +161,27 @@ const AutomaticInvoiceProvider = ({ children }) => {
     });
     return total;
   };
+  const getAddFees = () => {
+    const { merchant, litigator } = addFee;
+    let subtotal = getTotal(),
+      total = 0;
+    if (merchant.rate) {
+      total +=
+        Math.round((parseFloat(merchant.rate) / 100) * subtotal * 100) / 100;
+    }
+    total += litigator.qty * litigator.rate;
+    return total;
+  };
   const getTaxableSubtotal = () => {
     const { merchant, litigator } = addFee;
     let temp = formState.campaign.filter(
       item => selectedCampaign.indexOf(item.uuid) !== -1
     );
     let total = 0;
-    let mer = merchant.qty * merchant.rate,
+    let mer =
+        Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
       lit = litigator.qty * litigator.rate;
-    if (merchant.tax) total += mer;
+    if (merchant.tax && merchant.rate) total += mer;
     if (litigator.tax) total += lit;
     temp.map(item => {
       let a = item.content.billable_hours * item.content.bill_rate,
@@ -199,7 +218,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return tax;
   };
   const getBalance = () => {
-    return getTotal() + getTax();
+    return getTotal() + getAddFees() + getTax();
   };
   const createInvoice = type => {
     dispatch({
@@ -360,10 +379,12 @@ const AutomaticInvoiceProvider = ({ children }) => {
       data.Line.push(litigatorObj);
     }
 
-    if (merchant.qty !== "" && merchant.rate !== "") {
+    if (merchant.rate !== "") {
       const merchantObj = {
         LineNum: lineData.length + 1,
-        Amount: merchant.qty * merchant.rate,
+        Amount:
+          Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) /
+          100,
         SalesItemLineDetail: {
           TaxCodeRef: {
             value: merchant.tax ? "TAX" : "NON"
@@ -372,11 +393,14 @@ const AutomaticInvoiceProvider = ({ children }) => {
             name: "Merchant Fees",
             value: "25"
           },
-          Qty: merchant.qty,
-          UnitPrice: merchant.rate
+          Qty: 1,
+          UnitPrice:
+            Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) /
+            100
         },
         Id: `${lineData.length + 1}`,
-        DetailType: "SalesItemLineDetail"
+        DetailType: "SalesItemLineDetail",
+        Description: `Merchant Fees ${merchant.rate} %`
       };
       data.Line.push(merchantObj);
     }
@@ -435,6 +459,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
         getTotal,
         getTaxableSubtotal,
         getTax,
+        getAddFees,
         getTaxStatus,
         mockTaxation,
         getBalance,
