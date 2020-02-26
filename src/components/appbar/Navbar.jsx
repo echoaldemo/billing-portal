@@ -11,6 +11,7 @@ import Menu from '@material-ui/core/Menu'
 import logo from 'assets/pp_logo_white_font.png'
 import { StateContext } from 'context/StateContext'
 import { get, post } from 'utils/api'
+import { ExpandMore, PowerSettingsNew } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -82,8 +83,18 @@ export default function MenuAppBar({ history }) {
             <span style={{ paddingLeft: 15, paddingRight: 15 }}>|</span>
             <span>Billing Portal</span>
           </Typography>
-          <div>
-            {state.userProfile.name ? state.userProfile.name : 'loading'}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {state.userProfile.imageUrl ? (
+              <img
+                style={{ height: 36, borderRadius: '50%' }}
+                src={state.userProfile.imageUrl}
+                alt=" "
+              />
+            ) : (
+              <AccountCircle />
+            )}
+            &nbsp;
+            {state.userProfile.name ? state.userProfile.name : ''}
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -91,33 +102,29 @@ export default function MenuAppBar({ history }) {
               onClick={handleMenu}
               color="inherit"
             >
-              {state.userProfile.imageUrl ? (
-                <img
-                  style={{ height: 36, borderRadius: '50%' }}
-                  src={state.userProfile.imageUrl}
-                  alt=" "
-                />
-              ) : (
-                <AccountCircle />
-              )}
+              <ExpandMore />
             </IconButton>
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              {/* <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem> */}
+              <MenuItem
+                onClick={() => {
+                  localStorage.clear()
+                  window.location.href = '/'
+                }}
+              >
+                <PowerSettingsNew />
+                &nbsp;Logout
+              </MenuItem>
             </Menu>
           </div>
         </Toolbar>
