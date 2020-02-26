@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { OverviewContext, OverviewProvider } from "context/OverviewContext";
 import { Paper, Typography, Divider } from "@material-ui/core";
 import Add from "@material-ui/icons/PostAdd";
 import Delete from "@material-ui/icons/DeleteForever";
@@ -81,8 +82,19 @@ const bubbleColor = summary => {
   }
 };
 
-const ActivityLogs = () => {
+const ActivityLogsComponent = () => {
   const classes = useStyles();
+  const { state, dispatch } = useContext(OverviewContext);
+  useEffect(() => {
+    let temp = state.logs;
+    temp.map(e => {
+      if (e.type === "create-draft") e["icon"] = <Add />;
+    });
+    dispatch({
+      type: "set-logs",
+      payload: { logs: temp }
+    });
+  }, [state.logs]);
   return (
     <Paper>
       <Typography variant="subtitle2" style={{ padding: 19 }}>
@@ -91,14 +103,13 @@ const ActivityLogs = () => {
       <Divider />
       <div style={{ width: "100%", height: "42vh", overflowY: "scroll" }}>
         <Timeline>
-          {mock.map((item, i) => (
+          {state.logs.map((item, i) => (
             <React.Fragment key={i}>
               <TimelineEvent
-
-                title={item.summary}
-                createdAt={item.time}
+                title={item.description}
+                createdAt={`${item.date} ${item.time}`}
                 icon={item.icon}
-                bubbleStyle={bubbleColor(item.summary)}
+                bubbleStyle={bubbleColor(item.description)}
               />
               <div className={classes.root}></div>
             </React.Fragment>
@@ -108,4 +119,13 @@ const ActivityLogs = () => {
     </Paper>
   );
 };
+
+const ActivityLogs = () => {
+  return (
+    <OverviewProvider>
+      <ActivityLogsComponent />
+    </OverviewProvider>
+  );
+};
+
 export default ActivityLogs;

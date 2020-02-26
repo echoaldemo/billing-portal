@@ -43,7 +43,7 @@ const mockTaxation = [
 ];
 const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
-  const { getPendingInvoicesData } = useContext(StateContext);
+  const { state: state2, getPendingInvoicesData } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [addFee, setAddFee] = useState(initialAddFee);
@@ -228,7 +228,15 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const { litigator, merchant } = addFee;
 
     let start = new Date(formState.billingPeriod.start),
-      end = new Date(formState.billingPeriod.end);
+      end = new Date(formState.billingPeriod.end),
+      today = new Date();
+
+    const dateToday =
+      today.getFullYear() +
+      "-" +
+      appendLeadingZeroes(today.getMonth()) +
+      "-" +
+      appendLeadingZeroes(today.getDate());
 
     const startDate =
       start.getFullYear() +
@@ -404,7 +412,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
       };
       data.Line.push(merchantObj);
     }
-
     data.Line.push(finalLine);
     if (type === "approve") {
       post("/api/invoice", data)
@@ -413,34 +420,47 @@ const AutomaticInvoiceProvider = ({ children }) => {
             type: "set-modal-type",
             payload: { modalType: "success" }
           });
+          data.status = 2;
         })
         .catch(err => {
           console.log(err);
         });
-    } else {
-      data = {
-        ...data,
-        invoiceType: "Automatic",
-        company,
-        campaigns,
-        startDate,
-        dueDate,
-        total,
-        billingType: formState.billingType,
-        docNumber: Math.floor(Math.random() * 9999)
-      };
-      post("/api/create_pending", data)
-        .then(res => {
-          dispatch({
-            type: "set-modal-type",
-            payload: { modalType: "success" }
-          });
-          getPendingInvoicesData();
-        })
-        .catch(err => {
-          console.log(err);
+    } else data.status = 0;
+    data = {
+      ...data,
+      invoiceType: "Automatic",
+      company,
+      campaigns,
+      startDate,
+      dueDate,
+      total,
+      billingType: formState.billingType,
+      docNumber: Math.floor(Math.random() * 9999)
+    };
+    post("/api/create_pending", data)
+      .then(res => {
+        const logData = {
+          date: dateToday,
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          }),
+          type: "create-draft",
+          description: `${state2.userProfile.name} created a draft for ${company.name}.`,
+          invoiceId: res.data.id
+        };
+        post("/api/logs/create", logData).then(cont => {
+          console.log(cont);
         });
-    }
+        dispatch({
+          type: "set-modal-type",
+          payload: { modalType: "success" }
+        });
+        getPendingInvoicesData();
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
   return (
     <AutomaticInvoiceContext.Provider
