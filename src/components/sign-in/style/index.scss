@@ -1,3 +1,119 @@
-.login-container {
-  background: #f89523;
+.landing-page-wrapper {
+  display: flex;
+  justify-content: space-between;
+  height: 100vh;
+}
+
+.left-component-container {
+  width: 40vw;
+  height: 100vh;
+  background-color: #fcfcfc;
+  box-shadow: 0 0 5px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.right-component-container {
+  width: 60vw;
+  height: 100vh;
+  background: linear-gradient(
+      0deg,
+      rgba(247, 149, 39, 0.8),
+      rgba(247, 149, 39, 0.8)
+    ),
+    url("../../../assets/dan-dimmock-sNwnjxm8eTY-unsplash.jpg");
+  background-size: cover;
+}
+.landing-component-wrapper {
+  width: 100%;
+  margin: 0 auto;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 120px;
+  flex-direction: column;
+}
+
+.logo-container {
+  padding: 15px;
+}
+.login-wrapper {
+}
+.loading-container {
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+.MuiCircularProgress-colorPrimary {
+  color: #1194f6 !important;
+}
+.message-header {
+  color: #444851;
+}
+
+.message-container {
+  background-color: #f1f1f1;
+  width: 100%;
+  text-align: center;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.message-text {
+  width: 80%;
+  display: inline-block;
+  letter-spacing: 1.1px;
+  line-height: 2;
+}
+.login-message {
+  font-size: 20px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #444851;
+}
+.login-form-container {
+  padding-bottom: 25px !important;
+}
+
+.login-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  flex-direction: column;
+}
+.report-span {
+  text-decoration: underline;
+}
+.landing-footer {
+  width: 40%;
+  text-align: center;
+  position: absolute;
+  bottom: 60px;
+  font-size: 14px;
+}
+
+@media screen and (max-device-width: 1024px) and (min-device-width: 425px) {
+  .left-component-container {
+    width: 100%;
+  }
+  .right-component-container {
+    display: none;
+  }
+  .landing-page-wrapper {
+    width: 100%;
+  }
+}
+a {
+  text-decoration: none;
+  color: #333;
 }
