@@ -121,7 +121,6 @@ const NewInvoice = ({ handleClose, duplicate }) => {
           btnText="Create another"
         />
       </Dialog>
-      )}
     </React.Fragment>
   );
 };
