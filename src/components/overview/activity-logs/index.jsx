@@ -7,6 +7,7 @@ import Edit from "@material-ui/icons/Edit";
 import Email from "@material-ui/icons/Email";
 import { Timeline, TimelineEvent } from "react-event-timeline";
 import { makeStyles } from "@material-ui/core/styles";
+import { TableLoader, NoResult } from "common-components";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -89,6 +90,7 @@ const ActivityLogsComponent = () => {
     let temp = state.logs;
     temp.map(e => {
       if (e.type === "create-draft") e["icon"] = <Add />;
+      if (e.type === "sent-invoice") e["icon"] = <Email />;
     });
     dispatch({
       type: "set-logs",
@@ -101,20 +103,26 @@ const ActivityLogsComponent = () => {
         ACTIVITY LOG
       </Typography>
       <Divider />
-      <div style={{ width: "100%", height: "42vh", overflowY: "scroll" }}>
-        <Timeline>
-          {state.logs.map((item, i) => (
-            <React.Fragment key={i}>
-              <TimelineEvent
-                title={item.description}
-                createdAt={`${item.date} ${item.time}`}
-                icon={item.icon}
-                bubbleStyle={bubbleColor(item.description)}
-              />
-              <div className={classes.root}></div>
-            </React.Fragment>
-          ))}
-        </Timeline>
+      <div style={{ width: 375, height: "42vh", overflowY: "scroll" }}>
+        {state.logsLoading ? (
+          <TableLoader />
+        ) : state.logs.length === 0 ? (
+          <NoResult />
+        ) : (
+          <Timeline>
+            {state.logs.map((item, i) => (
+              <React.Fragment key={i}>
+                <TimelineEvent
+                  title={item.description}
+                  createdAt={`${item.date} ${item.time}`}
+                  icon={item.icon}
+                  bubbleStyle={bubbleColor(item.description)}
+                />
+                <div className={classes.root}></div>
+              </React.Fragment>
+            ))}
+          </Timeline>
+        )}
       </div>
     </Paper>
   );

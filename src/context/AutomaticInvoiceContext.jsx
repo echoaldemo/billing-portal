@@ -413,21 +413,33 @@ const AutomaticInvoiceProvider = ({ children }) => {
       data.Line.push(merchantObj);
     }
     data.Line.push(finalLine);
+    let logData = {
+      date: dateToday,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    };
     if (type === "approve") {
+      logData.type = "sent-invoice";
+      logData.description = `${state2.userProfile.name} issued an invoice to ${company.name}.`;
       post("/api/invoice", data)
         .then(res => {
           dispatch({
             type: "set-modal-type",
             payload: { modalType: "success" }
           });
-          data.status = 2;
         })
         .catch(err => {
           console.log(err);
         });
-    } else data.status = 0;
+    } else {
+      logData.type = "create-draft";
+      logData.description = `${state2.userProfile.name} created a draft for ${company.name}.`;
+    }
     data = {
       ...data,
+      status: type === "approve" ? 2 : 0,
       invoiceType: "Automatic",
       company,
       campaigns,
@@ -439,19 +451,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
     };
     post("/api/create_pending", data)
       .then(res => {
-        const logData = {
-          date: dateToday,
-          time: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-          }),
-          type: "create-draft",
-          description: `${state2.userProfile.name} created a draft for ${company.name}.`,
-          invoiceId: res.data.id
-        };
-        post("/api/logs/create", logData).then(cont => {
-          console.log(cont);
-        });
+        logData.invoiceId = res.data.id;
+        post("/api/logs/create", logData);
         dispatch({
           type: "set-modal-type",
           payload: { modalType: "success" }
