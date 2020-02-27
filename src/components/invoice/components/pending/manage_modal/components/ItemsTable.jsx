@@ -7,7 +7,8 @@ import {
   TableRow,
   Collapse,
   MenuItem,
-  Checkbox
+  Checkbox,
+  InputAdornment
 } from '@material-ui/core'
 import { ExpandMore, ExpandLess } from '@material-ui/icons'
 import { InputField, TimeInput } from 'common-components'
@@ -34,6 +35,7 @@ export default function ItemsTable() {
   const [litigator, setLitiGator] = useState(defaultLitigator)
   const [merchant, setMerchant] = useState(defaultMerchant)
   const [total, setTotal] = useState(0)
+  const [subTotal, setSubTotal] = useState(0)
   const [add, setAdd] = useState(false)
   const [tax, setTax] = useState({
     percentage: 0,
@@ -199,10 +201,12 @@ export default function ItemsTable() {
 
   useEffect(() => {
     let totalAmt = 0,
-      taxx = 0
+      taxx = 0,
+      sub = 0
     if (Object.keys(services).length !== 0) {
       for (let i = 0; i < Object.keys(services).length; i++) {
         totalAmt += handleAmt(services[i])
+        sub += handleAmt(services[i])
         if (services[i].billable.taxed) {
           taxx += handleTaxAmt(services[i].billable.amt, tax.percentage)
         }
@@ -220,6 +224,7 @@ export default function ItemsTable() {
         taxx += handleTaxAmt(merchant.amt, tax.percentage)
       }
       totalAmt += parseFloat(litigator.amt) + parseFloat(merchant.amt)
+      //sub += parseFloat(litigator.amt) + parseFloat(merchant.amt)
       if (tax.percentage !== 0) {
         totalAmt += taxx
       }
@@ -231,6 +236,7 @@ export default function ItemsTable() {
         }
       })
       setTotal(totalAmt)
+      setSubTotal(sub)
     }
     // eslint-disable-next-line
   }, [services, litigator, merchant, tax.percentage])
@@ -535,6 +541,24 @@ export default function ItemsTable() {
                 </div>
               )
             })}
+
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell className={classes.tab1} />
+                  <TableCell className={classes.tab4} />
+                  <TableCell className={classes.tab2} />
+                  <TableCell className={classes.tab2}>
+                    <b style={{ fontSize: 15 }}>SERVICE SUBTOTAL</b>
+                  </TableCell>
+                  <TableCell className={classes.tab2}>
+                    <b style={{ fontSize: 15 }}>{formatter.format(subTotal)}</b>
+                  </TableCell>
+                  <TableCell className={classes.tab3} />
+                </TableRow>
+              </TableBody>
+            </Table>
+
             <Table>
               <TableBody>
                 <TableRow>
@@ -642,7 +666,7 @@ export default function ItemsTable() {
                       Merchant Fees
                     </TableCell>
                     <TableCell className={classes.tab2}>
-                      <InputField
+                      {/* <InputField
                         fullWidth
                         type="number"
                         placeholder="Merchant quantity"
@@ -659,26 +683,36 @@ export default function ItemsTable() {
                             amt: e.target.value * merchant.rate
                           })
                         }
-                      />
+                      /> */}
                     </TableCell>
                     <TableCell className={classes.tab2}>
                       <InputField
                         fullWidth
                         type="number"
-                        placeholder="Rate value"
                         inputProps={{
                           min: 0,
                           style: { textAlign: 'right' }
                         }}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">%</InputAdornment>
+                          )
+                        }}
                         disabled={!state.editManageData}
                         value={merchant.rate}
-                        onChange={e =>
+                        onChange={e => {
+                          let val =
+                            e.target.value < 0
+                              ? 0
+                              : e.target.value > 100
+                              ? 100
+                              : e.target.value
                           setMerchant({
                             ...merchant,
-                            rate: e.target.value,
-                            amt: e.target.value * merchant.qty
+                            rate: val,
+                            amt: (val / 100) * subTotal
                           })
-                        }
+                        }}
                       />
                     </TableCell>
                     <TableCell className={classes.tab2}>
@@ -702,16 +736,6 @@ export default function ItemsTable() {
                         justifyContent: 'flex-end'
                       }}
                     >
-                      {/* <Checkbox
-                        checked={editTax}
-                        onChange={e => {
-                          setEditTax(e.target.checked)
-                          if (!e.target.checked) {
-                            setTax({ percentage: 0, amt: 0, code: '' })
-                          }
-                        }}
-                        disabled={!state.editManageData}
-                      /> */}
                       <InputField
                         select
                         disabled={!state.editManageData}
@@ -740,7 +764,7 @@ export default function ItemsTable() {
               <TableBody>
                 <TableRow>
                   <TableCell className={classes.tab1}>
-                    <b style={{ fontSize: 15 }}>Total</b>
+                    <b style={{ fontSize: 15 }}>TOTAL</b>
                   </TableCell>
                   <TableCell className={classes.tab4} />
                   <TableCell className={classes.tab2} />
