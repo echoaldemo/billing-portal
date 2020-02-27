@@ -55,9 +55,13 @@ export default function MenuAppBar({ history }) {
   }, [])
 
   const getUser = async () => {
-    const { data: googleId } = await post(`/api/users/auth`, { token })
+    const { data: googleId } = await post(`/api/users/auth`, {
+      token
+    }).catch(() => {
+      localStorage.clear()
+      window.location.href = '/'
+    })
     const { data } = await get(`/api/users/${googleId}`)
-    console.log(data, 'test')
     if (data) {
       dispatch({
         type: 'set-user-profile',
