@@ -3,6 +3,7 @@ import { Button, Divider } from "@material-ui/core";
 import { Modal, LoadingModal } from "common-components";
 import { StateContext } from "context/StateContext";
 import { patch } from "utils/api";
+import { postLog } from "utils/time";
 
 const ApproveModal = () => {
   const {
@@ -10,7 +11,8 @@ const ApproveModal = () => {
     setConfirmModal,
     selectedItems,
     getPendingInvoicesData,
-    setSelectedItems
+    setSelectedItems,
+    state
   } = React.useContext(StateContext);
 
   const [loading, setLoading] = React.useState(false);
@@ -32,7 +34,16 @@ const ApproveModal = () => {
         });
       }
     }
-
+    let desc;
+    if (selectedItems.length > 1)
+      desc = `${state.userProfile.name} approved ${selectedItems.length} invoices.`;
+    else
+      desc = `${state.userProfile.name} approved invoice #${selectedItems[0].id}.`;
+    postLog({
+      type: "approve-invoice",
+      description: desc,
+      invoiceId: null
+    });
     setLoading(false);
     getPendingInvoicesData();
     setSelectedItems([]);

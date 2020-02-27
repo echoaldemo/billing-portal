@@ -11,7 +11,7 @@ export default function SimplePopover({ item }) {
     deletePendingStatus,
     state
   } = React.useContext(StateContext);
-  const handleClick = (event) => {
+  const handleClick = event => {
     setAnchorEl(event.currentTarget);
     dispatch({ type: "set-selected-data", payload: { selectedData: item } });
   };
@@ -19,9 +19,7 @@ export default function SimplePopover({ item }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  console.log(state.selectedData);
-
-  const openManageModal = (item) => {
+  const openManageModal = item => {
     dispatch({
       type: "set-manage-modal",
       payload: { openManage: true }

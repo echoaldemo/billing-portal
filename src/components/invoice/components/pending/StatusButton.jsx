@@ -3,6 +3,7 @@ import { Button, Popover, Typography } from "@material-ui/core";
 import { Drafts, Visibility, ThumbUp } from "@material-ui/icons";
 import { StateContext } from "context/StateContext";
 import { patch } from "utils/api";
+import { postLog } from "utils/time";
 const statusToString = status => {
   switch (status) {
     case 0:
@@ -28,7 +29,9 @@ const statusToString = status => {
   }
 };
 const StatusButton = ({ item }) => {
-  const { dispatch, getPendingInvoicesData } = React.useContext(StateContext);
+  const { dispatch, getPendingInvoicesData, state } = React.useContext(
+    StateContext
+  );
 
   const updateStateStatus = status => {
     patch(`/api/pending/edit/${item.id}`, { status: status })
@@ -41,6 +44,26 @@ const StatusButton = ({ item }) => {
       .then(() => {
         getPendingInvoicesData();
       });
+    let logData,
+      name = state.userProfile.name;
+    if (status === 0) {
+      logData = {
+        type: "mark-draft",
+        description: `${name} marked invoice #${item.id} as a draft.`
+      };
+    } else if (status === 1) {
+      logData = {
+        type: "mark-review",
+        description: `${name} marked invoice #${item.id} as reviewed.`
+      };
+    } else {
+      logData = {
+        type: "approve-invoice",
+        description: `${name} approved invoice #${item.id}.`
+      };
+    }
+    logData.invoiceId = item.id;
+    postLog(logData);
   };
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {

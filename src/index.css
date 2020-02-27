@@ -1,16 +1,16 @@
-@import 'https://fonts.googleapis.com/css?family=Roboto&display=swap';
+@import "https://fonts.googleapis.com/css?family=Roboto&display=swap";
 body {
   color: #444851;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
 }
 
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -43,7 +43,7 @@ input[type='number'] {
 
 .tab-text {
   font-size: 14px !important;
-  font-weight: 500;
+  font-weight: 600;
   font-stretch: normal !important;
   font-style: normal !important;
   line-height: normal !important;
@@ -175,11 +175,6 @@ input[type='number'] {
   font-weight: normal;
 }
 
-.MuiTabs-indicator {
-  background-color: #0f97fc !important;
-  height: 3px !important;
-}
-
 .Mui-checked {
   color: #0f97fc !important;
 }
@@ -280,18 +275,6 @@ input[type='number'] {
 .MuiTableContainer-root {
   min-height: 480px;
 }
-
-/* date range */
-/* .rdrDateDisplayWrapper {
-  width: 420px;
-}
-
-.rdrMonthAndYearWrapper {
-  display: none !important;
-}
-.rdrMonths {
-  display: none !important;
-} */
 @media screen and (min-device-width: 1440px) and (max-device-width: 1600px) {
   .tab-panel-container {
     width: 70% !important;
