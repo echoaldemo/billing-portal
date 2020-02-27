@@ -52,17 +52,25 @@ export default function MenuAppBar({ history }) {
     return () => {
       token = null
     }
+    // eslint-disable-next-line
   }, [])
 
   const getUser = async () => {
-    const { data: googleId } = await post(`/api/users/auth`, { token })
+    const { data: googleId } = await post(`/api/users/auth`, {
+      token
+    }).catch(() => {
+      localStorage.clear()
+      window.location.href = '/'
+    })
     const { data } = await get(`/api/users/${googleId}`)
-    console.log(data, 'test')
     if (data) {
       dispatch({
         type: 'set-user-profile',
         payload: { userProfile: data }
       })
+    } else {
+      localStorage.clear()
+      window.location.href = '/'
     }
   }
 

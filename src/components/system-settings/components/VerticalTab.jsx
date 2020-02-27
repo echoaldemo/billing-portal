@@ -1,28 +1,32 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Box, Typography, Tab, Tabs } from "@material-ui/core";
+import { Box, Typography, Tab, Tabs, Paper } from "@material-ui/core";
 import "../style/index.scss";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <Typography
-      component="div"
+    <div
       role="tabpanel"
       hidden={value !== index}
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
+      style={{ width: "100%" }}
     >
       {value === index && (
-        <Box
-          style={{ padding: 15, paddingTop: 0, paddingLeft: 25, width: 900 }}
+        <div
+          style={{
+            padding: 15,
+            paddingLeft: 25,
+            paddingTop: 25
+          }}
         >
           {children}
-        </Box>
+        </div>
       )}
-    </Typography>
+    </div>
   );
 }
 
@@ -47,7 +51,7 @@ export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
   };
 
   return (
-    <div className="vertical-tab-container">
+    <Paper className="vertical-tab-container" square={true}>
       <Tabs
         orientation="vertical"
         value={value}
@@ -73,6 +77,6 @@ export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
           </TabPanel>
         );
       })}
-    </div>
+    </Paper>
   );
 }

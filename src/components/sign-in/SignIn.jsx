@@ -16,23 +16,25 @@ const SignIn = ({ history }) => {
     }
   }, []); // eslint-disable-line
   const responseGoogle = async res => {
-    const find = await get(`/api/users/${res.googleId}`);
-    if (find.data) {
-      dispatch({
-        type: "set-user-profile",
-        payload: { userProfile: find.data }
-      });
-    } else {
-      res.profileObj.status = "active";
-      post("/api/users/create", res.profileObj).then(res =>
+    if (res.googleId) {
+      const find = await get(`/api/users/${res.googleId}`);
+      if (find.data) {
         dispatch({
           type: "set-user-profile",
-          payload: { userProfile: res.data }
-        })
-      );
+          payload: { userProfile: find.data }
+        });
+      } else {
+        res.profileObj.status = "active";
+        post("/api/users/create", res.profileObj).then(res =>
+          dispatch({
+            type: "set-user-profile",
+            payload: { userProfile: res.data }
+          })
+        );
+      }
+      localStorage.setItem("gooleToken", res.tokenId);
+      history.push("/overview");
     }
-    localStorage.setItem("gooleToken", res.tokenId);
-    history.push("/overview");
   };
 
   return (
