@@ -12,9 +12,9 @@ import PendingCheckboxToolbar from "./components/pending/PendingCheckboxToolbar"
 import SearchData from "./components/filter-toolbar/SearchData";
 import { Typography, Box, Paper, Divider, Grid } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
-const Invoice = () => {
+const Invoice = (props) => {
   const { selectedItems } = React.useContext(StateContext);
-
+  console.log(props);
   return (
     <React.Fragment>
       <PanelHeader

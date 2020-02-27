@@ -2,8 +2,10 @@ import React from "react";
 import { Grid, Paper, Container } from "@material-ui/core";
 import Chart from "react-google-charts";
 import { PanelHeader } from "common-components";
-import CardInfo from "./card-info";
 import ActivityLogs from "./activity-logs";
+import DraftInvoices from "./draft-invoices/DraftInvoices";
+import ReviewedInvoices from "./reviewed-invoices/ReviewedInvoices";
+import ApprovedInvoices from "./approved-invoices/ApprovedInvoices";
 const pieOptions = {
   title: "",
   pieHole: 0.6,
@@ -49,18 +51,10 @@ const Overview = () => {
           subTitle="Lorem ipsum dolor sit amet consectetur adipisicing elit. "
         />
 
-        <Grid container className="display-even p-normal pb-normal">
-          <CardInfo primaryLabel="Total Invoices" secondaryLabel="42,524" />
-
-          <CardInfo
-            primaryLabel="Total Automatic Invoices"
-            secondaryLabel="50,203"
-          />
-
-          <CardInfo
-            primaryLabel="Total Manual Invoices"
-            secondaryLabel="10,203"
-          />
+        <Grid container spacing={5} className="display-even p-normal pb-normal">
+          <DraftInvoices />
+          <ReviewedInvoices />
+          <ApprovedInvoices />
         </Grid>
 
         <Grid container style={{ marginTop: 50 }}>
