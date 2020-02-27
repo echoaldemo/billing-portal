@@ -87,6 +87,17 @@ input[type="number"] {
 .fz-20 {
   font-size: 20px;
 }
+.header-text-primary {
+  font-size: 18px;
+  color: #444851;
+  font-weight: 300;
+}
+.header-text-secondary {
+  font-size: 14px;
+  color: #a0aeba;
+  font-weight: 300;
+  line-height: 2.1;
+}
 .header-container {
   padding-top: 15px;
   padding-bottom: 15px;
