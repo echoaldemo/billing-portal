@@ -7,7 +7,10 @@ import {
   Table,
   TableContainer,
   TablePagination,
-  Divider
+  Divider,
+  TableRow,
+  TableCell,
+  TableBody
 } from "@material-ui/core";
 
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
@@ -35,7 +38,6 @@ const PendingTable = () => {
 
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -106,7 +108,11 @@ const PendingTable = () => {
                   }}
                   check={checked()}
                 />
-                <PendingTableBody data={sortData(state.data)} />
+                <PendingTableBody
+                  data={sortData(state.data)}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                />
               </Table>
             </TableContainer>
           ) : (

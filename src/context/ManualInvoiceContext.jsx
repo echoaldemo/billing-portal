@@ -47,6 +47,7 @@ const initialAdditionalFee = {
   merchantQty: "",
   merchantRate: "",
   merchantTax: true,
+  merchantInvalid: false,
 
   scrubbingQty: "",
   scrubbingRate: "",
@@ -69,12 +70,13 @@ const ManualInvoiceProvider = ({ children }) => {
     { code: "7", taxrate: "11", name: "Mexico", percentage: 16 }
   ];
   const [tax, setTax] = useState(6.1);
-  const computeItemService = (qty = 0, rate = 0, isTaxed) => {
+  const computeItemService = (qty = 0, rate = 0) => {
     return qty * rate;
   };
+
   const getBalance = () => {
     let total = 0;
-    billingFormState.forEach((item) => {
+    billingFormState.forEach(item => {
       total +=
         computeItemService(
           item.billableHrsQty,
@@ -92,7 +94,7 @@ const ManualInvoiceProvider = ({ children }) => {
   };
   const getTaxableServices = () => {
     let total = 0;
-    billingFormState.forEach((item) => {
+    billingFormState.forEach(item => {
       if (item.billableHrsTaxed) {
         total += computeItemService(
           item.billableHrsQty,
@@ -113,16 +115,14 @@ const ManualInvoiceProvider = ({ children }) => {
     let total = 0;
     if (additionalFee.merchantTax) {
       total += computeItemService(
-        additionalFee.merchantQty,
-        additionalFee.merchantRate,
-        additionalFee.merchantTax
+        additionalFee.merchantRate / 100,
+        getBalance()
       );
     }
     if (additionalFee.scrubbingTax) {
       total += computeItemService(
         additionalFee.scrubbingQty,
-        additionalFee.scrubbingRate,
-        additionalFee.scrubbingTax
+        additionalFee.scrubbingRate
       );
     }
     return total;
@@ -196,8 +196,8 @@ const ManualInvoiceProvider = ({ children }) => {
       billingPeriod: { ...formState.billingPeriod, end: dueDate }
     });
   }, [formState.billingType, formState.billingPeriod.start]);
-  const setActiveCampaigns = (uuid) => {
-    const filteredCampaigns = state.campaigns.filter((c) => c.company === uuid);
+  const setActiveCampaigns = uuid => {
+    const filteredCampaigns = state.campaigns.filter(c => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
   };
   const getGeneralData = () => {
@@ -239,15 +239,20 @@ const ManualInvoiceProvider = ({ children }) => {
       });
     });
     additionalFeeDetails.map((detail, detailIndex) => {
-      let { qty, rate, tax } = detail;
+      let { qty, rate, tax, value } = detail;
 
-      if (computeInt(additionalFee[qty], additionalFee[rate]) !== 0) {
+      const total = computeInt(
+        value === "25" ? additionalFee[rate] : additionalFee[qty],
+        value === "25" ? getBalance() : additionalFee[qty]
+      );
+
+      if (total !== 0) {
         newLine.push({
-          Amount: computeInt(additionalFee[qty], additionalFee[rate]),
+          Amount: parseFloat(total),
           SalesItemLineDetail: {
             TaxCodeRef: { value: additionalFee[tax] ? "TAX" : "NON" },
             ItemRef: { name: detail.name, value: detail.value },
-            Qty: additionalFee[qty],
+            Qty: value === "25" ? null : additionalFee[qty],
             UnitPrice: parseFloat(additionalFee[rate])
           },
           DetailType: "SalesItemLineDetail",
@@ -267,19 +272,19 @@ const ManualInvoiceProvider = ({ children }) => {
     return newLine;
   };
 
-  const sendToQuickbooks = (data) => {
+  const sendToQuickbooks = data => {
     setCreateLoading(true);
     post("/api/invoice", data)
-      .then((res) => {
+      .then(res => {
         setCreateLoading(false);
         setShowCreateNew(true);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
 
-  const saveAsDraft = (data) => {
+  const saveAsDraft = data => {
     let newData = {
       ...data,
       invoiceType: "Manual",
@@ -293,16 +298,16 @@ const ManualInvoiceProvider = ({ children }) => {
     };
     setCreateLoading(true);
     post("/api/create_pending", newData)
-      .then((res) => {
+      .then(res => {
         setCreateLoading(false);
         setShowCreateNew(true);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   };
   const createManualInvoice = (type, handleClose) => {
-    const taxDetail = mockTaxation.find((item) => item.percentage === tax);
+    const taxDetail = mockTaxation.find(item => item.percentage === tax);
     let taxDetails = {
       TxnTaxCodeRef: {
         value: taxDetail.code
@@ -336,6 +341,7 @@ const ManualInvoiceProvider = ({ children }) => {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
     };
+    console.log("DATA", data);
 
     switch (type) {
       case "approve":
@@ -357,7 +363,7 @@ const ManualInvoiceProvider = ({ children }) => {
   };
 
   const allChecked = () => {
-    const result = billingFormState.map((item) => {
+    const result = billingFormState.map(item => {
       return (
         item["billableHrsTaxed"] ||
         item["didTaxed"] ||
@@ -367,7 +373,7 @@ const ManualInvoiceProvider = ({ children }) => {
       );
     });
 
-    return result.some((val) => val === true);
+    return result.some(val => val === true);
   };
 
   return (

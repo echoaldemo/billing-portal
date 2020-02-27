@@ -22,4 +22,7 @@ const WarningModal = ({ text, content, btnText, closeFn, secondaryFn }) => {
   );
 };
 
+const WarningIcon = Styled.WarningIcon;
+
 export default WarningModal;
+export { WarningIcon };

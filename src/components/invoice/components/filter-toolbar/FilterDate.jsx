@@ -4,7 +4,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-
+import { InputField } from "common-components";
 import DateFnsUtils from "@date-io/date-fns";
 import { StateContext } from "context/StateContext";
 import { formatDate } from "utils/func";
@@ -40,10 +40,11 @@ const FilterDate = () => {
   return (
     <Grid container spacing={5}>
       <Grid item lg={6} xs={6} md={6}>
-        <InputLabel className="date-label">From</InputLabel>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
+            TextFieldComponent={InputField}
             name="billingPeriod"
+            label="From"
             disableToolbar
             variant="inline"
             format="MM/dd/yyyy"
@@ -55,9 +56,10 @@ const FilterDate = () => {
         </MuiPickersUtilsProvider>
       </Grid>
       <Grid item lg={6} xs={6} md={6}>
-        <InputLabel className="date-label">To</InputLabel>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
+            TextFieldComponent={InputField}
+            label="To"
             name="billingPeriod"
             disableToolbar
             variant="inline"

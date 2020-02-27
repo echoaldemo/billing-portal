@@ -1,6 +1,11 @@
 import React, { useState, useContext } from "react";
 import { RowHeader, Row } from "common-components";
-import { Checkbox as TempCb, MenuItem, Collapse } from "@material-ui/core";
+import {
+  Checkbox as TempCb,
+  MenuItem,
+  Collapse,
+  InputAdornment
+} from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import ExpandButton from "../manual/ExpandButtton";
@@ -25,6 +30,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     getTaxableSubtotal,
     getTax,
     getTaxStatus,
+    getAddFees,
     formState,
     setFormState,
     addFee,
@@ -36,8 +42,16 @@ const CampaignBilling = ({ campaignDetails }) => {
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
   const getAmount = label => {
     const { qty, rate } = addFee[label];
-    let content;
-    if (qty && rate)
+    let content, merchantTotal;
+    if (label === "merchant" && rate) {
+      merchantTotal =
+        Math.round((parseFloat(rate) / 100) * getTotal() * 100) / 100;
+      content = (
+        <div style={{ textAlign: "right", width: "100%" }}>
+          <b>{formatter.format(merchantTotal)}</b>
+        </div>
+      );
+    } else if (qty && rate)
       content = (
         <div style={{ textAlign: "right", width: "100%" }}>
           <b>{formatter.format(parseFloat(qty) * parseFloat(rate))}</b>
@@ -47,22 +61,19 @@ const CampaignBilling = ({ campaignDetails }) => {
     return content;
   };
   const getTotalAdd = () => {
-    const { litigator, merchant } = addFee;
-    let content;
-    const total = merchant.qty * merchant.rate + litigator.qty * litigator.rate;
+    const total = getAddFees();
     if (total)
-      content = (
+      return (
         <div style={{ textAlign: "right", width: "100%" }}>
           <b>{formatter.format(total)}</b>
         </div>
       );
-    else content = "";
-    return content;
+    else return "";
   };
   const getServices = () => {
     const { litigator, merchant } = addFee;
     let label = [];
-    if (merchant.qty * merchant.rate) label.push("Merchant Fees");
+    if (merchant.rate) label.push("Merchant Fees");
     if (litigator.qty * litigator.rate) label.push("Litigator Scrubbing");
 
     if (!label.length) return <i>None</i>;
@@ -87,17 +98,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     },
     { label: "Merchant Fees", size: 2 },
     {
-      label: (
-        <InputField
-          value={addFee.merchant.qty}
-          name="merchant"
-          onChange={e => handleAddFees(e, "qty")}
-          placeholder="Merchant quantity"
-          inputProps={{
-            style: { textAlign: "right" }
-          }}
-        />
-      ),
+      label: "",
       size: 2
     },
     {
@@ -106,9 +107,11 @@ const CampaignBilling = ({ campaignDetails }) => {
           name="merchant"
           onChange={e => handleAddFees(e, "rate")}
           value={addFee.merchant.rate}
-          placeholder="Rate value"
           inputProps={{
             style: { textAlign: "right" }
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">%</InputAdornment>
           }}
         />
       ),
@@ -199,7 +202,19 @@ const CampaignBilling = ({ campaignDetails }) => {
     },
 
     {
-      label: " ",
+      label: (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            marginTop: "-2px"
+          }}
+        >
+          <span style={{ fontSize: 12 }}>SUBTOTAL</span>
+          <span>{formatter.format(getAddFees())}</span>
+        </div>
+      ),
       size: 1
     }
   ];
@@ -257,11 +272,26 @@ const CampaignBilling = ({ campaignDetails }) => {
               fontSize: 20
             }}
           >
-            {formatter.format(getTotal())}
+            {formatter.format(getTotal() + getAddFees())}
           </span>
         </div>
       ),
       size: 2
+    }
+  ];
+  const serviceSubtotal = [
+    { label: " ", size: 9 },
+    {
+      label: <CenterCont>SERVICE SUBTOTAL</CenterCont>,
+      size: 2
+    },
+    {
+      label: (
+        <CenterCont>
+          <b>{formatter.format(getTotal())}</b>
+        </CenterCont>
+      ),
+      size: 1
     }
   ];
   const taxRow = [
@@ -315,7 +345,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         />
         <div
           style={{
-            maxHeight: 476,
+            maxHeight: 450,
             overflow: "auto"
           }}
         >
@@ -332,7 +362,11 @@ const CampaignBilling = ({ campaignDetails }) => {
           })}
         </div>
       </div>
-      <br />
+      <div
+        style={{ border: "solid 1px #F1F1F1", borderTop: 0, borderBottom: 0 }}
+      >
+        <Row rowData={serviceSubtotal} />
+      </div>
       <Row
         rowData={
           additionalCollapse ? additionalFeesCollapse : additionalFeesRow

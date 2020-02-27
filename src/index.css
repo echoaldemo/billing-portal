@@ -43,7 +43,7 @@ input[type='number'] {
 
 .tab-text {
   font-size: 14px !important;
-  font-weight: bold !important;
+  font-weight: 500;
   font-stretch: normal !important;
   font-style: normal !important;
   line-height: normal !important;
@@ -275,6 +275,10 @@ input[type='number'] {
 .span-disabled {
   pointer-events: none;
   color: rgba(0, 0, 0, 0.5);
+}
+
+.MuiTableContainer-root {
+  min-height: 480px;
 }
 
 /* date range */

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   AppBar,
   IconButton,
@@ -13,11 +13,11 @@ import { Close, ArrowDropDown } from "@material-ui/icons";
 import { useStyles } from "../styles";
 export default function NewInvoiceAppbar({
   createFn,
-  handleClose,
   type,
   balance,
   selectedCompany,
-  openWarning
+  openWarning,
+  merchantInvalid
 }) {
   const classes = useStyles();
 
@@ -57,7 +57,7 @@ export default function NewInvoiceAppbar({
             createFn("draft");
           }}
           color="inherit"
-          disabled={!selectedCompany}
+          disabled={!selectedCompany || merchantInvalid === true}
         >
           Save
         </Button>
@@ -89,7 +89,7 @@ export default function NewInvoiceAppbar({
                 createFn("approve");
               }
             }}
-            disabled={balance === 0}
+            disabled={balance === 0 || merchantInvalid}
           >
             Save and approve
           </MenuItem>
