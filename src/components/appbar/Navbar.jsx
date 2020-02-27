@@ -52,6 +52,7 @@ export default function MenuAppBar({ history }) {
     return () => {
       token = null
     }
+    // eslint-disable-next-line
   }, [])
 
   const getUser = async () => {
@@ -67,6 +68,9 @@ export default function MenuAppBar({ history }) {
         type: 'set-user-profile',
         payload: { userProfile: data }
       })
+    } else {
+      localStorage.clear()
+      window.location.href = '/'
     }
   }
 

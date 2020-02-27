@@ -134,7 +134,7 @@ export default function ManagePendingFooter() {
     if (merchant.amt !== 0) {
       rest.Line.push({
         DetailType: 'SalesItemLineDetail',
-        Amount: parseFloat(merchant.amt) || 0,
+        Amount: parseFloat(merchant.amt),
         SalesItemLineDetail: {
           ItemRef: {
             value: '25',
@@ -143,9 +143,10 @@ export default function ManagePendingFooter() {
           TaxCodeRef: {
             value: merchant.taxed ? 'TAX' : 'NON'
           },
-          Qty: parseFloat(merchant.qty) || 1,
-          UnitPrice: parseFloat(merchant.rate) || 0
-        }
+          Qty: 1,
+          UnitPrice: parseFloat(merchant.amt)
+        },
+        Description: `Merchant Fees ${merchant.rate} %`
       })
       if (merchant.taxed) {
         totalAmt += handleTaxAmt(merchant.amt, tax.percentage)
