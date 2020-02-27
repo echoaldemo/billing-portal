@@ -175,11 +175,6 @@ input[type="number"] {
   font-weight: normal;
 }
 
-.MuiTabs-indicator {
-  background-color: #0f97fc !important;
-  height: 3px !important;
-}
-
 .Mui-checked {
   color: #0f97fc !important;
 }
@@ -280,18 +275,6 @@ input[type="number"] {
 .MuiTableContainer-root {
   min-height: 480px;
 }
-
-/* date range */
-/* .rdrDateDisplayWrapper {
-  width: 420px;
-}
-
-.rdrMonthAndYearWrapper {
-  display: none !important;
-}
-.rdrMonths {
-  display: none !important;
-} */
 @media screen and (min-device-width: 1440px) and (max-device-width: 1600px) {
   .tab-panel-container {
     width: 70% !important;

@@ -4,7 +4,7 @@ import { get, post } from "utils/api";
 import { StateContext } from "context/StateContext";
 import logo from "assets/pp_logo_transparent_bkgrd.png";
 import "./style/index.scss";
-
+import { ReportBugButton } from "common-components";
 const SignIn = ({ history }) => {
   const { state, dispatch } = useContext(StateContext);
   const [load, setLoad] = useState(false);
@@ -85,6 +85,7 @@ const SignIn = ({ history }) => {
               laborum. Occaecat amet duis laborum culpa velit."
             </div>
             <div className="quotes-secondary">-Anonymous</div>
+            <ReportBugButton />
           </div>
         </div>
       ) : null}

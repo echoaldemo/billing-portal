@@ -9,3 +9,32 @@
     width: auto;
   }
 }
+
+.vertical-tab-container {
+  display: flex;
+  flex-grow: 1;
+  height: 70vh;
+  padding: 15px;
+  .vertical-tabs {
+    border-right: solid 1px #f1f1f1;
+    width: 180px;
+  }
+  .tab-item {
+    text-transform: none;
+    font-weight: 600;
+  }
+  .MuiTab-root {
+    font-size: 12px;
+  }
+  .MuiTab-wrapper {
+    display: flex !important;
+    justify-content: flex-start !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .MuiTabs-indicator {
+    background-color: #0f97fc !important;
+    width: 3px !important;
+  }
+}
