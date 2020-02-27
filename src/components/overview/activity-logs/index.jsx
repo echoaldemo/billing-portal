@@ -43,6 +43,7 @@ const ActivityLogsComponent = () => {
       if (e.type === "create-draft") e["icon"] = <Add />;
       if (e.type === "sent-invoice") e["icon"] = <Email />;
       if (e.type === "delete-invoice") e["icon"] = <Delete />;
+      if (e.type === "edit-invoice") e["icon"] = <Edit />;
     });
     dispatch({
       type: "set-logs",

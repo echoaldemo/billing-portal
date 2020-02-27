@@ -39,7 +39,7 @@ const DeleteModal = () => {
     const dateToday =
       today.getFullYear() +
       "-" +
-      appendLeadingZeroes(today.getMonth()) +
+      appendLeadingZeroes(today.getMonth() + 1) +
       "-" +
       appendLeadingZeroes(today.getDate());
     let desc;

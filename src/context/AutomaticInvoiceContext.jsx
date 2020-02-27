@@ -234,7 +234,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const dateToday =
       today.getFullYear() +
       "-" +
-      appendLeadingZeroes(today.getMonth()) +
+      appendLeadingZeroes(today.getMonth() + 1) +
       "-" +
       appendLeadingZeroes(today.getDate());
 
@@ -449,6 +449,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
+    console.log(dateToday);
     post("/api/create_pending", data)
       .then(res => {
         logData.invoiceId = res.data.id;
