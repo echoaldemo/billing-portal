@@ -1,8 +1,18 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Slide } from "@material-ui/core";
+import styled from "styled-components";
 
-export const useStyles = makeStyles((theme) => ({
+const CenterCont = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-direction: column;
+  height: 100%;
+`;
+export { CenterCont };
+
+export const useStyles = makeStyles(theme => ({
   appBar: {
     position: "relative",
     backgroundColor: "#5F7D98"

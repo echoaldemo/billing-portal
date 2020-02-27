@@ -1,48 +1,20 @@
-import React, { useContext } from 'react'
-import { Paper, Button, makeStyles, TextField, Grid } from '@material-ui/core'
-import logo from 'assets/logo.png'
+import React, { useContext, useEffect, useState } from 'react'
 import { GoogleLogin } from 'react-google-login'
 import { get, post } from 'utils/api'
 import { StateContext } from 'context/StateContext'
-
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '80vh'
-  },
-  wrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'space-evenly'
-  },
-  paper: {
-    backgroundColor: 'whitesmoke',
-    padding: 20
-  },
-  button: {
-    backgroundColor: '#7c8a97',
-    color: '#fff',
-    height: 40,
-    borderRadius: 3,
-    width: 300,
-    '&:hover': {
-      backgroundColor: '#6d7a86'
-    }
-  },
-  typography: {
-    color: '#777777'
-  },
-  textfield: {
-    width: 300
-  }
-}))
+import logo from 'assets/pp_logo_transparent_bkgrd.png'
+import './style/index.scss'
 
 const SignIn = ({ history }) => {
-  const classes = useStyles()
-  const { dispatch } = useContext(StateContext)
-
+  const { state, dispatch } = useContext(StateContext)
+  const [load, setLoad] = useState(false)
+  useEffect(() => {
+    setLoad(true)
+    const token = localStorage.getItem('gooleToken')
+    if (state.userProfile.name || token) {
+      history.push('/overview')
+    }
+  }, []) // eslint-disable-line
   const responseGoogle = async res => {
     const find = await get(`/api/users/${res.googleId}`)
     if (find.data) {
@@ -59,57 +31,58 @@ const SignIn = ({ history }) => {
         })
       )
     }
-    console.log(res)
     localStorage.setItem('gooleToken', res.tokenId)
     history.push('/overview')
   }
 
   return (
-    <div className={classes.root}>
-      <Paper className={classes.wrapper} classes={{ root: classes.paper }}>
-        <div style={{ textAlign: 'center' }}>
-          <img src={logo} alt="logo" />
+    <>
+      {load ? (
+        <div className="landing-page-wrapper">
+          <div className="left-component-container">
+            <div className="landing-component-wrapper">
+              <div className="logo-container">
+                <img src={logo} width={180} alt="" />
+              </div>
+              <div className="message-container">
+                <h2 className="message-header">Welcome to Billing Portal</h2>
+                <div>
+                  <p className="message-text">
+                    Laborum aliquip deserunt duis consequat laboris. Ut aliquip
+                    ullamco tempor deserunt dolore culpa cillum.
+                  </p>
+                </div>
+              </div>
+              <div className="render-component-container">
+                <div className="login-btn-container">
+                  <GoogleLogin
+                    className="LoginSignIn"
+                    clientId="28861163542-0mub2dqtubvcjgun3n9vlrnkgfhgi7n4.apps.googleusercontent.com"
+                    buttonText={
+                      <span style={{ textTransform: 'none', fontWeight: 600 }}>
+                        Sign in with Google
+                      </span>
+                    }
+                    style={{
+                      width: 150,
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                    onSuccess={responseGoogle}
+                    onFailure={responseGoogle}
+                    cookiePolicy={'single_host_origin'}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="landing-footer">
+              <span>All rights reserved, Perfect Pitch 2019</span>
+            </div>
+          </div>
+          <div className="right-component-container" />
         </div>
-        <form style={{ paddingTop: 20 }}>
-          <Grid container direction="column" spacing={3} alignItems="center">
-            <Grid item>
-              <TextField
-                variant="outlined"
-                label="Username"
-                classes={{ root: classes.textfield }}
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                variant="outlined"
-                label="Password"
-                classes={{ root: classes.textfield }}
-              />
-            </Grid>
-            <Grid item>
-              <GoogleLogin
-                className="LoginSignIn"
-                clientId="28861163542-0mub2dqtubvcjgun3n9vlrnkgfhgi7n4.apps.googleusercontent.com"
-                render={renderProps => (
-                  <Button
-                    onClick={renderProps.onClick}
-                    classes={{ root: classes.button }}
-                  >
-                    SIGN IN
-                  </Button>
-                )}
-                buttonText="Login"
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
-                cookiePolicy={'single_host_origin'}
-              />
-
-              {/* <Button classes={{ root: classes.button }}>SIGN IN</Button> */}
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    </div>
+      ) : null}
+    </>
   )
 }
 

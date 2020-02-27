@@ -43,7 +43,7 @@ input[type="number"] {
 
 .tab-text {
   font-size: 14px !important;
-  font-weight: bold !important;
+  font-weight: 600;
   font-stretch: normal !important;
   font-style: normal !important;
   line-height: normal !important;
@@ -86,17 +86,6 @@ input[type="number"] {
 }
 .fz-20 {
   font-size: 20px;
-}
-.header-text-primary {
-  font-size: 18px;
-  color: #444851;
-  font-weight: 300;
-}
-.header-text-secondary {
-  font-size: 14px;
-  color: #a0aeba;
-  font-weight: 300;
-  line-height: 2.1;
 }
 .header-container {
   padding-top: 15px;

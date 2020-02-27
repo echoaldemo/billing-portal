@@ -1,96 +1,48 @@
 import React, { useContext, useEffect } from "react";
 import { OverviewContext, OverviewProvider } from "context/OverviewContext";
-import { Paper, Typography, Divider } from "@material-ui/core";
+import { StateContext } from "context/StateContext";
+import {
+  Paper,
+  Typography,
+  Divider,
+  CircularProgress as Loader
+} from "@material-ui/core";
 import Add from "@material-ui/icons/PostAdd";
 import Delete from "@material-ui/icons/DeleteForever";
 import Edit from "@material-ui/icons/Edit";
 import Email from "@material-ui/icons/Email";
 import { Timeline, TimelineEvent } from "react-event-timeline";
 import { makeStyles } from "@material-ui/core/styles";
-import { TableLoader, NoResult } from "common-components";
+import { NoResult } from "common-components";
+import { getFromNow, bubbleColor, getPronoun } from "./utils";
 
 const useStyles = makeStyles(() => ({
   root: {
     padding: "3px 0px 3px 0px"
+  },
+  grid: {
+    display: "grid",
+    height: "100%",
+    alignItems: "center",
+    justifyItems: "center"
+  },
+  container: {
+    width: 375,
+    height: "42vh",
+    overflowY: "scroll"
   }
 }));
-
-const mock = [
-  {
-    summary: "Jude Agagad sent an invoice to Rapid Response.",
-    icon: <Email />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "You issued an invoice to Shift44.",
-    icon: <Add />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "Jomar Bandol modified an invoice for Rapid Response.",
-    icon: <Edit />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "John Paul Garcia modified information of Shift44",
-    icon: <Edit />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "Jules Ballaran deleted an invoice for Rapid Response.",
-    icon: <Delete />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "You sent an invoice to Rapid Response.",
-    icon: <Email />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "Sidney Bercasio deleted an invoice for Shift44.",
-    icon: <Delete />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "John Paul Garcia modified information of Shift44",
-    icon: <Edit />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "Samuel Lopez issued an invoice for Rapid Response.",
-    icon: <Add />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "Samuel Lopez issued an invoice for Rapid Response.",
-    icon: <Add />,
-    time: "2020-28-01 10:06 PM"
-  },
-  {
-    summary: "Sidney Bercasio deleted an invoice for Shift44.",
-    icon: <Delete />,
-    time: "2020-28-01 10:06 PM"
-  }
-];
-
-const bubbleColor = summary => {
-  if (summary.indexOf("deleted") !== -1) {
-    return { border: "2px solid rgb(255, 43, 43)" };
-  } else if (summary.indexOf("modified") !== -1) {
-    return { border: "2px solid rgb(206, 193, 44)" };
-  } else {
-    return { border: "2px solid rgb(33, 154, 42)" };
-  }
-};
 
 const ActivityLogsComponent = () => {
   const classes = useStyles();
   const { state, dispatch } = useContext(OverviewContext);
+  const { state: mainState } = useContext(StateContext);
   useEffect(() => {
     let temp = state.logs;
     temp.map(e => {
       if (e.type === "create-draft") e["icon"] = <Add />;
       if (e.type === "sent-invoice") e["icon"] = <Email />;
+      if (e.type === "delete-invoice") e["icon"] = <Delete />;
     });
     dispatch({
       type: "set-logs",
@@ -103,9 +55,11 @@ const ActivityLogsComponent = () => {
         ACTIVITY LOG
       </Typography>
       <Divider />
-      <div style={{ width: 375, height: "42vh", overflowY: "scroll" }}>
+      <div className={classes.container}>
         {state.logsLoading ? (
-          <TableLoader />
+          <div className={classes.grid}>
+            <Loader size={50} />
+          </div>
         ) : state.logs.length === 0 ? (
           <NoResult />
         ) : (
@@ -113,8 +67,11 @@ const ActivityLogsComponent = () => {
             {state.logs.map((item, i) => (
               <React.Fragment key={i}>
                 <TimelineEvent
-                  title={item.description}
-                  createdAt={`${item.date} ${item.time}`}
+                  title={getPronoun(
+                    item.description,
+                    mainState.userProfile.name
+                  )}
+                  createdAt={getFromNow(item.date, item.time)}
                   icon={item.icon}
                   bubbleStyle={bubbleColor(item.description)}
                 />

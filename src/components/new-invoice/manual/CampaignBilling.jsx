@@ -1,7 +1,8 @@
 /* eslint-disable */
 import React, { useState, useEffect } from "react";
 import RowForm from "./RowForm";
-import { Row, TimeInput, CustomCheckbox, RowHeader } from "common-components";
+import { CenterCont } from "./styles/ManualInvoice.style";
+import { Row, CustomCheckbox, RowHeader } from "common-components";
 import InputField from "../components/CustomInput";
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
 import { Checkbox, MenuItem, Collapse } from "@material-ui/core";
@@ -304,6 +305,21 @@ const CampaignBilling = ({ campaignDetails }) => {
     return parseFloat(taxed);
   };
 
+  const serviceSubtotal = [
+    { label: " ", size: 9 },
+    {
+      label: <CenterCont>SERVICE SUBTOTAL</CenterCont>,
+      size: 2
+    },
+    {
+      label: (
+        <CenterCont>
+          <b>{formatter.format(parseFloat(getBalance()))}</b>
+        </CenterCont>
+      ),
+      size: 1
+    }
+  ];
   const taxRow = [
     { label: " ", size: 3 },
     { label: " ", size: 3 },
@@ -379,6 +395,7 @@ const CampaignBilling = ({ campaignDetails }) => {
             );
           })}
         </div>
+        <Row rowData={serviceSubtotal} />
       </div>
       <br />
       <div style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}>
@@ -388,7 +405,6 @@ const CampaignBilling = ({ campaignDetails }) => {
           }
           style={{ border: "solid 1px #F1F1F1" }}
         />
-
         <Collapse in={additionalCollapse}>
           <Row
             rowData={additionalFeesRow2}
@@ -436,7 +452,6 @@ const TaxMenu = () => {
         value={taxChecked ? tax : 0}
         disabled={!taxChecked}
         onChange={e => {
-          console.log("object", tax);
           setTax(e.target.value);
         }}
       >
