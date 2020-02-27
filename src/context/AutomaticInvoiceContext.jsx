@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, useState, useContext } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
 import { getMock, post } from "utils/api";
+import { postLog } from "utils/time";
 import { StateContext } from "context/StateContext";
 
 const appendLeadingZeroes = n => {
@@ -413,13 +414,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       data.Line.push(merchantObj);
     }
     data.Line.push(finalLine);
-    let logData = {
-      date: dateToday,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      })
-    };
+    let logData = {};
     if (type === "approve") {
       logData.type = "sent-invoice";
       logData.description = `${state2.userProfile.name} issued an invoice to ${company.name}.`;
@@ -449,11 +444,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
       billingType: formState.billingType,
       docNumber: Math.floor(Math.random() * 9999)
     };
-    console.log(dateToday);
     post("/api/create_pending", data)
       .then(res => {
         logData.invoiceId = res.data.id;
-        post("/api/logs/create", logData);
+        postLog(logData);
         dispatch({
           type: "set-modal-type",
           payload: { modalType: "success" }

@@ -5,14 +5,10 @@ import { TableStepper } from "common-components";
 import { Divider, Button } from "@material-ui/core";
 import InvoiceDetails from "./InvoiceDetails";
 import ManagePendingFooter from "./components/ManagePendingFooter";
-import { patch, post } from "utils/api";
+import { patch } from "utils/api";
+import { postLog } from "utils/time";
 import { handleAmt, handleTaxAmt } from "./constVar";
-const appendLeadingZeroes = n => {
-  if (n <= 9) {
-    return "0" + n;
-  }
-  return n;
-};
+
 export default function ManagePendingInvoice() {
   const {
     state,
@@ -193,24 +189,11 @@ export default function ManagePendingInvoice() {
       getPendingInvoicesData();
       // setModalLoading(false)
     });
-    const today = new Date();
-    const dateToday =
-      today.getFullYear() +
-      "-" +
-      appendLeadingZeroes(today.getMonth() + 1) +
-      "-" +
-      appendLeadingZeroes(today.getDate());
-    const logData = {
-      date: dateToday,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      }),
+    postLog({
       type: "edit-invoice",
       description: `${state.userProfile.name} modified invoice #${id}.`,
       invoiceId: id
-    };
-    post("/api/logs/create", logData);
+    });
   };
 
   const EditButton = () => {

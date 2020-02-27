@@ -11,6 +11,9 @@ import Add from "@material-ui/icons/PostAdd";
 import Delete from "@material-ui/icons/DeleteForever";
 import Edit from "@material-ui/icons/Edit";
 import Email from "@material-ui/icons/Email";
+import Check from "@material-ui/icons/Check";
+import Draft from "@material-ui/icons/Drafts";
+import Review from "@material-ui/icons/RateReview";
 import { Timeline, TimelineEvent } from "react-event-timeline";
 import { makeStyles } from "@material-ui/core/styles";
 import { NoResult } from "common-components";
@@ -44,6 +47,9 @@ const ActivityLogsComponent = () => {
       if (e.type === "sent-invoice") e["icon"] = <Email />;
       if (e.type === "delete-invoice") e["icon"] = <Delete />;
       if (e.type === "edit-invoice") e["icon"] = <Edit />;
+      if (e.type === "approve-invoice") e["icon"] = <Check />;
+      if (e.type === "mark-draft") e["icon"] = <Draft />;
+      if (e.type === "mark-review") e["icon"] = <Review />;
     });
     dispatch({
       type: "set-logs",

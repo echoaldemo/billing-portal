@@ -6,6 +6,7 @@ import {
 } from "common-components";
 import { StateContext } from "context/StateContext";
 import { remove, post } from "utils/api";
+import { postLog } from "utils/time";
 const appendLeadingZeroes = n => {
   if (n <= 9) {
     return "0" + n;
@@ -47,17 +48,11 @@ const DeleteModal = () => {
       desc = `${state.userProfile.name} deleted ${selectedItems.length} invoices.`;
     else
       desc = `${state.userProfile.name} deleted an invoice for ${selectedItems[0].company.name}.`;
-    const logData = {
-      date: dateToday,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      }),
+    postLog({
       type: "delete-invoice",
       description: desc,
       invoiceId: null
-    };
-    post("/api/logs/create", logData);
+    });
     setTimeout(() => {
       setLoading(false);
       handleModalClose();
