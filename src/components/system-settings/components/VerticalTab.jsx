@@ -63,6 +63,7 @@ export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
           return (
             <Tab
               icon={tab.icon}
+              key={i}
               label={<span style={{ marginTop: -5 }}>&nbsp; {tab.label}</span>}
               {...a11yProps(i)}
               className="tab-item"
