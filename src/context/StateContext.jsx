@@ -122,6 +122,8 @@ const StateProvider = ({ children }) => {
         return null;
     }
   }, initialState);
+  console.log(state.selectedData);
+  console.log(formState);
 
   return (
     <StateContext.Provider

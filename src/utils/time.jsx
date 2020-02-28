@@ -1,5 +1,15 @@
 import { post } from "utils/api";
 
+const formatArray = arr => {
+  if (arr.length === 1) {
+    return arr[0];
+  } else if (arr.length === 2) {
+    return arr.join(" and ");
+  } else if (arr.length > 2) {
+    return arr.slice(0, -1).join(", ") + ", and " + arr.slice(-1);
+  }
+};
+
 const appendLeadingZeroes = n => {
   if (n <= 9) {
     return "0" + n;
@@ -29,4 +39,4 @@ const postLog = param => {
   post("/api/logs/create", logData);
 };
 
-export { postLog };
+export { postLog, formatArray };
