@@ -5,15 +5,22 @@ import {
   LoadingNoDialog as LoadingModal
 } from "common-components";
 import { StateContext } from "context/StateContext";
-import { remove } from "utils/api";
-
+import { remove, post } from "utils/api";
+import { postLog } from "utils/time";
+const appendLeadingZeroes = n => {
+  if (n <= 9) {
+    return "0" + n;
+  }
+  return n;
+};
 const DeleteModal = () => {
   const {
     selectedItems,
     setSelectedItems,
     getPendingInvoicesData,
     confirmModal,
-    setConfirmModal
+    setConfirmModal,
+    state
   } = React.useContext(StateContext);
 
   const [loading, setLoading] = React.useState(false);
@@ -29,6 +36,23 @@ const DeleteModal = () => {
         setDeleteCount(i + 1);
       });
     }
+    const today = new Date();
+    const dateToday =
+      today.getFullYear() +
+      "-" +
+      appendLeadingZeroes(today.getMonth() + 1) +
+      "-" +
+      appendLeadingZeroes(today.getDate());
+    let desc;
+    if (selectedItems.length > 1)
+      desc = `${state.userProfile.name} deleted ${selectedItems.length} invoices.`;
+    else
+      desc = `${state.userProfile.name} deleted an invoice for ${selectedItems[0].company.name}.`;
+    postLog({
+      type: "delete-invoice",
+      description: desc,
+      invoiceId: null
+    });
     setTimeout(() => {
       setLoading(false);
       handleModalClose();
