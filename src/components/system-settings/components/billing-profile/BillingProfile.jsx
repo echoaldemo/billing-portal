@@ -21,9 +21,7 @@ const BillingProfile = () => {
             dispatch({ type: "set-edit", payload: { edit: !edit } });
           }}
         >
-          <Button>
-            <b>{!edit ? "Edit items" : "Save"}</b>
-          </Button>
+          <Button>{!edit ? "Edit items" : "Save"}</Button>
         </Grid>
       </Grid>
 

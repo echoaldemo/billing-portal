@@ -12,20 +12,23 @@ const initialState = {
 
 const BillingContext = React.createContext();
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "set-companies":
+      return { ...state, companies: action.payload.companies };
+    case "set-selected-company":
+      return { ...state, selectedCompany: action.payload.selectedCompany };
+    case "set-edit":
+      return { ...state, edit: action.payload.edit };
+    default:
+      return null;
+  }
+};
+
 const BillingProvider = ({ children }) => {
+  const [rowCollapse, setRowCollapse] = useState([0, 1]);
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
-  const [state, dispatch] = useReducer((state, action) => {
-    switch (action.type) {
-      case "set-companies":
-        return { ...state, companies: action.payload.companies };
-      case "set-selected-company":
-        return { ...state, selectedCompany: action.payload.selectedCompany };
-      case "set-edit":
-        return { ...state, edit: action.payload.edit };
-      default:
-        return null;
-    }
-  }, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const getCompanyCampaigns = company_uuid => {
     const result = mockCampaigns.filter(item => item.company === company_uuid);
@@ -41,7 +44,9 @@ const BillingProvider = ({ children }) => {
       value={{
         state,
         dispatch,
-        companyCampaigns
+        companyCampaigns,
+        rowCollapse,
+        setRowCollapse
       }}
     >
       {children}
