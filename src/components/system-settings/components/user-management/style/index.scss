@@ -1,0 +1,46 @@
+.user-table-header {
+  b {
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+.users-table-container {
+  min-height: 60vh;
+  border: solid 1px #f1f1f1;
+}
+
+.cell-status-span {
+  display: block;
+  color: white;
+  width: 60px;
+  height: 20px;
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 600;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+}
+
+.user-active {
+  background: #6698c7;
+}
+
+.user-inactive {
+  background: #ff504d;
+}
+
+.settings-icon {
+  color: #7c8a97;
+  cursor: pointer;
+}
+
+.menu-manage-user {
+  min-width: 130px;
+  color: #7c8a97 !important;
+  svg {
+    margin-right: 5px;
+    height: 20px;
+  }
+}
