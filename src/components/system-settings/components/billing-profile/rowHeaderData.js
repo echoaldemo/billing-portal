@@ -1,22 +1,26 @@
 const rowHeaderData = [
   {
     label: "Campaign name",
-    size: 5
+    size: 3
   },
   {
-    label: "Billable",
-    size: 2,
+    label: "Services",
+    size: 4
+  },
+  {
+    label: "Tax",
+    size: 1,
     style: { textAlign: "right" }
   },
   {
-    label: "DID Billing",
+    label: "Rates",
     size: 2,
-    style: { textAlign: "right" }
+    style: { textAlign: "left" }
   },
   {
-    label: "Performance",
+    label: " ",
     size: 2,
-    style: { textAlign: "right" }
+    style: { textAlign: "center" }
   }
 ];
 
