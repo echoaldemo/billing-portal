@@ -1,34 +1,13 @@
 import React, { useContext } from "react";
 import { Row, RowHeader } from "common-components";
 import { BillingContext } from "context/BillingProfileContext";
+import InputField from "../../../new-invoice/components/CustomInput";
+import RowHeaderData from "./rowHeaderData";
 const CampaignRows = () => {
-  const { companyCampaigns } = useContext(BillingContext);
-
   return (
     <div style={{ width: "100%", paddingTop: 15 }}>
       <RowHeader
-        rowHeaderData={[
-          {
-            label: "Campaign name",
-            size: 4
-          },
-          {
-            label: "Billable",
-            size: 2
-          },
-          {
-            label: "DID Billing",
-            size: 2
-          },
-          {
-            label: "Performance",
-            size: 2
-          },
-          {
-            label: "Actions",
-            size: 2
-          }
-        ]}
+        rowHeaderData={RowHeaderData}
         style={{ border: "solid 1px #F1f1f1" }}
       />
       <div
@@ -38,26 +17,60 @@ const CampaignRows = () => {
           overflow: "auto"
         }}
       >
-        {companyCampaigns.length > 0 && (
-          <React.Fragment>
-            {companyCampaigns.map((item, i) => {
-              return (
-                <Row
-                  key={i}
-                  style={{ borderBottom: "solid 1px #F1f1f1" }}
-                  rowData={[
-                    {
-                      label: item.name,
-                      size: 5
-                    }
-                  ]}
-                />
-              );
-            })}
-          </React.Fragment>
-        )}
+        <RowBody />
       </div>
     </div>
+  );
+};
+
+const RowBody = () => {
+  const { companyCampaigns, state } = useContext(BillingContext);
+  const { edit } = state;
+  return (
+    <React.Fragment>
+      {companyCampaigns.length > 0 && (
+        <React.Fragment>
+          {companyCampaigns.map((item, i) => {
+            return (
+              <Row
+                key={i}
+                style={{ borderBottom: "solid 1px #F1f1f1" }}
+                rowData={[
+                  {
+                    label: item.name,
+                    size: 5
+                  },
+                  {
+                    label: (
+                      <InputField
+                        placeholder="Billable Rate"
+                        disabled={!edit}
+                      />
+                    ),
+                    size: 2
+                  },
+                  {
+                    label: (
+                      <InputField placeholder="DID Rate" disabled={!edit} />
+                    ),
+                    size: 2
+                  },
+                  {
+                    label: (
+                      <InputField
+                        placeholder="Performace rate"
+                        disabled={!edit}
+                      />
+                    ),
+                    size: 2
+                  }
+                ]}
+              />
+            );
+          })}
+        </React.Fragment>
+      )}
+    </React.Fragment>
   );
 };
 

@@ -1,14 +1,29 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
-import { BillingProvider } from "context/BillingProfileContext";
+import { Grid, Button } from "@material-ui/core";
+import { BillingProvider, BillingContext } from "context/BillingProfileContext";
 import SelectCompanyField from "./SelectCompanyField";
 import CampaignRows from "./CampaignRows";
 const BillingProfile = () => {
+  const { state, dispatch } = React.useContext(BillingContext);
+  const { edit } = state;
   return (
     <div className="billing-profile-container">
-      <Grid container>
+      <Grid container className="header-container">
         <Grid item xs={2} lg={4}>
           <SelectCompanyField />
+        </Grid>
+        <Grid
+          item
+          xs={2}
+          lg={2}
+          className="edit-btn-container"
+          onClick={() => {
+            dispatch({ type: "set-edit", payload: { edit: !edit } });
+          }}
+        >
+          <Button>
+            <b>{!edit ? "Edit items" : "Save"}</b>
+          </Button>
         </Grid>
       </Grid>
 

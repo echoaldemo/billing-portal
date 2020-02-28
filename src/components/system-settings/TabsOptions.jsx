@@ -3,7 +3,7 @@ import React from "react";
 import SettingsIcon from "@material-ui/icons/Settings";
 import PeopleIcon from "@material-ui/icons/People";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-
+import PaymentIcon from "@material-ui/icons/Payment";
 const TabsOptions = [
   {
     icon: <SettingsIcon />,
@@ -14,8 +14,12 @@ const TabsOptions = [
     label: "User management"
   },
   {
-    icon: <AttachMoneyIcon />,
+    icon: <PaymentIcon />,
     label: "Billing Profile"
+  },
+  {
+    icon: <AttachMoneyIcon />,
+    label: "Manage Tax"
   }
 ];
 

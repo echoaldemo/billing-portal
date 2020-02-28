@@ -6,7 +6,8 @@ import {
 
 const initialState = {
   companies: mockCompanies,
-  selectedCompany: mockCompanies[0].uuid
+  selectedCompany: mockCompanies[0].uuid,
+  edit: false
 };
 
 const BillingContext = React.createContext();
@@ -19,7 +20,8 @@ const BillingProvider = ({ children }) => {
         return { ...state, companies: action.payload.companies };
       case "set-selected-company":
         return { ...state, selectedCompany: action.payload.selectedCompany };
-
+      case "set-edit":
+        return { ...state, edit: action.payload.edit };
       default:
         return null;
     }
