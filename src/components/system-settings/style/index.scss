@@ -10,7 +10,19 @@
   }
 }
 .billing-profile-container {
-  border: solid 1px;
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .edit-btn-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end;
+  }
+  button {
+    text-transform: none;
+    border: solid 1px #f1f1f1;
+  }
 }
 
 .vertical-tab-container {
