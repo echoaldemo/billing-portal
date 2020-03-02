@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { RemoveRedEye } from "@material-ui/icons";
+import { RateReview } from "@material-ui/icons";
 import CardInfo from "../card-info";
 import { get } from "utils/api";
 
@@ -31,7 +31,7 @@ const ReviewedInvoices = () => {
       }
       loading={loading}
       status={1}
-      icon={() => <RemoveRedEye fontSize="large" style={{ marginRight: 20 }} />}
+      icon={() => <RateReview fontSize="large" style={{ marginRight: 20 }} />}
     />
   );
 };

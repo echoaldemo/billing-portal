@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Drafts } from "@material-ui/icons";
 import CardInfo from "../card-info";
 import { get } from "utils/api";
 
@@ -30,6 +31,7 @@ const DraftInvoices = () => {
       }
       loading={loading}
       status={0}
+      icon={() => <Drafts fontSize="large" style={{ marginRight: 20 }} />}
     />
   );
 };
