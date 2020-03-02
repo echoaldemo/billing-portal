@@ -47,7 +47,7 @@ const CampaignRowsDetails = ({ item, index }) => {
       size: 3
     },
     {
-      label: <span>Billable Hrs, DID Billing, Performance</span>,
+      label: <small>Billable Hours, DID Billing, Performance</small>,
       size: 4
     },
 
