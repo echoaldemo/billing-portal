@@ -35,7 +35,7 @@ const ShowExpand = ({ index }) => {
   );
 };
 
-const CampaignRowsDetails = ({ item, index }) => {
+const CampaignRowsDetails = ({ item, index, campaignRate }) => {
   const {
     rowCollapse,
     state: { edit }
@@ -47,7 +47,7 @@ const CampaignRowsDetails = ({ item, index }) => {
       size: 3
     },
     {
-      label: <span>Billable Hrs, DID Billing, Performance</span>,
+      label: <small>Billable Hours, DID Billing, Performance</small>,
       size: 4
     },
 
@@ -80,7 +80,13 @@ const CampaignRowsDetails = ({ item, index }) => {
       style: { textAlign: "right" }
     },
     {
-      label: <InputField placeholder="Hourly rate" disabled={!edit} />,
+      label: (
+        <InputField
+          value={campaignRate.billable_rate}
+          placeholder="Hourly rate"
+          disabled={!edit}
+        />
+      ),
       size: 2,
       style: { textAlign: "left" }
     },
@@ -106,7 +112,13 @@ const CampaignRowsDetails = ({ item, index }) => {
       style: { textAlign: "right" }
     },
     {
-      label: <InputField placeholder="DID rate" disabled={!edit} />,
+      label: (
+        <InputField
+          value={campaignRate.did_rate}
+          placeholder="DID rate"
+          disabled={!edit}
+        />
+      ),
       size: 2,
       style: { textAlign: "left" }
     },
@@ -132,7 +144,13 @@ const CampaignRowsDetails = ({ item, index }) => {
       style: { textAlign: "right" }
     },
     {
-      label: <InputField placeholder="Performance rate" disabled={!edit} />,
+      label: (
+        <InputField
+          value={campaignRate.performance_rate}
+          placeholder="Performance rate"
+          disabled={!edit}
+        />
+      ),
       size: 2,
       style: { textAlign: "left" }
     },

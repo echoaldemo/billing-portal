@@ -3,11 +3,13 @@ import {
   mockCompanies,
   mockCampaigns
 } from "components/new-invoice/mock/index";
+import { get } from "utils/api";
 
 const initialState = {
   companies: mockCompanies,
   selectedCompany: mockCompanies[0].uuid,
-  edit: false
+  edit: false,
+  campaignRates: []
 };
 
 const BillingContext = React.createContext();
@@ -20,6 +22,8 @@ const reducer = (state, action) => {
       return { ...state, selectedCompany: action.payload.selectedCompany };
     case "set-edit":
       return { ...state, edit: action.payload.edit };
+    case "set-campaign-rates":
+      return { ...state, campaignRates: action.payload.campaignRates };
     default:
       return null;
   }
@@ -37,6 +41,15 @@ const BillingProvider = ({ children }) => {
 
   useEffect(() => {
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
+    get(`/api/rate/${state.selectedCompany}`).then(result => {
+      console.log("rresult daata", result.data);
+      dispatch({
+        type: "set-campaign-rates",
+        payload: {
+          campaignRates: result.data ? result.data : []
+        }
+      });
+    });
   }, [state.selectedCompany]);
 
   return (

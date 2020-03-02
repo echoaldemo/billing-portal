@@ -3,6 +3,7 @@ import { Grid, Button } from "@material-ui/core";
 import { BillingProvider, BillingContext } from "context/BillingProfileContext";
 import SelectCompanyField from "./SelectCompanyField";
 import CampaignRows from "./CampaignRows";
+import { CustomCheckbox } from "common-components";
 const BillingProfile = () => {
   const { state, dispatch } = React.useContext(BillingContext);
   const { edit } = state;
@@ -27,6 +28,11 @@ const BillingProfile = () => {
 
       <Grid container>
         <CampaignRows />
+        <h5>
+          <CustomCheckbox checked={true} />
+          &nbsp;
+          <span>Apply previous invoice data for campaign's rate values.</span>
+        </h5>
       </Grid>
     </div>
   );
