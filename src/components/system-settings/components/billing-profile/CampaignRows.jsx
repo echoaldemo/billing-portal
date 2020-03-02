@@ -18,13 +18,38 @@ const CampaignRows = () => {
 };
 
 const RowBody = () => {
-  const { companyCampaigns } = useContext(BillingContext);
+  const {
+    companyCampaigns,
+    state: { campaignRates }
+  } = useContext(BillingContext);
+
+  const getCampaignRate = uuid => {
+    const result = campaignRates.find(item => {
+      return item.campaign_uuid === uuid;
+    });
+    return result
+      ? result
+      : {
+          billable_rate: "not set",
+          did_rate: "not set",
+          performance_rate: "not set"
+        };
+  };
+
   return (
     <React.Fragment>
       {companyCampaigns.length > 0 && (
         <React.Fragment>
           {companyCampaigns.map((item, i) => {
-            return <CampaignRowDetails item={item} key={i} index={i} />;
+            console.log(item);
+            return (
+              <CampaignRowDetails
+                item={item}
+                key={i}
+                index={i}
+                campaignRate={getCampaignRate(item.uuid)}
+              />
+            );
           })}
         </React.Fragment>
       )}
