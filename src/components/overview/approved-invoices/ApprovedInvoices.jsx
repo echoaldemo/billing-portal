@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Check } from "@material-ui/icons";
 import CardInfo from "../card-info";
 import { get } from "utils/api";
 
@@ -24,11 +25,13 @@ const ApprovedInvoices = () => {
 
   return (
     <CardInfo
-      primaryLabel="Total Approved Invoices"
+      primaryLabel="Approved Invoices"
       secondaryLabel={
         formatNumber(approved.length) + " / " + formatNumber(all.length)
       }
       loading={loading}
+      status={2}
+      icon={() => <Check fontSize="large" style={{ marginRight: 20 }} />}
     />
   );
 };

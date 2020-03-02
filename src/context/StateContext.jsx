@@ -37,6 +37,7 @@ const dateRangeInitial = {
 
 const StateProvider = ({ children }) => {
   const [modalLoading, setModalLoading] = useState(false);
+  const [filterStatus, setFilterStatus] = useState(false);
   const [originalData, setOriginalData] = useState([]);
   const [formState, setFormState] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
@@ -44,33 +45,41 @@ const StateProvider = ({ children }) => {
 
   const [dateRange, setDateRange] = React.useState(dateRangeInitial);
 
-  const setLoading = value => {
+  const setLoading = (value) => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
-  const setData = value => {
+  const setData = (value) => {
     dispatch({ type: "set-data", payload: { data: value } });
   };
-  const setEditModal = value => {
+  const setEditModal = (value) => {
     dispatch({ type: "set-edit-modal", payload: { openEdit: value } });
   };
-  const setTab = value => {
+  const setTab = (value) => {
     dispatch({ type: "set-tab", payload: { active_tab: value } });
   };
-  const getPendingInvoicesData = () => {
+  const getPendingInvoicesData = (status = filterStatus) => {
+    console.log(filterStatus);
     setLoading(true);
     get("/api/pending/list")
-      .then(res => {
-        setLoading(false);
+      .then((res) => {
         setOriginalData(res.data);
-
-        setData(res.data);
+        if (status !== false) {
+          const result = res.data.filter((item) => {
+            return item.status == status;
+          });
+          setData(result);
+          setLoading(false);
+        } else {
+          setData(res.data);
+          setLoading(false);
+        }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         setLoading(false);
       });
   };
-  const deletePendingStatus = id => {
+  const deletePendingStatus = (id) => {
     dispatch({
       type: "set-update-loading",
       payload: { updateLoading: true }
@@ -122,8 +131,6 @@ const StateProvider = ({ children }) => {
         return null;
     }
   }, initialState);
-  console.log(state.selectedData);
-  console.log(formState);
 
   return (
     <StateContext.Provider
@@ -147,7 +154,9 @@ const StateProvider = ({ children }) => {
         confirmModal,
         setConfirmModal,
         dateRange,
-        setDateRange
+        setDateRange,
+        filterStatus,
+        setFilterStatus
       }}
     >
       {children}

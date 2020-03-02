@@ -6,6 +6,8 @@ import ActivityLogs from "./activity-logs";
 import DraftInvoices from "./draft-invoices/DraftInvoices";
 import ReviewedInvoices from "./reviewed-invoices/ReviewedInvoices";
 import ApprovedInvoices from "./approved-invoices/ApprovedInvoices";
+import { StateContext } from "context/StateContext";
+
 const pieOptions = {
   title: "",
   pieHole: 0.6,
@@ -43,6 +45,11 @@ const pieOptions = {
   fontName: "Roboto"
 };
 const Overview = () => {
+  const { setFilterStatus } = React.useContext(StateContext);
+  React.useEffect(() => {
+    setFilterStatus(false);
+  }, []);
+
   return (
     <Grid container>
       <Grid item lg={12}>

@@ -24,11 +24,12 @@ const DraftInvoices = () => {
 
   return (
     <CardInfo
-      primaryLabel="Total Draft Invoices"
+      primaryLabel="Draft Invoices"
       secondaryLabel={
         formatNumber(pending.length) + " / " + formatNumber(all.length)
       }
       loading={loading}
+      status={0}
     />
   );
 };
