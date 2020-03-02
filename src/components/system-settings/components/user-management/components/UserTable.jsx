@@ -10,6 +10,7 @@ import { Settings } from '@material-ui/icons'
 import UserTableHeader from './UserTableHeader'
 import StatusCell from './StatusCell'
 import MenuButton from './MenuButton'
+import ManageModal from './ManageModal'
 import { store } from 'context/UserManagementContext'
 
 const UserTable = () => {
@@ -35,7 +36,7 @@ const UserTable = () => {
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <StatusCell status={user.status} />
-                  <TableCell>{'admin'}</TableCell>
+                  <TableCell>{user.type}</TableCell>
                   <TableCell align="center">
                     <Settings
                       onClick={e =>
@@ -71,6 +72,7 @@ const UserTable = () => {
           })
         }
       />
+      <ManageModal />
     </>
   )
 }

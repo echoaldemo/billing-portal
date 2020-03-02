@@ -44,3 +44,50 @@
     height: 20px;
   }
 }
+
+.user-manage-modal-header {
+  min-width: 420px;
+  height: 60px;
+  background: #5f7d98;
+  font-size: 20px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  svg {
+    margin-right: 12px;
+    cursor: pointer;
+  }
+  span {
+    margin-left: 12px;
+    font-weight: 600;
+  }
+}
+
+.user-manage-modal-body {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-button {
+  width: 165px;
+  height: 40px;
+  border-radius: 3px;
+  background-color: #eeeeee;
+  outline: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-save {
+  background: #b6d36b;
+  color: white;
+}
+.modal-button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}

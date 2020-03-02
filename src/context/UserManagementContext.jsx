@@ -6,7 +6,8 @@ const initialState = {
   rowsPerPage: 10,
   loading: true,
   anchorEl: null,
-  selectedUser: {}
+  selectedUser: {},
+  openManage: false
 }
 
 const store = createContext(initialState)
@@ -37,6 +38,10 @@ const StateProvider = ({ children }) => {
         }
       case 'MENU_CLOSE':
         return { ...state, anchorEl: null }
+      case 'OPEN_MANAGE':
+        return { ...state, openManage: true }
+      case 'CLOSE_MANAGE':
+        return { ...state, openManage: false }
       default:
         return null
     }

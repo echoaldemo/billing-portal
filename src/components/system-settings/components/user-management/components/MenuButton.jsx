@@ -9,6 +9,11 @@ const MenuButton = () => {
     dispatch
   } = useContext(store)
 
+  const openModal = () => {
+    dispatch({ type: 'OPEN_MANAGE' })
+    dispatch({ type: 'MENU_CLOSE' })
+  }
+
   const handleClose = () => {
     dispatch({ type: 'MENU_CLOSE' })
   }
@@ -20,9 +25,9 @@ const MenuButton = () => {
       open={Boolean(anchorEl)}
       onClose={handleClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
     >
-      <MenuItem className="menu-manage-user" onClick={handleClose}>
+      <MenuItem className="menu-manage-user" onClick={openModal}>
         <Edit /> Manage
       </MenuItem>
       <MenuItem className="menu-manage-user" onClick={handleClose}>
