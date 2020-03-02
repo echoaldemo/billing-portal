@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useContext } from "react";
+import React, { useReducer, useState, useContext, useEffect } from "react";
 import { postLog } from "utils/time";
 import { get, remove } from "utils/api";
 const initialState = {
@@ -42,9 +42,41 @@ const StateProvider = ({ children }) => {
   const [formState, setFormState] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
   const [confirmModal, setConfirmModal] = React.useState(confirmModalInitial);
-
+  const [filterOpt, setFilterOpt] = React.useState({
+    invoiceType: " ",
+    billingType: " ",
+    status: false
+  });
   const [dateRange, setDateRange] = React.useState(dateRangeInitial);
-
+  const filter = (data = originalData) => {
+    let filterOptions = {};
+    if (filterOpt.invoiceType !== " ") {
+      filterOptions["invoiceType"] = filterOpt.invoiceType;
+    }
+    if (filterOpt.billingType !== " ") {
+      filterOptions["billingType"] = filterOpt.billingType;
+    }
+    if (filterOpt.status !== false) {
+      filterOptions["status"] = filterOpt.status;
+    }
+    const filtered = data.filter((item) => {
+      for (let key in filterOptions) {
+        if (item[key] === undefined || item[key] !== filterOptions[key])
+          return false;
+      }
+      return true;
+    });
+    setData(filtered);
+  };
+  const handleFilterChange = (e, label) => {
+    setFilterOpt({
+      ...filterOpt,
+      [label]: e.target.value
+    });
+  };
+  useEffect(() => {
+    filter();
+  }, [filterOpt]);
   const setLoading = (value) => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
@@ -60,24 +92,11 @@ const StateProvider = ({ children }) => {
   const getPendingInvoicesData = (status = filterStatus) => {
     console.log(filterStatus);
     setLoading(true);
-    get("/api/pending/list")
-      .then((res) => {
-        setOriginalData(res.data);
-        if (status !== false) {
-          const result = res.data.filter((item) => {
-            return item.status == status;
-          });
-          setData(result);
-          setLoading(false);
-        } else {
-          setData(res.data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+    get("/api/pending/list").then((res) => {
+      setOriginalData(res.data);
+      filter(res.data);
+      setLoading(false);
+    });
   };
   const deletePendingStatus = (id) => {
     dispatch({
@@ -156,7 +175,10 @@ const StateProvider = ({ children }) => {
         dateRange,
         setDateRange,
         filterStatus,
-        setFilterStatus
+        setFilterStatus,
+        handleFilterChange,
+        filterOpt,
+        setFilterOpt
       }}
     >
       {children}

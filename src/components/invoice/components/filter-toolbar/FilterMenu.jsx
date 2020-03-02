@@ -1,45 +1,20 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Grid, MenuItem } from "@material-ui/core";
 import { InputField } from "common-components";
 import { StateContext } from "context/StateContext";
 const FilterMenu = () => {
-  const { state, setData, originalData } = useContext(StateContext);
-  const [invoiceType, setInvoiceType] = React.useState(false);
-  const [billingType, setBillingType] = React.useState(false);
+  const { handleFilterChange, filterOpt } = useContext(StateContext);
 
   const invoiceTypeOptions = [
-    { value: false, label: "All" },
+    { value: " ", label: "All" },
     { value: "Automatic", label: "Automatic" },
-    { value: "manual", label: "Manual" }
+    { value: "Manual", label: "Manual" }
   ];
   const billingTypeOptions = [
-    { value: false, label: "All" },
-    { value: "monthly", label: "Monthly" },
-    { value: "weekly", label: "Weekly" }
+    { value: " ", label: "All" },
+    { value: "1", label: "Monthly" },
+    { value: "2", label: "Weekly" }
   ];
-
-  const filterInvoiceType = e => {
-    const billingValue = billingType === "monthly" ? "1" : null;
-    setInvoiceType(e.target.value);
-    const filteredWithInvoiceType = originalData.filter(item => {
-      return !e.target.value || !billingType
-        ? state.data
-        : item.invoiceType === e.target.value &&
-            item.billingType === billingValue;
-    });
-    setData(filteredWithInvoiceType);
-  };
-
-  const filterBillingType = e => {
-    setBillingType(e.target.value);
-    const value = e.target.value === "monthly" ? "1" : null;
-    const filteredWithBillingType = originalData.filter(item => {
-      return !e.target.value || !invoiceType
-        ? state.data
-        : item.billingType === value && item.invoiceType === invoiceType;
-    });
-    setData(filteredWithBillingType);
-  };
 
   return (
     <Grid container style={{ justifyContent: "flex-end" }} spacing={5}>
@@ -53,15 +28,15 @@ const FilterMenu = () => {
         }}
       >
         <InputField
-          onChange={e => {
-            filterInvoiceType(e);
+          onChange={(e) => {
+            handleFilterChange(e, "invoiceType");
           }}
           fullWidth
-          value={invoiceType}
+          value={filterOpt.invoiceType}
           label="Select Invoice Type"
           select
         >
-          {invoiceTypeOptions.map(item => {
+          {invoiceTypeOptions.map((item) => {
             return (
               <MenuItem key={item.value} value={item.value}>
                 {item.label}
@@ -81,15 +56,15 @@ const FilterMenu = () => {
         }}
       >
         <InputField
-          onChange={e => {
-            filterBillingType(e);
+          onChange={(e) => {
+            handleFilterChange(e, "billingType");
           }}
           fullWidth
-          value={billingType}
+          value={filterOpt.billingType}
           label="Select Billing Type"
           select
         >
-          {billingTypeOptions.map(item => {
+          {billingTypeOptions.map((item) => {
             return (
               <MenuItem key={item.value} value={item.value}>
                 {item.label}

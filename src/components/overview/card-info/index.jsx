@@ -45,7 +45,7 @@ export default function CardInfo({
   icon = () => <Create fontSize="large" style={{ marginRight: 20 }} />
 }) {
   const classes = useStyles();
-  const { setFilterStatus } = React.useContext(StateContext);
+  const { filterOpt, setFilterOpt } = React.useContext(StateContext);
 
   return (
     <>
@@ -82,7 +82,7 @@ export default function CardInfo({
             to={{
               pathname: "/invoices"
             }}
-            onClick={() => setFilterStatus(status)}
+            onClick={() => setFilterOpt({ ...filterOpt, status })}
           >
             <Button size="small" color="default">
               See more details <KeyboardArrowRight />
