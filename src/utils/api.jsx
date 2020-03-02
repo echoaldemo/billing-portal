@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:8000";
+const baseUrl = "http://phdev.perfectpitchtech.com:8001";
 
 const baseMock = "http://5e2fcff79c29c900145db496.mockapi.io";
 const req = {
