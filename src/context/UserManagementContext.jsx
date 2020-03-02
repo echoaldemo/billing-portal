@@ -3,11 +3,14 @@ import React, { createContext, useReducer } from 'react'
 const initialState = {
   users: [],
   page: 0,
-  rowsPerPage: 10,
+  rowsPerPage: 8,
   loading: true,
   anchorEl: null,
   selectedUser: {},
-  openManage: false
+  openManage: false,
+  editLoading: false,
+  delLoading: false,
+  search: ''
 }
 
 const store = createContext(initialState)
@@ -42,6 +45,18 @@ const StateProvider = ({ children }) => {
         return { ...state, openManage: true }
       case 'CLOSE_MANAGE':
         return { ...state, openManage: false }
+      case 'EDIT_LOAD_OPEN':
+        return { ...state, editLoading: true }
+      case 'EDIT_LOAD_CLOSE':
+        return { ...state, editLoading: false }
+      case 'DELETE_LOAD_OPEN':
+        return { ...state, delLoading: true }
+      case 'DELETE_LOAD_CLOSE':
+        return { ...state, delLoading: false }
+      case 'SET_SELECTED_USER':
+        return { ...state, selectedUser: payload.selectedUser }
+      case 'HANDLE_SEARCH':
+        return { ...state, search: payload.search }
       default:
         return null
     }
