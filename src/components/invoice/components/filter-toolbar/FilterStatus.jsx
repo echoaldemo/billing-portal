@@ -4,36 +4,15 @@ import { InputField } from "common-components";
 import { StateContext } from "context/StateContext";
 
 const FilterStatus = () => {
-  const { setData, originalData, filterStatus, setFilterStatus } = useContext(
-    StateContext
-  );
-
-  const [menuVal, setMenuVal] = useState(filterStatus);
-  useEffect(() => {
-    setMenuVal(filterStatus);
-    filterStatusChange(filterStatus);
-  }, [filterStatus]);
-
-  const filterStatusChange = (val) => {
-    setMenuVal(val);
-    setFilterStatus(val);
-    if (val === false) {
-      setData(originalData);
-    } else {
-      const result = originalData.filter((item) => {
-        return item.status == val;
-      });
-      setData(result);
-    }
-  };
+  const { filterOpt, handleFilterChange } = useContext(StateContext);
 
   return (
     <InputField
       onChange={(e) => {
-        filterStatusChange(e.target.value);
+        handleFilterChange(e, "status");
       }}
       fullWidth
-      value={menuVal}
+      value={filterOpt.status}
       label="Status"
       select
     >
