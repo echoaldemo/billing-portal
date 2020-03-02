@@ -5,6 +5,7 @@ const UserTableHeader = () => {
   return (
     <TableHead className="user-table-header">
       <TableRow>
+        <TableCell />
         <TableCell>
           <b>Name</b>
         </TableCell>
