@@ -10,14 +10,14 @@ import PendingCheckboxToolbar from "./components/pending/PendingCheckboxToolbar"
 import SearchData from "./components/filter-toolbar/SearchData";
 import { Paper, Divider, Grid } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
-const Invoice = props => {
+const Invoice = (props) => {
   const { selectedItems, state, dispatch, setFormState } = React.useContext(
     StateContext
   );
   useEffect(() => {
     if (props.location.state && state.data.length !== 0) {
       const id = props.location.state.invoiceId;
-      const arr = [...state.data].filter(e => e.id === id);
+      const arr = [...state.data].filter((e) => e.id === id);
       if (arr.length > 0) {
         dispatch({
           type: "set-selected-data",
