@@ -5,7 +5,7 @@ import {
   LoadingNoDialog as LoadingModal
 } from "common-components";
 import { StateContext } from "context/StateContext";
-import { remove, post } from "utils/api";
+import { remove, patch } from "utils/api";
 import { postLog } from "utils/time";
 const appendLeadingZeroes = n => {
   if (n <= 9) {
@@ -32,17 +32,13 @@ const DeleteModal = () => {
   const deleteSelectedInvoices = async () => {
     setLoading(true);
     for (let i = 0; i < selectedItems.length; i++) {
-      await remove(`/api/pending/delete/${selectedItems[i].id}`).then(() => {
+      await patch(`/api/pending/edit/${selectedItems[i].id}`, {
+        status: 3
+      }).then(() => {
         setDeleteCount(i + 1);
       });
     }
-    const today = new Date();
-    const dateToday =
-      today.getFullYear() +
-      "-" +
-      appendLeadingZeroes(today.getMonth() + 1) +
-      "-" +
-      appendLeadingZeroes(today.getDate());
+
     let desc;
     if (selectedItems.length > 1)
       desc = `${state.userProfile.name} deleted ${selectedItems.length} invoices.`;
