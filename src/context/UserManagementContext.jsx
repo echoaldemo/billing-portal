@@ -11,7 +11,8 @@ const initialState = {
   editLoading: false,
   delLoading: false,
   search: '',
-  copy: false
+  copy: false,
+  count: 0
 }
 
 const store = createContext(initialState)
@@ -62,6 +63,8 @@ const StateProvider = ({ children }) => {
         return { ...state, selectedUser: payload.selectedUser }
       case 'HANDLE_SEARCH':
         return { ...state, search: payload.search }
+      case 'SET_COUNT':
+        return { ...state, count: payload.count }
       default:
         return null
     }
