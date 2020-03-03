@@ -7,6 +7,14 @@
 .users-table-container {
   min-height: 55vh;
   border: solid 1px #f1f1f1;
+  .MuiTableCell-root {
+    padding: 12px;
+  }
+  img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .cell-status-span {
