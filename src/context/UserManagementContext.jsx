@@ -3,7 +3,7 @@ import React, { createContext, useReducer } from 'react'
 const initialState = {
   users: [],
   page: 0,
-  rowsPerPage: 6,
+  rowsPerPage: 8,
   loading: true,
   anchorEl: null,
   selectedUser: {},

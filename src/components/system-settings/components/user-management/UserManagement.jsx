@@ -3,6 +3,7 @@ import UserTable from './components/UserTable'
 import Loading from './components/Loading'
 import { store, StateProvider } from 'context/UserManagementContext'
 import { get } from 'utils/api'
+import SEO from 'utils/seo'
 import './style/index.scss'
 
 const ManageUser = () => {
@@ -18,7 +19,12 @@ const ManageUser = () => {
     })
   }, [dispatch])
 
-  return <>{loading ? <Loading /> : <UserTable />}</>
+  return (
+    <>
+      <SEO title="User Management" />
+      {loading ? <Loading /> : <UserTable />}
+    </>
+  )
 }
 
 const UserManagement = () => {
