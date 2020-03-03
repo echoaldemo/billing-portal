@@ -1,22 +1,26 @@
-import React from "react";
+import React from 'react'
 
-import SettingsIcon from "@material-ui/icons/Settings";
-import PeopleIcon from "@material-ui/icons/People";
-import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-
+import SettingsIcon from '@material-ui/icons/Settings'
+import PeopleIcon from '@material-ui/icons/People'
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney'
+import PaymentIcon from '@material-ui/icons/Payment'
 const TabsOptions = [
   {
     icon: <SettingsIcon />,
-    label: "General settings"
+    label: 'General settings'
   },
   {
     icon: <PeopleIcon />,
-    label: "User management"
+    label: 'User management'
   },
   {
-    icon: <AttachMoneyIcon />,
-    label: "Billing Profile"
+    icon: <PaymentIcon />,
+    label: 'Billing Profile'
   }
-];
+  // {
+  //   icon: <AttachMoneyIcon />,
+  //   label: "Manage Tax"
+  // }
+]
 
-export default TabsOptions;
+export default TabsOptions

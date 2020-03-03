@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Box, Typography, Tab, Tabs, Paper } from "@material-ui/core";
 import "../style/index.scss";
@@ -48,7 +48,14 @@ export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    localStorage.setItem("localTab", newValue);
   };
+  useEffect(() => {
+    const prevTab = localStorage.getItem("localTab");
+    if (prevTab) {
+      setValue(parseInt(prevTab));
+    }
+  }, []);
 
   return (
     <Paper className="vertical-tab-container" square={true}>
@@ -63,7 +70,8 @@ export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
           return (
             <Tab
               icon={tab.icon}
-              label={<span style={{ marginTop: -5 }}>&nbsp; {tab.label}</span>}
+              key={i}
+              label={<span className="tab-item-text">&nbsp; {tab.label}</span>}
               {...a11yProps(i)}
               className="tab-item"
             />

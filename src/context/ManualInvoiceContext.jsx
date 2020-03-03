@@ -1,5 +1,6 @@
 /* eslint-disable */
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useReducer, useEffect, useState, useContext } from "react";
+import { StateContext } from "context/StateContext";
 import {
   mockCampaigns,
   mockCompanies,
@@ -12,6 +13,7 @@ import {
   additionalFeeDetails
 } from "utils/func";
 import { post } from "utils/api";
+import { postLog } from "utils/time";
 const today = new Date();
 const date =
   today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
@@ -56,6 +58,7 @@ const initialAdditionalFee = {
 
 const ManualInvoiceContext = React.createContext();
 const ManualInvoiceProvider = ({ children }) => {
+  const { state: state2 } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
   const [createLoading, setCreateLoading] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
@@ -284,7 +287,7 @@ const ManualInvoiceProvider = ({ children }) => {
       });
   };
 
-  const saveAsDraft = data => {
+  const saveAsDraft = (data, type) => {
     let newData = {
       ...data,
       invoiceType: "Manual",
@@ -294,11 +297,26 @@ const ManualInvoiceProvider = ({ children }) => {
       dueDate: formatDate(new Date(formState.billingPeriod.end)),
       total: computeBalanceDue(),
       billingType: formState.billingType,
-      docNumber: Math.floor(Math.random() * 9999)
+      docNumber: Math.floor(Math.random() * 9999),
+      status: type === "approve" ? 2 : 0
     };
+    let logData;
+    if (type === "approve") {
+      logData = {
+        type: "sent-invoice",
+        description: `${state2.userProfile.name} issued an invoice to ${newData.company.name}.`
+      };
+    } else {
+      logData = {
+        type: "create-draft",
+        description: `${state2.userProfile.name} created a draft for ${newData.company.name}.`
+      };
+    }
     setCreateLoading(true);
     post("/api/create_pending", newData)
       .then(res => {
+        logData.invoiceId = res.data.id;
+        postLog(logData);
         setCreateLoading(false);
         setShowCreateNew(true);
       })
@@ -328,7 +346,6 @@ const ManualInvoiceProvider = ({ children }) => {
         }
       ]
     };
-
     let data = {
       CustomerRef: {
         value: company(formState.company).qb_id
@@ -341,17 +358,16 @@ const ManualInvoiceProvider = ({ children }) => {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
     };
-    console.log("DATA", data);
-
     switch (type) {
       case "approve":
         sendToQuickbooks(data, handleClose);
+        saveAsDraft(data, type);
         break;
       case "draft":
-        saveAsDraft(data, handleClose);
+        saveAsDraft(data, type);
         break;
       default:
-        saveAsDraft(data, handleClose);
+        saveAsDraft(data, type);
         break;
     }
   };

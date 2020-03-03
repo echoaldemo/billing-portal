@@ -1,41 +1,42 @@
-import React, { useContext, useEffect, useState } from "react";
-import { GoogleLogin } from "react-google-login";
-import { get, post } from "utils/api";
-import { StateContext } from "context/StateContext";
-import logo from "assets/pp_logo_transparent_bkgrd.png";
-import "./style/index.scss";
-import { ReportBugButton } from "common-components";
+import React, { useContext, useEffect, useState } from 'react'
+import { GoogleLogin } from 'react-google-login'
+import { get, post } from 'utils/api'
+import { StateContext } from 'context/StateContext'
+import logo from 'assets/pp_logo_transparent_bkgrd.png'
+import './style/index.scss'
+import { ReportBugButton } from 'common-components'
 const SignIn = ({ history }) => {
-  const { state, dispatch } = useContext(StateContext);
-  const [load, setLoad] = useState(false);
+  const { state, dispatch } = useContext(StateContext)
+  const [load, setLoad] = useState(false)
   useEffect(() => {
-    setLoad(true);
-    const token = localStorage.getItem("gooleToken");
+    setLoad(true)
+    const token = localStorage.getItem('gooleToken')
     if (state.userProfile.name || token) {
-      history.push("/overview");
+      history.push('/overview')
     }
-  }, []); // eslint-disable-line
+  }, []) // eslint-disable-line
   const responseGoogle = async res => {
     if (res.googleId) {
-      const find = await get(`/api/users/${res.googleId}`);
+      const find = await get(`/api/users/${res.googleId}`)
       if (find.data) {
         dispatch({
-          type: "set-user-profile",
+          type: 'set-user-profile',
           payload: { userProfile: find.data }
-        });
+        })
       } else {
-        res.profileObj.status = "active";
-        post("/api/users/create", res.profileObj).then(res =>
+        res.profileObj.status = 'active'
+        res.profileObj.type = 'admin'
+        post('/api/users/create', res.profileObj).then(res =>
           dispatch({
-            type: "set-user-profile",
+            type: 'set-user-profile',
             payload: { userProfile: res.data }
           })
-        );
+        )
       }
-      localStorage.setItem("gooleToken", res.tokenId);
-      history.push("/overview");
+      localStorage.setItem('gooleToken', res.tokenId)
+      history.push('/overview')
     }
-  };
+  }
 
   return (
     <>
@@ -61,18 +62,18 @@ const SignIn = ({ history }) => {
                     className="LoginSignIn"
                     clientId="28861163542-0mub2dqtubvcjgun3n9vlrnkgfhgi7n4.apps.googleusercontent.com"
                     buttonText={
-                      <span style={{ textTransform: "none", fontWeight: 600 }}>
+                      <span style={{ textTransform: 'none', fontWeight: 600 }}>
                         Sign in with Google
                       </span>
                     }
                     style={{
                       width: 150,
-                      display: "flex",
-                      alignItems: "center"
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
                     onSuccess={responseGoogle}
                     onFailure={responseGoogle}
-                    cookiePolicy={"single_host_origin"}
+                    cookiePolicy={'single_host_origin'}
                   />
                 </div>
               </div>
@@ -92,7 +93,7 @@ const SignIn = ({ history }) => {
         </div>
       ) : null}
     </>
-  );
-};
+  )
+}
 
-export default SignIn;
+export default SignIn

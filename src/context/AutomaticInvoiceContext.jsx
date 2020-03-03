@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, useState, useContext } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
-import { getMock, post } from "utils/api";
+import { getMock, post, get } from "utils/api";
 import { postLog } from "utils/time";
 import { StateContext } from "context/StateContext";
 
@@ -119,12 +119,22 @@ const AutomaticInvoiceProvider = ({ children }) => {
     setSelectedCampaign([]);
     getGeneralData();
   };
+  console.log(formState.campaign);
   const handleBillingChange = e => {
-    getMock("/company1", {}).then(res => {
+    get(`/api/rate/${formState.company}`).then(res => {
       let temp = formState.campaign;
-      temp.forEach(item => {
-        let data = res.data[Math.floor(Math.random() * 10)];
-        item["content"] = data;
+      let rates = res.data;
+      temp.forEach(item1 => {
+        const result = rates.find(item2 => {
+          return item2.campaign_uuid === item1.uuid;
+        });
+        const { billable_rate, performance_rate, did_rate } = result;
+        item1["content"] = {
+          ...item1["content"],
+          bill_rate: billable_rate,
+          performance_rate,
+          did_rate
+        };
       });
       setFormState({
         ...formState,

@@ -1,0 +1,101 @@
+.user-table-header {
+  b {
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+.users-table-container {
+  min-height: 55vh;
+  border: solid 1px #f1f1f1;
+  .MuiTableCell-root {
+    padding: 12px;
+  }
+  img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.cell-status-span {
+  display: block;
+  color: white;
+  width: 60px;
+  height: 20px;
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 600;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+}
+
+.user-active {
+  background: #6698c7;
+}
+
+.user-inactive {
+  background: #ff504d;
+}
+
+.settings-icon {
+  color: #7c8a97;
+  cursor: pointer;
+}
+
+.menu-manage-user {
+  min-width: 130px;
+  color: #7c8a97 !important;
+  svg {
+    margin-right: 5px;
+    height: 20px;
+  }
+}
+
+.user-manage-modal-header {
+  min-width: 420px;
+  height: 60px;
+  background: #5f7d98;
+  font-size: 20px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  svg {
+    margin-right: 12px;
+    cursor: pointer;
+  }
+  span {
+    margin-left: 12px;
+    font-weight: 600;
+  }
+}
+
+.user-manage-modal-body {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-button {
+  width: 165px;
+  height: 40px;
+  border-radius: 3px;
+  background-color: #eeeeee;
+  outline: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-save {
+  background: #b6d36b;
+  color: white;
+}
+.modal-button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}

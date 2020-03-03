@@ -5,8 +5,10 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
-import { Typography, CircularProgress, Grid, Select } from "@material-ui/core";
-import { KeyboardArrowRight } from "@material-ui/icons";
+import { Typography, CircularProgress, Grid } from "@material-ui/core";
+import { KeyboardArrowRight, Create } from "@material-ui/icons";
+import { Link } from "react-router-dom";
+import { StateContext } from "context/StateContext";
 
 const useStyles = makeStyles({
   card: {
@@ -35,34 +37,57 @@ const useStyles = makeStyles({
   }
 });
 
-export default function CardInfo({ primaryLabel, secondaryLabel, loading }) {
+export default function CardInfo({
+  primaryLabel,
+  secondaryLabel,
+  loading,
+  status = false,
+  icon = () => <Create fontSize="large" style={{ marginRight: 20 }} />
+}) {
   const classes = useStyles();
+  const { filterOpt, setFilterOpt } = React.useContext(StateContext);
 
   return (
     <>
       <Card className={classes.card}>
         <CardActionArea>
           <CardContent>
-            <Typography
-              gutterBottom
-              component="h5"
-              style={{ color: "#444851", textAlign: "left" }}
-            >
-              {primaryLabel.toUpperCase()}
-            </Typography>
-            <Typography
-              variant="h4"
-              color="textSecondary"
-              style={{ fontWeight: 500 }}
-            >
-              {secondaryLabel}
-            </Typography>
+            <Grid container>
+              <Grid item>
+                <Typography
+                  gutterBottom
+                  component="h5"
+                  style={{ color: "#444851", textAlign: "left" }}
+                >
+                  {primaryLabel.toUpperCase()}
+                </Typography>
+                <Typography
+                  variant="h4"
+                  color="textSecondary"
+                  style={{
+                    fontWeight: 500,
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  {icon()}
+                  {secondaryLabel}
+                </Typography>
+              </Grid>
+            </Grid>
           </CardContent>
         </CardActionArea>
-        <CardActions>
-          <Button size="small" color="default">
-            See more details <KeyboardArrowRight />
-          </Button>
+        <CardActions style={{ justifyContent: "flex-end" }}>
+          <Link
+            to={{
+              pathname: "/invoices"
+            }}
+            onClick={() => setFilterOpt({ ...filterOpt, status })}
+          >
+            <Button size="small" color="default">
+              See more details <KeyboardArrowRight />
+            </Button>
+          </Link>
         </CardActions>
         {loading && (
           <div className={classes.loaderDiv}>

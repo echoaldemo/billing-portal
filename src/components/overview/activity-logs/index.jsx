@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { withRouter } from "react-router-dom";
 import { OverviewContext, OverviewProvider } from "context/OverviewContext";
 import { StateContext } from "context/StateContext";
 import {
@@ -14,6 +15,7 @@ import Email from "@material-ui/icons/Email";
 import Check from "@material-ui/icons/Check";
 import Draft from "@material-ui/icons/Drafts";
 import Review from "@material-ui/icons/RateReview";
+import Duplicate from "@material-ui/icons/FileCopy";
 import { Timeline, TimelineEvent } from "react-event-timeline";
 import { makeStyles } from "@material-ui/core/styles";
 import { NoResult } from "common-components";
@@ -36,26 +38,61 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const ActivityLogsComponent = () => {
+const ActivityLogsComponent = props => {
   const classes = useStyles();
   const { state, dispatch } = useContext(OverviewContext);
   const { state: mainState } = useContext(StateContext);
   useEffect(() => {
     let temp = state.logs;
     temp.map(e => {
-      if (e.type === "create-draft") e["icon"] = <Add />;
+      /* if (e.type === "create-draft") e["icon"] = <Add />;
       if (e.type === "sent-invoice") e["icon"] = <Email />;
       if (e.type === "delete-invoice") e["icon"] = <Delete />;
       if (e.type === "edit-invoice") e["icon"] = <Edit />;
       if (e.type === "approve-invoice") e["icon"] = <Check />;
       if (e.type === "mark-draft") e["icon"] = <Draft />;
       if (e.type === "mark-review") e["icon"] = <Review />;
+      if (e.type === "mark-review") e["icon"] */
+      switch (e.type) {
+        case "create-draft":
+          e["icon"] = <Add />;
+          break;
+        case "sent-invoice":
+          e["icon"] = <Email />;
+          break;
+        case "delete-invoice":
+          e["icon"] = <Delete />;
+          break;
+        case "edit-invoice":
+          e["icon"] = <Edit />;
+          break;
+        case "approve-invoice":
+          e["icon"] = <Check />;
+          break;
+        case "mark-draft":
+          e["icon"] = <Draft />;
+          break;
+        case "mark-review":
+          e["icon"] = <Review />;
+          break;
+        case "duplicate-invoice":
+          e["icon"] = <Duplicate />;
+          break;
+        default:
+          break;
+      }
     });
     dispatch({
       type: "set-logs",
       payload: { logs: temp }
     });
   }, [state.logs]);
+  const clickEvent = id => {
+    props.history.push({
+      pathname: "/invoices",
+      state: { invoiceId: id }
+    });
+  };
   return (
     <Paper>
       <Typography variant="subtitle2" style={{ padding: 19 }}>
@@ -81,6 +118,7 @@ const ActivityLogsComponent = () => {
                   createdAt={getFromNow(item.date, item.time)}
                   icon={item.icon}
                   bubbleStyle={bubbleColor(item.description)}
+                  onIconClick={() => clickEvent(item.invoiceId)}
                 />
                 <div className={classes.root}></div>
               </React.Fragment>
@@ -92,12 +130,12 @@ const ActivityLogsComponent = () => {
   );
 };
 
-const ActivityLogs = () => {
+const ActivityLogs = props => {
   return (
     <OverviewProvider>
-      <ActivityLogsComponent />
+      <ActivityLogsComponent {...props} />
     </OverviewProvider>
   );
 };
 
-export default ActivityLogs;
+export default withRouter(ActivityLogs);

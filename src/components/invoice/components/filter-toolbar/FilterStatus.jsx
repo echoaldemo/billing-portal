@@ -1,32 +1,18 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Grid, MenuItem } from "@material-ui/core";
 import { InputField } from "common-components";
 import { StateContext } from "context/StateContext";
+
 const FilterStatus = () => {
-  const { setData, originalData } = useContext(StateContext);
-
-  const [menuVal, setMenuVal] = useState(false);
-
-  const filterStatusChange = e => {
-    setMenuVal(e.target.value);
-
-    if (e.target.value === false) {
-      setData(originalData);
-    } else {
-      const result = originalData.filter(item => {
-        return item.status == e.target.value;
-      });
-      setData(result);
-    }
-  };
+  const { filterOpt, handleFilterChange } = useContext(StateContext);
 
   return (
     <InputField
-      onChange={e => {
-        filterStatusChange(e);
+      onChange={(e) => {
+        handleFilterChange(e, "status");
       }}
       fullWidth
-      value={menuVal}
+      value={filterOpt.status}
       label="Status"
       select
     >
