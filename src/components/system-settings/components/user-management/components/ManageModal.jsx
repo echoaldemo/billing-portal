@@ -1,12 +1,30 @@
 import React, { useContext } from 'react'
-import { Dialog, InputAdornment, MenuItem, Switch } from '@material-ui/core'
+import {
+  Dialog,
+  InputAdornment,
+  MenuItem,
+  Switch,
+  Tooltip
+} from '@material-ui/core'
 import { Close, FileCopyOutlined } from '@material-ui/icons'
+import { withStyles } from '@material-ui/core/styles'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { InputField, LoadingModal } from 'common-components'
 import { store } from 'context/UserManagementContext'
 import { patch, get } from 'utils/api'
+
+const LightTooltip = withStyles(theme => ({
+  tooltip: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 11
+  }
+}))(Tooltip)
+
 const ManageModal = () => {
   const {
-    state: { openManage, selectedUser, editLoading },
+    state: { openManage, selectedUser, editLoading, copy },
     dispatch
   } = useContext(store)
 
@@ -68,10 +86,29 @@ const ManageModal = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <FileCopyOutlined
+                  {/* <FileCopyOutlined
                     onClick={() => alert('test')}
                     style={{ fontSize: 18, cursor: 'pointer' }}
-                  />
+                  /> */}
+                  <CopyToClipboard
+                    text={selectedUser.email}
+                    onCopy={() => dispatch({ type: 'SET_COPY_ON' })}
+                    onPointerLeave={() => dispatch({ type: 'SET_COPY_OFF' })}
+                  >
+                    {copy ? (
+                      <LightTooltip title="UUID Copied!" placement="top">
+                        <FileCopyOutlined
+                          style={{ fontSize: 18, cursor: 'pointer' }}
+                        />
+                      </LightTooltip>
+                    ) : (
+                      <LightTooltip title="Copy UUID" placement="top">
+                        <FileCopyOutlined
+                          style={{ fontSize: 18, cursor: 'pointer' }}
+                        />
+                      </LightTooltip>
+                    )}
+                  </CopyToClipboard>
                 </InputAdornment>
               )
             }}
