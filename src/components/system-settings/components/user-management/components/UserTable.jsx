@@ -1,14 +1,8 @@
 import React, { useContext } from 'react'
-import {
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TablePagination
-} from '@material-ui/core'
-import { Settings, Search } from '@material-ui/icons'
+import { Table, TablePagination } from '@material-ui/core'
+import { Search } from '@material-ui/icons'
 import UserTableHeader from './UserTableHeader'
-import StatusCell from './StatusCell'
+import UserTableBody from './UserTableBody'
 import MenuButton from './MenuButton'
 import ManageModal from './ManageModal'
 import { InputField } from 'common-components'
@@ -56,65 +50,7 @@ const UserTable = () => {
       <div className="users-table-container">
         <Table>
           <UserTableHeader />
-          <TableBody>
-            {search
-              ? users
-                  .filter(u => u.name.match(new RegExp(search, 'i')))
-                  .map((user, i) => {
-                    return i < 8 ? (
-                      <TableRow key={i}>
-                        <TableCell>
-                          <img src={user.imageUrl} alt="" />
-                        </TableCell>
-                        <TableCell>{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <StatusCell status={user.status} />
-                        <TableCell>{user.type}</TableCell>
-                        <TableCell align="center">
-                          <Settings
-                            onClick={e =>
-                              dispatch({
-                                type: 'MENU_OPEN',
-                                payload: {
-                                  anchorEl: e.currentTarget,
-                                  selectedUser: user
-                                }
-                              })
-                            }
-                            className="settings-icon"
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ) : null
-                  })
-              : users
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user, i) => (
-                    <TableRow key={i}>
-                      <TableCell>
-                        <img src={user.imageUrl} alt="" />
-                      </TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <StatusCell status={user.status} />
-                      <TableCell>{user.type}</TableCell>
-                      <TableCell align="center">
-                        <Settings
-                          onClick={e =>
-                            dispatch({
-                              type: 'MENU_OPEN',
-                              payload: {
-                                anchorEl: e.currentTarget,
-                                selectedUser: user
-                              }
-                            })
-                          }
-                          className="settings-icon"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-          </TableBody>
+          <UserTableBody />
         </Table>
       </div>
       <MenuButton />
