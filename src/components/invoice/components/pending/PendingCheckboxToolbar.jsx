@@ -6,26 +6,36 @@ import ApproveModal from "./ApproveModal";
 import DuplicateItems from "./DuplicateItems";
 import { StateContext } from "context/StateContext";
 import { post } from "utils/api";
+import { postLog, formatArray } from "utils/time";
 export default function PendingCheckboxToolbar() {
   const {
     confirmModal,
     setConfirmModal,
     selectedItems,
     getPendingInvoicesData,
-    setSelectedItems
+    setSelectedItems,
+    state
   } = React.useContext(StateContext);
   const [duplicateLoading, setDuplicateLoading] = React.useState(false);
   const [duplicateCount, setDuplicateCount] = React.useState(0);
 
   const duplicateSelectedItems = async () => {
     setDuplicateLoading(true);
+    let nameArr = [];
     for (let i = 0; i < selectedItems.length; i++) {
       let { id, ...rest } = selectedItems[i];
-      await post(`/api/create_pending`, rest).then(() => {
+      await post(`/api/create_pending`, { ...rest, status: 0 }).then(() => {
         setDuplicateCount(i + 1);
       });
+      nameArr.push(`#${selectedItems[i].id}`);
     }
-
+    postLog({
+      type: "duplicate-invoice",
+      description: `${state.userProfile.name} duplicated invoice ${formatArray(
+        nameArr
+      )}`,
+      invoiceId: null
+    });
     setDuplicateLoading(false);
     getPendingInvoicesData();
     setSelectedItems([]);

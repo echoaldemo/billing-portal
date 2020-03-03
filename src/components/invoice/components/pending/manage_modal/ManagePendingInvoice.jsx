@@ -265,7 +265,7 @@ export default function ManagePendingInvoice() {
         });
         setFormState({});
       }}
-      title={<b>Manage Pending Invoice</b>}
+      title={<b>{`Manage Invoice #${state.selectedData.id}`}</b>}
       width="80%"
       renderEditButton={EditButton}
     >

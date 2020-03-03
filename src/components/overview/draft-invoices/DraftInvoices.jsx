@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Drafts } from "@material-ui/icons";
 import CardInfo from "../card-info";
 import { get } from "utils/api";
 
@@ -24,11 +25,13 @@ const DraftInvoices = () => {
 
   return (
     <CardInfo
-      primaryLabel="Total Draft Invoices"
+      primaryLabel="Draft Invoices"
       secondaryLabel={
         formatNumber(pending.length) + " / " + formatNumber(all.length)
       }
       loading={loading}
+      status={0}
+      icon={() => <Drafts fontSize="large" style={{ marginRight: 20 }} />}
     />
   );
 };

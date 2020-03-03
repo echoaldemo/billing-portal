@@ -68,7 +68,6 @@ export default function SimplePopover({ item }) {
             onClick={() => {
               openManageModal();
               handleClose();
-              console.log("test", state.selectedData);
             }}
           >
             Manage

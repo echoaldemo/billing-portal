@@ -1,50 +1,17 @@
-import React from "react";
-import { Grid, Paper, Container } from "@material-ui/core";
-import Chart from "react-google-charts";
-import { PanelHeader } from "common-components";
-import ActivityLogs from "./activity-logs";
-import DraftInvoices from "./draft-invoices/DraftInvoices";
-import ReviewedInvoices from "./reviewed-invoices/ReviewedInvoices";
-import ApprovedInvoices from "./approved-invoices/ApprovedInvoices";
-const pieOptions = {
-  title: "",
-  pieHole: 0.6,
-  slices: [
-    {
-      color: "#2BB673"
-    },
-    {
-      color: "#d91e48"
-    },
-    {
-      color: "#007fad"
-    },
-    {
-      color: "#e9a227"
-    }
-  ],
-  legend: {
-    position: "bottom",
-    alignment: "center",
-    textStyle: {
-      color: "233238",
-      fontSize: 14
-    }
-  },
-  tooltip: {
-    showColorCode: true
-  },
-  chartArea: {
-    left: 0,
-    top: 0,
-    width: "100%",
-    height: "80%"
-  },
-  fontName: "Roboto"
-};
+import React from 'react'
+import { Grid, Container } from '@material-ui/core'
+import { PanelHeader } from 'common-components'
+import ActivityLogs from './activity-logs'
+import DraftInvoices from './draft-invoices/DraftInvoices'
+import ReviewedInvoices from './reviewed-invoices/ReviewedInvoices'
+import ApprovedInvoices from './approved-invoices/ApprovedInvoices'
+import PieChart from './pie-chart/PieChart'
+import SEO from 'utils/seo'
+
 const Overview = () => {
   return (
     <Grid container>
+      <SEO title="Overview" />
       <Grid item lg={12}>
         <PanelHeader
           title="Statistic Overview"
@@ -59,19 +26,7 @@ const Overview = () => {
 
         <Grid container style={{ marginTop: 50 }}>
           <Grid item lg={8} className="center h-500">
-            <Chart
-              chartType="PieChart"
-              data={[
-                ["Automatic", "Manual"],
-                ["Automatic", 12],
-                ["Manual", 5.5]
-              ]}
-              options={pieOptions}
-              graph_id="PieChart"
-              width={"100%"}
-              height={"400px"}
-              legend_toggle
-            />
+            <PieChart />
           </Grid>
 
           <Grid item lg={4} className="center h-500">
@@ -83,12 +38,12 @@ const Overview = () => {
           <Grid item lg={8}></Grid>
 
           <Grid item lg={4}>
-            <Container style={{ margin: "140px 0px 0px 10px" }}></Container>
+            <Container style={{ margin: '140px 0px 0px 10px' }}></Container>
           </Grid>
         </Grid>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default Overview;
+export default Overview

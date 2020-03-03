@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { RateReview } from "@material-ui/icons";
 import CardInfo from "../card-info";
 import { get } from "utils/api";
 
@@ -24,11 +25,13 @@ const ReviewedInvoices = () => {
 
   return (
     <CardInfo
-      primaryLabel="Total Reviewed Invoices"
+      primaryLabel="Reviewed Invoices"
       secondaryLabel={
         formatNumber(reviewed.length) + " / " + formatNumber(all.length)
       }
       loading={loading}
+      status={1}
+      icon={() => <RateReview fontSize="large" style={{ marginRight: 20 }} />}
     />
   );
 };

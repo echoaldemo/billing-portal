@@ -1,22 +1,40 @@
-import React from "react";
-import { PanelHeader } from "common-components";
+import React, { useEffect } from 'react'
+import { PanelHeader } from 'common-components'
 import {
-  InvoiceTable,
   EditInvoice,
-  TableTabs,
   PendingTable,
   FilterToolbar,
   InvoiceTableToolbar
-} from "./components";
-import PendingCheckboxToolbar from "./components/pending/PendingCheckboxToolbar";
-import SearchData from "./components/filter-toolbar/SearchData";
-import { Typography, Box, Paper, Divider, Grid } from "@material-ui/core";
-import { StateContext } from "context/StateContext";
-const Invoice = (props) => {
-  const { selectedItems } = React.useContext(StateContext);
-  console.log(props);
+} from './components'
+import PendingCheckboxToolbar from './components/pending/PendingCheckboxToolbar'
+import SearchData from './components/filter-toolbar/SearchData'
+import { Paper, Divider, Grid } from '@material-ui/core'
+import { StateContext } from 'context/StateContext'
+import SEO from 'utils/seo'
+const Invoice = props => {
+  const { selectedItems, state, dispatch, setFormState } = React.useContext(
+    StateContext
+  )
+  useEffect(() => {
+    if (props.location.state && state.data.length !== 0) {
+      const id = props.location.state.invoiceId
+      const arr = [...state.data].filter(e => e.id === id)
+      if (arr.length > 0) {
+        dispatch({
+          type: 'set-selected-data',
+          payload: { selectedData: arr[0] }
+        })
+        setFormState(arr[0])
+        dispatch({
+          type: 'set-manage-modal',
+          payload: { openManage: true }
+        })
+      }
+    }
+  }, [props.location.state, state.data])
   return (
     <React.Fragment>
+      <SEO title="Manage Invoices" />
       <PanelHeader
         title="Invoices"
         subTitle="Manage all pending and approved invoices from quickbooks site."
@@ -26,8 +44,8 @@ const Invoice = (props) => {
           item
           lg={4}
           style={{
-            display: "flex",
-            alignItems: "center"
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
           <SearchData />
@@ -36,9 +54,9 @@ const Invoice = (props) => {
           item
           lg={8}
           style={{
-            display: "flex",
-            flexDirection: "row-reverse",
-            alignItems: "center"
+            display: 'flex',
+            flexDirection: 'row-reverse',
+            alignItems: 'center'
           }}
         >
           {selectedItems.length > 0 ? (
@@ -51,12 +69,6 @@ const Invoice = (props) => {
       <br />
 
       <Paper square={true}>
-        {/* <Grid container className="p-normal">
-          <Grid item lg={4}>
-            <SearchData />
-          </Grid>
-        </Grid>
-        <Divider /> */}
         <div style={{ padding: 15 }}>
           <FilterToolbar />
         </div>
@@ -66,23 +78,6 @@ const Invoice = (props) => {
 
       <EditInvoice />
     </React.Fragment>
-  );
-};
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box>{children}</Box>}
-    </Typography>
-  );
+  )
 }
-
-export default Invoice;
+export default Invoice
