@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
@@ -6,13 +6,7 @@ import {
 } from "@material-ui/pickers";
 
 import { ManualInvoiceContext } from "context/ManualInvoiceContext";
-import {
-  Grid,
-  MenuItem,
-  ListItemText,
-  Checkbox,
-  InputLabel
-} from "@material-ui/core";
+import { Grid, MenuItem, ListItemText, Checkbox } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
 
 export default function GeneralForm({ duplicate }) {
@@ -32,7 +26,6 @@ export default function GeneralForm({ duplicate }) {
     setSelectedCampaign(filteredCampaign.map(item => item.uuid));
     return filteredCampaign;
   };
-
   useEffect(() => {
     if (duplicate) {
       if (!state.loading) {
@@ -188,13 +181,13 @@ export default function GeneralForm({ duplicate }) {
           <div>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
+                minDate={formState.billingPeriod.start}
                 TextFieldComponent={InputField}
                 label="End of Period"
                 name="billingPeriod"
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
-                minDate={Date(formState.billingPeriod.start)}
                 minDateMessage="Date should not be before minimal date"
                 value={formState.billingPeriod.end}
                 onChange={date => {

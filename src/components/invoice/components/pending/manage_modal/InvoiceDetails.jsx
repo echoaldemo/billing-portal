@@ -150,7 +150,7 @@ export default function InvoiceDetails() {
               variant="inline"
               format="MM/dd/yyyy"
               value={formState.dueDate}
-              minDate={Date(formState.startDate)}
+              minDate={formState.startDate}
               minDateMessage="Date should not be before minimal date"
               onChange={date => setFormState({ ...formState, dueDate: date })}
               disabled={!state.editManageData}

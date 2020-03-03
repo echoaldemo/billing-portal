@@ -146,7 +146,7 @@ export default function GeneralForm() {
                 TextFieldComponent={InputField}
                 label="End of Period"
                 name="billingPeriod"
-                minDate={Date(formState.billingPeriod.start)}
+                minDate={formState.billingPeriod.start}
                 minDateMessage="Date should not be before minimal date"
                 disableToolbar
                 variant="inline"
