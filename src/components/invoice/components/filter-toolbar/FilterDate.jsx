@@ -21,39 +21,39 @@ const FilterDate = () => {
     originalData
   } = useContext(StateContext);
 
-  useEffect(() => {
-    filterDataByDate();
-  }, [dateRange]);
+  // useEffect(() => {
+  //   filterDataByDate();
+  // }, [dateRange]);
 
-  const filterDataByDate = () => {
-    let filterOptions = {};
-    if (filterOpt.invoiceType !== " ") {
-      filterOptions["invoiceType"] = filterOpt.invoiceType;
-    }
-    if (filterOpt.billingType !== " ") {
-      filterOptions["billingType"] = filterOpt.billingType;
-    }
-    if (filterOpt.status !== false) {
-      filterOptions["status"] = filterOpt.status;
-    }
-    let startDate = moment(dateRange.startDate).subtract(1, "days");
-    let endDate = moment(dateRange.endDate).add(1, "days");
-    const range = moment().range(startDate, endDate);
-    const filtered = originalData.filter((item) => {
-      for (let key in filterOptions) {
-        if (item[key] === undefined || item[key] !== filterOptions[key])
-          return false;
-      }
-      return true;
-    });
-    const result = filtered.filter((item) => {
-      return (
-        range.contains(new Date(item.startDate)) ||
-        range.contains(new Date(item.endDate))
-      );
-    });
-    setData(result);
-  };
+  // const filterDataByDate = () => {
+  //   let filterOptions = {};
+  //   if (filterOpt.invoiceType !== " ") {
+  //     filterOptions["invoiceType"] = filterOpt.invoiceType;
+  //   }
+  //   if (filterOpt.billingType !== " ") {
+  //     filterOptions["billingType"] = filterOpt.billingType;
+  //   }
+  //   if (filterOpt.status !== false) {
+  //     filterOptions["status"] = filterOpt.status;
+  //   }
+  //   let startDate = moment(dateRange.startDate).subtract(1, "days");
+  //   let endDate = moment(dateRange.endDate).add(1, "days");
+  //   const range = moment().range(startDate, endDate);
+  //   const filtered = originalData.filter((item) => {
+  //     for (let key in filterOptions) {
+  //       if (item[key] === undefined || item[key] !== filterOptions[key])
+  //         return false;
+  //     }
+  //     return true;
+  //   });
+  //   const result = filtered.filter((item) => {
+  //     return (
+  //       range.contains(new Date(item.startDate)) ||
+  //       range.contains(new Date(item.endDate))
+  //     );
+  //   });
+  //   setData(result);
+  // };
   const handleDateChange = (date, type) => {
     setDateRange({ ...dateRange, [type]: formatDate(date) });
   };
