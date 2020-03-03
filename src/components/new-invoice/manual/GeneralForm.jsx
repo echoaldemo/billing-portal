@@ -194,6 +194,8 @@ export default function GeneralForm({ duplicate }) {
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
+                minDate={Date(formState.billingPeriod.start)}
+                minDateMessage="Date should not be before minimal date"
                 value={formState.billingPeriod.end}
                 onChange={date => {
                   setFormState({
