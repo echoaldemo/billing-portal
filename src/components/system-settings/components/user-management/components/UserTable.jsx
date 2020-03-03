@@ -16,7 +16,7 @@ import { store } from 'context/UserManagementContext'
 
 const UserTable = () => {
   const {
-    state: { users, page, rowsPerPage, search },
+    state: { users, page, rowsPerPage, search, count },
     dispatch
   } = useContext(store)
 
@@ -29,56 +29,91 @@ const UserTable = () => {
       <div style={{ width: '50%', marginBottom: 16 }}>
         <InputField
           fullWidth
-          label="Search by number or company"
+          label="Search by name"
           InputProps={{
             endAdornment: <Search style={{ color: '#CCC' }} />
           }}
           value={search}
-          onChange={e =>
+          onChange={e => {
+            if (e.target.value) {
+              dispatch({ type: 'SET_PAGE', payload: { page: 0 } })
+              dispatch({
+                type: 'SET_COUNT',
+                payload: {
+                  count: users.filter(user =>
+                    user.name.match(new RegExp(e.target.value, 'i'))
+                  ).length
+                }
+              })
+            }
             dispatch({
               type: 'HANDLE_SEARCH',
               payload: { search: e.target.value }
             })
-          }
+          }}
         />
       </div>
       <div className="users-table-container">
         <Table>
           <UserTableHeader />
           <TableBody>
-            {users
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((user, i) => {
-                return user.name.match(new RegExp(search, 'i')) ? (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <img
-                        style={{ height: 36, borderRadius: '50%' }}
-                        src={user.imageUrl}
-                        alt=""
-                      />
-                    </TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <StatusCell status={user.status} />
-                    <TableCell>{user.type}</TableCell>
-                    <TableCell align="center">
-                      <Settings
-                        onClick={e =>
-                          dispatch({
-                            type: 'MENU_OPEN',
-                            payload: {
-                              anchorEl: e.currentTarget,
-                              selectedUser: user
+            {search
+              ? users
+                  .filter(u => u.name.match(new RegExp(search, 'i')))
+                  .map((user, i) => {
+                    return i < 8 ? (
+                      <TableRow key={i}>
+                        <TableCell>
+                          <img src={user.imageUrl} alt="" />
+                        </TableCell>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <StatusCell status={user.status} />
+                        <TableCell>{user.type}</TableCell>
+                        <TableCell align="center">
+                          <Settings
+                            onClick={e =>
+                              dispatch({
+                                type: 'MENU_OPEN',
+                                payload: {
+                                  anchorEl: e.currentTarget,
+                                  selectedUser: user
+                                }
+                              })
                             }
-                          })
-                        }
-                        className="settings-icon"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : null
-              })}
+                            className="settings-icon"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ) : null
+                  })
+              : users
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <img src={user.imageUrl} alt="" />
+                      </TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <StatusCell status={user.status} />
+                      <TableCell>{user.type}</TableCell>
+                      <TableCell align="center">
+                        <Settings
+                          onClick={e =>
+                            dispatch({
+                              type: 'MENU_OPEN',
+                              payload: {
+                                anchorEl: e.currentTarget,
+                                selectedUser: user
+                              }
+                            })
+                          }
+                          className="settings-icon"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
           </TableBody>
         </Table>
       </div>
@@ -87,7 +122,7 @@ const UserTable = () => {
         rowsPerPageOptions={['']}
         labelRowsPerPage=""
         component="div"
-        count={users.length}
+        count={search ? count : users.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={setPage}
