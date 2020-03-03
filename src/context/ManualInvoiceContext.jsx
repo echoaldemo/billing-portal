@@ -79,7 +79,7 @@ const ManualInvoiceProvider = ({ children }) => {
 
   const getBalance = () => {
     let total = 0;
-    billingFormState.forEach(item => {
+    billingFormState.forEach((item) => {
       total +=
         computeItemService(
           item.billableHrsQty,
@@ -97,7 +97,7 @@ const ManualInvoiceProvider = ({ children }) => {
   };
   const getTaxableServices = () => {
     let total = 0;
-    billingFormState.forEach(item => {
+    billingFormState.forEach((item) => {
       if (item.billableHrsTaxed) {
         total += computeItemService(
           item.billableHrsQty,
@@ -199,8 +199,8 @@ const ManualInvoiceProvider = ({ children }) => {
       billingPeriod: { ...formState.billingPeriod, end: dueDate }
     });
   }, [formState.billingType, formState.billingPeriod.start]);
-  const setActiveCampaigns = uuid => {
-    const filteredCampaigns = state.campaigns.filter(c => c.company === uuid);
+  const setActiveCampaigns = (uuid) => {
+    const filteredCampaigns = state.campaigns.filter((c) => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
   };
   const getGeneralData = () => {
@@ -275,14 +275,14 @@ const ManualInvoiceProvider = ({ children }) => {
     return newLine;
   };
 
-  const sendToQuickbooks = data => {
+  const sendToQuickbooks = (data) => {
     setCreateLoading(true);
     post("/api/invoice", data)
-      .then(res => {
+      .then((res) => {
         setCreateLoading(false);
         setShowCreateNew(true);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -314,38 +314,41 @@ const ManualInvoiceProvider = ({ children }) => {
     }
     setCreateLoading(true);
     post("/api/create_pending", newData)
-      .then(res => {
+      .then((res) => {
         logData.invoiceId = res.data.id;
         postLog(logData);
         setCreateLoading(false);
         setShowCreateNew(true);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
   const createManualInvoice = (type, handleClose) => {
-    const taxDetail = mockTaxation.find(item => item.percentage === tax);
-    let taxDetails = {
-      TxnTaxCodeRef: {
-        value: taxDetail.code
-      },
-      TotalTax: computeTax(),
-      TaxLine: [
-        {
-          DetailType: "TaxLineDetail",
-          Amount: computeTax(),
-          TaxLineDetail: {
-            NetAmountTaxable: taxableTotal(),
-            TaxPercent: tax,
-            TaxRateRef: {
-              value: taxDetail.taxrate
-            },
-            PercentBased: true
+    const taxDetail = mockTaxation.find((item) => item.percentage === tax);
+    let taxDetails = null;
+    if (taxChecked) {
+      taxDetails = {
+        TxnTaxCodeRef: {
+          value: taxDetail.code
+        },
+        TotalTax: computeTax(),
+        TaxLine: [
+          {
+            DetailType: "TaxLineDetail",
+            Amount: computeTax(),
+            TaxLineDetail: {
+              NetAmountTaxable: taxableTotal(),
+              TaxPercent: tax,
+              TaxRateRef: {
+                value: taxDetail.taxrate
+              },
+              PercentBased: true
+            }
           }
-        }
-      ]
-    };
+        ]
+      };
+    }
     let data = {
       CustomerRef: {
         value: company(formState.company).qb_id
@@ -379,7 +382,7 @@ const ManualInvoiceProvider = ({ children }) => {
   };
 
   const allChecked = () => {
-    const result = billingFormState.map(item => {
+    const result = billingFormState.map((item) => {
       return (
         item["billableHrsTaxed"] ||
         item["didTaxed"] ||
@@ -389,7 +392,7 @@ const ManualInvoiceProvider = ({ children }) => {
       );
     });
 
-    return result.some(val => val === true);
+    return result.some((val) => val === true);
   };
 
   return (
