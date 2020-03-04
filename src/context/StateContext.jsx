@@ -40,7 +40,7 @@ const defaultFilterOptions = {
   invoiceType: " ",
   billingType: " ",
   status: false
-}
+};
 
 const StateProvider = ({ children }) => {
   const [modalLoading, setModalLoading] = useState(false);
@@ -71,9 +71,10 @@ const StateProvider = ({ children }) => {
       return true;
     });
     if (dateRange.startDate && dateRange.endDate) {
-      let startDate = moment(dateRange.startDate).subtract(1, "days");
-      let endDate = moment(dateRange.endDate).add(1, "days");
+      let startDate = moment(dateRange.startDate);
+      let endDate = moment(dateRange.endDate);
       const range = moment().range(startDate, endDate);
+      console.log("range", range);
       filtered = filtered.filter((item) => {
         return (
           range.contains(new Date(item.startDate)) ||
@@ -83,10 +84,10 @@ const StateProvider = ({ children }) => {
     }
     setData(filtered);
   };
-  const resetFilter = ()=> {
-    setFilterOpt(defaultFilterOptions)
-    setDateRange(dateRangeInitial)
-  }
+  const resetFilter = () => {
+    setFilterOpt(defaultFilterOptions);
+    setDateRange(dateRangeInitial);
+  };
   const handleFilterChange = (e, label) => {
     setFilterOpt({
       ...filterOpt,
@@ -114,6 +115,7 @@ const StateProvider = ({ children }) => {
     get("/api/pending/list").then((res) => {
       setOriginalData(res.data);
       filter(res.data);
+      console.log(res.data);
       setLoading(false);
     });
   };
