@@ -7,7 +7,7 @@ export default function SelectCompanyField() {
   const { state, dispatch } = useContext(BillingContext);
   return (
     <InputField
-      label="Selecte company"
+      label="Select company"
       value={state.selectedCompany}
       onChange={e => {
         dispatch({
