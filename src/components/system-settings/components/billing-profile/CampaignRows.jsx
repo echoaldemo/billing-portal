@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Row, RowHeader } from "common-components";
+import { RowHeader } from "common-components";
 import { BillingContext } from "context/BillingProfileContext";
 import RowHeaderData from "./rowHeaderData";
 import CampaignRowDetails from "./CampaignRowsDetails";
@@ -18,38 +18,14 @@ const CampaignRows = () => {
 };
 
 const RowBody = () => {
-  const {
-    companyCampaigns,
-    state: { campaignRates }
-  } = useContext(BillingContext);
-
-  const getCampaignRate = uuid => {
-    const result = campaignRates.find(item => {
-      return item.campaign_uuid === uuid;
-    });
-    return result
-      ? result
-      : {
-          billable_rate: "not set",
-          did_rate: "not set",
-          performance_rate: "not set"
-        };
-  };
+  const { formState } = useContext(BillingContext);
 
   return (
     <React.Fragment>
-      {companyCampaigns.length > 0 && (
+      {formState.length > 0 && (
         <React.Fragment>
-          {companyCampaigns.map((item, i) => {
-            console.log(item);
-            return (
-              <CampaignRowDetails
-                item={item}
-                key={i}
-                index={i}
-                campaignRate={getCampaignRate(item.uuid)}
-              />
-            );
+          {formState.map((item, i) => {
+            return <CampaignRowDetails item={item} key={i} index={i} />;
           })}
         </React.Fragment>
       )}

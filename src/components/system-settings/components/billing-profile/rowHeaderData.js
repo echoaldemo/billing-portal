@@ -5,13 +5,9 @@ const rowHeaderData = [
   },
   {
     label: "Services",
-    size: 4
+    size: 5
   },
-  {
-    label: "Tax",
-    size: 1,
-    style: { textAlign: "right" }
-  },
+
   {
     label: "Rates",
     size: 2,

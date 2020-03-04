@@ -22,8 +22,6 @@ const reducer = (state, action) => {
       return { ...state, selectedCompany: action.payload.selectedCompany };
     case "set-edit":
       return { ...state, edit: action.payload.edit };
-    case "set-campaign-rates":
-      return { ...state, campaignRates: action.payload.campaignRates };
     default:
       return null;
   }
@@ -33,24 +31,50 @@ const BillingProvider = ({ children }) => {
   const [rowCollapse, setRowCollapse] = useState([0, 1]);
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  const [formState, setFormState] = useState([]);
   const getCompanyCampaigns = company_uuid => {
     const result = mockCampaigns.filter(item => item.company === company_uuid);
     return result;
   };
-
+  const addRateObj = (companyDetails, campRates) => {
+    companyDetails.map(item => {
+      const result = campRates.find(camp => camp.campaign_uuid === item.uuid);
+      if (result) {
+        item.edited = false;
+        item.profile_id = result.profile_id;
+        item.billable_rate = result.billable_rate;
+        item.did_rate = result.did_rate;
+        item.performance_rate = result.performance_rate;
+      } else {
+        item.edited = false;
+        item.profile_id = null;
+        item.billable_rate = 0;
+        item.did_rate = 0;
+        item.performance_rate = 0;
+      }
+    });
+    return companyDetails;
+  };
   useEffect(() => {
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
     get(`/api/rate/${state.selectedCompany}`).then(result => {
-      console.log("rresult daata", result.data);
-      dispatch({
-        type: "set-campaign-rates",
-        payload: {
-          campaignRates: result.data ? result.data : []
-        }
-      });
+      setFormState(
+        addRateObj(getCompanyCampaigns(state.selectedCompany), result.data)
+      );
     });
   }, [state.selectedCompany]);
+
+  const handleFieldChange = (e, index, type) => {
+    let result = formState.map((item, i) => {
+      if (i === index) {
+        item.edited = true;
+        item[type] = e.target.value;
+      }
+
+      return item;
+    });
+    setFormState(result);
+  };
 
   return (
     <BillingContext.Provider
@@ -59,7 +83,10 @@ const BillingProvider = ({ children }) => {
         dispatch,
         companyCampaigns,
         rowCollapse,
-        setRowCollapse
+        setRowCollapse,
+        formState,
+        setFormState,
+        handleFieldChange
       }}
     >
       {children}
