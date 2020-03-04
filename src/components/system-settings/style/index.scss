@@ -28,9 +28,10 @@
 .vertical-tab-container {
   display: flex;
   border: solid 1px #f1f1f1;
-
   min-height: 70vh;
   .vertical-tabs {
+    display: flex;
+    flex-direction: column;
     min-width: 180px;
     background-color: #f1f1f1;
   }

@@ -1,6 +1,6 @@
-import React, { useReducer, useState, useContext, useEffect } from "react";
+import React, { useReducer, useState, useEffect } from "react";
 import { postLog } from "utils/time";
-import { get, remove } from "utils/api";
+import { get, patch } from "utils/api";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
 
@@ -74,7 +74,6 @@ const StateProvider = ({ children }) => {
       let startDate = moment(dateRange.startDate);
       let endDate = moment(dateRange.endDate);
       const range = moment().range(startDate, endDate);
-      console.log("range", range);
       filtered = filtered.filter((item) => {
         return (
           range.contains(new Date(item.startDate)) ||
@@ -125,7 +124,7 @@ const StateProvider = ({ children }) => {
       payload: { updateLoading: true }
     });
 
-    remove(`/api/pending/delete/${id}`).then(() => {
+    patch(`/api/pending/edit/${id}`, { status: 3 }).then(() => {
       dispatch({
         type: "set-update-loading",
         payload: { updateLoading: false }
@@ -150,7 +149,6 @@ const StateProvider = ({ children }) => {
         return { ...state, loading: action.payload.loading };
       case "set-data":
         return { ...state, data: action.payload.data };
-
       case "set-edit-modal":
         return { ...state, openEdit: action.payload.openEdit };
       case "set-manage-modal":
