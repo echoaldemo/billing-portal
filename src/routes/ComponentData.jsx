@@ -1,9 +1,5 @@
 import React from "react";
-import { Invoice, Overview, SystemSettings } from "components";
-
-const ContactSupport = () => {
-  return <h1>Contact Support</h1>;
-};
+import { Invoice, Overview, SystemSettings, ContactSupport } from "components";
 
 const componentData = [
   { path: "/overview", component: Overview },

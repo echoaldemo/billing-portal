@@ -1,13 +1,14 @@
-import React from 'react'
-import SignIn from 'components/sign-in/SignIn'
+import React from "react";
+import SignIn from "components/sign-in/SignIn";
 
-import Navbar from './appbar/Navbar'
-import Navlink from './navlinks/Navlinks'
-import Invoice from './invoice/Invoice'
-import NewInvoice from './new-invoice/manual/ManualInvoice'
-import Overview from './overview/Overview'
-import SystemSettings from './system-settings/SystemSettings'
-import Footer from './footer/Footer'
+import Navbar from "./appbar/Navbar";
+import Navlink from "./navlinks/Navlinks";
+import Invoice from "./invoice/Invoice";
+import NewInvoice from "./new-invoice/manual/ManualInvoice";
+import Overview from "./overview/Overview";
+import SystemSettings from "./system-settings/SystemSettings";
+import ContactSupport from "./contact-support/ContactSupport";
+import Footer from "./footer/Footer";
 export {
   Navbar,
   Navlink,
@@ -15,15 +16,16 @@ export {
   NewInvoice,
   Overview,
   SystemSettings,
+  ContactSupport,
   Footer
-}
+};
 
 const LandingPage = ({ history }) => {
   return (
     <div>
       <SignIn history={history} />
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;
