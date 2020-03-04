@@ -1,6 +1,6 @@
-import React, { useReducer, useState, useContext, useEffect } from "react";
+import React, { useReducer, useState, useEffect } from "react";
 import { postLog } from "utils/time";
-import { get, remove } from "utils/api";
+import { get, patch } from "utils/api";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
 
@@ -40,7 +40,7 @@ const defaultFilterOptions = {
   invoiceType: " ",
   billingType: " ",
   status: false
-}
+};
 
 const StateProvider = ({ children }) => {
   const [modalLoading, setModalLoading] = useState(false);
@@ -63,7 +63,7 @@ const StateProvider = ({ children }) => {
     if (filterOpt.status !== false) {
       filterOptions["status"] = filterOpt.status;
     }
-    let filtered = data.filter((item) => {
+    let filtered = data.filter(item => {
       for (let key in filterOptions) {
         if (item[key] === undefined || item[key] !== filterOptions[key])
           return false;
@@ -74,7 +74,7 @@ const StateProvider = ({ children }) => {
       let startDate = moment(dateRange.startDate).subtract(1, "days");
       let endDate = moment(dateRange.endDate).add(1, "days");
       const range = moment().range(startDate, endDate);
-      filtered = filtered.filter((item) => {
+      filtered = filtered.filter(item => {
         return (
           range.contains(new Date(item.startDate)) ||
           range.contains(new Date(item.endDate))
@@ -83,10 +83,10 @@ const StateProvider = ({ children }) => {
     }
     setData(filtered);
   };
-  const resetFilter = ()=> {
-    setFilterOpt(defaultFilterOptions)
-    setDateRange(dateRangeInitial)
-  }
+  const resetFilter = () => {
+    setFilterOpt(defaultFilterOptions);
+    setDateRange(dateRangeInitial);
+  };
   const handleFilterChange = (e, label) => {
     setFilterOpt({
       ...filterOpt,
@@ -96,34 +96,34 @@ const StateProvider = ({ children }) => {
   useEffect(() => {
     filter();
   }, [filterOpt, dateRange]);
-  const setLoading = (value) => {
+  const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
-  const setData = (value) => {
+  const setData = value => {
     dispatch({ type: "set-data", payload: { data: value } });
   };
-  const setEditModal = (value) => {
+  const setEditModal = value => {
     dispatch({ type: "set-edit-modal", payload: { openEdit: value } });
   };
-  const setTab = (value) => {
+  const setTab = value => {
     dispatch({ type: "set-tab", payload: { active_tab: value } });
   };
   const getPendingInvoicesData = (status = filterStatus) => {
     console.log(filterStatus);
     setLoading(true);
-    get("/api/pending/list").then((res) => {
+    get("/api/pending/list").then(res => {
       setOriginalData(res.data);
       filter(res.data);
       setLoading(false);
     });
   };
-  const deletePendingStatus = (id) => {
+  const deletePendingStatus = id => {
     dispatch({
       type: "set-update-loading",
       payload: { updateLoading: true }
     });
 
-    remove(`/api/pending/delete/${id}`).then(() => {
+    patch(`/api/pending/edit/${id}`, { status: 3 }).then(() => {
       dispatch({
         type: "set-update-loading",
         payload: { updateLoading: false }
@@ -148,7 +148,6 @@ const StateProvider = ({ children }) => {
         return { ...state, loading: action.payload.loading };
       case "set-data":
         return { ...state, data: action.payload.data };
-
       case "set-edit-modal":
         return { ...state, openEdit: action.payload.openEdit };
       case "set-manage-modal":

@@ -7,10 +7,7 @@ import {
   Table,
   TableContainer,
   TablePagination,
-  Divider,
-  TableRow,
-  TableCell,
-  TableBody
+  Divider
 } from "@material-ui/core";
 
 import ManagePendingInvoice from "./manage_modal/ManagePendingInvoice";
@@ -46,7 +43,7 @@ const PendingTable = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -72,7 +69,7 @@ const PendingTable = () => {
       if (order !== 0) return order;
       return a[1] - b[1];
     });
-    return stabilizedThis.map((el) => el[0]);
+    return stabilizedThis.map(el => el[0]);
   }
   function getSorting(order, orderBy) {
     return order === "desc"
@@ -100,7 +97,7 @@ const PendingTable = () => {
               <Table>
                 <InvoiceTableHeader
                   headCells={headCells}
-                  onSelectAllClick={(e) => {
+                  onSelectAllClick={e => {
                     if (e.target.checked) {
                       setSelectedItems(state.data);
                     } else {
