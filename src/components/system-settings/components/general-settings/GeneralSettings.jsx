@@ -1,10 +1,12 @@
-import React from "react";
-import { authorizeUri } from "utils/auth";
-import { Divider } from "@material-ui/core";
-import logo from "assets/qb_button.png";
+import React from 'react'
+import { authorizeUri } from 'utils/auth'
+import { Divider } from '@material-ui/core'
+import logo from 'assets/qb_button.png'
+import SEO from 'utils/seo'
 export default function GeneralSettings() {
   return (
     <div>
+      <SEO title="General Settings" />
       <h3 style={{ marginTop: 0 }}>Let's get you connected to Quickbooks!</h3>
       <p>
         Et occaecat proident amet et nulla veniam sit.Ipsum occaecat nulla nisi
@@ -18,7 +20,7 @@ export default function GeneralSettings() {
         labore.Consectetur mollit labore id qui adipisicing dolore.
         <br />
         <br />
-        Click the <b>Connect</b> button to get connected to{" "}
+        Click the <b>Connect</b> button to get connected to{' '}
         <b>Quickbooks Online</b>.
         <br />
       </p>
@@ -29,5 +31,5 @@ export default function GeneralSettings() {
       <br />
       <Divider />
     </div>
-  );
+  )
 }

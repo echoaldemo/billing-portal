@@ -5,6 +5,8 @@ import { StateContext } from 'context/StateContext'
 import logo from 'assets/pp_logo_transparent_bkgrd.png'
 import './style/index.scss'
 import { ReportBugButton } from 'common-components'
+import SEO from 'utils/seo'
+
 const SignIn = ({ history }) => {
   const { state, dispatch } = useContext(StateContext)
   const [load, setLoad] = useState(false)
@@ -40,6 +42,7 @@ const SignIn = ({ history }) => {
 
   return (
     <>
+      <SEO title="Sign In" />
       {load ? (
         <div className="landing-page-wrapper">
           <div className="left-component-container">
