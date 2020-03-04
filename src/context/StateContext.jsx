@@ -1,6 +1,10 @@
-import React, { useReducer, useState, useContext, useEffect } from "react";
+import React, { useReducer, useState, useEffect } from "react";
 import { postLog } from "utils/time";
 import { get, patch } from "utils/api";
+import Moment from "moment";
+import { extendMoment } from "moment-range";
+
+const moment = extendMoment(Moment);
 const initialState = {
   active_tab: 0,
   loading: false,
@@ -29,10 +33,13 @@ const StateContext = React.createContext();
 
 const today = new Date();
 const dateRangeInitial = {
-  startDate:
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate(),
-  endDate:
-    today.getFullYear() + "-" + (today.getMonth() + 2) + "-" + today.getDate()
+  startDate: null,
+  endDate: null
+};
+const defaultFilterOptions = {
+  invoiceType: " ",
+  billingType: " ",
+  status: false
 };
 
 const StateProvider = ({ children }) => {
@@ -42,12 +49,9 @@ const StateProvider = ({ children }) => {
   const [formState, setFormState] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
   const [confirmModal, setConfirmModal] = React.useState(confirmModalInitial);
-  const [filterOpt, setFilterOpt] = React.useState({
-    invoiceType: " ",
-    billingType: " ",
-    status: false
-  });
+  const [filterOpt, setFilterOpt] = React.useState(defaultFilterOptions);
   const [dateRange, setDateRange] = React.useState(dateRangeInitial);
+
   const filter = (data = originalData) => {
     let filterOptions = {};
     if (filterOpt.invoiceType !== " ") {
@@ -59,14 +63,29 @@ const StateProvider = ({ children }) => {
     if (filterOpt.status !== false) {
       filterOptions["status"] = filterOpt.status;
     }
-    const filtered = data.filter(item => {
+    let filtered = data.filter(item => {
       for (let key in filterOptions) {
         if (item[key] === undefined || item[key] !== filterOptions[key])
           return false;
       }
       return true;
     });
+    if (dateRange.startDate && dateRange.endDate) {
+      let startDate = moment(dateRange.startDate).subtract(1, "days");
+      let endDate = moment(dateRange.endDate).add(1, "days");
+      const range = moment().range(startDate, endDate);
+      filtered = filtered.filter(item => {
+        return (
+          range.contains(new Date(item.startDate)) ||
+          range.contains(new Date(item.endDate))
+        );
+      });
+    }
     setData(filtered);
+  };
+  const resetFilter = () => {
+    setFilterOpt(defaultFilterOptions);
+    setDateRange(dateRangeInitial);
   };
   const handleFilterChange = (e, label) => {
     setFilterOpt({
@@ -76,7 +95,7 @@ const StateProvider = ({ children }) => {
   };
   useEffect(() => {
     filter();
-  }, [filterOpt]);
+  }, [filterOpt, dateRange]);
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
@@ -177,7 +196,8 @@ const StateProvider = ({ children }) => {
         setFilterStatus,
         handleFilterChange,
         filterOpt,
-        setFilterOpt
+        setFilterOpt,
+        resetFilter
       }}
     >
       {children}

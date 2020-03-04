@@ -14,10 +14,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 36px;
+    border-radius: 50%;
   }
 }
 
 .cell-status-span {
+  text-transform: capitalize;
   display: block;
   color: white;
   width: 60px;
