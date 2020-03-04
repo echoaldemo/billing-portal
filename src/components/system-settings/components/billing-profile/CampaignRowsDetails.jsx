@@ -79,6 +79,7 @@ const CampaignRowsDetails = ({ item, index }) => {
     {
       label: (
         <InputField
+          type="number"
           value={item.billable_rate}
           placeholder="Hourly rate"
           disabled={!edit}
@@ -111,6 +112,7 @@ const CampaignRowsDetails = ({ item, index }) => {
       label: (
         <InputField
           value={item.did_rate}
+          type="number"
           placeholder="DID rate"
           disabled={!edit}
           onChange={e => {
@@ -141,6 +143,7 @@ const CampaignRowsDetails = ({ item, index }) => {
     {
       label: (
         <InputField
+          type="number"
           value={item.performance_rate}
           placeholder="Performance rate"
           disabled={!edit}
