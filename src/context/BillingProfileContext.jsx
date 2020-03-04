@@ -32,6 +32,8 @@ const BillingProvider = ({ children }) => {
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [formState, setFormState] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const getCompanyCampaigns = company_uuid => {
     const result = mockCampaigns.filter(item => item.company === company_uuid);
     return result;
@@ -56,11 +58,13 @@ const BillingProvider = ({ children }) => {
     return companyDetails;
   };
   useEffect(() => {
+    setLoading(true);
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
     get(`/api/rate/${state.selectedCompany}`).then(result => {
       setFormState(
         addRateObj(getCompanyCampaigns(state.selectedCompany), result.data)
       );
+      setLoading(false);
     });
   }, [state.selectedCompany]);
 
@@ -70,12 +74,11 @@ const BillingProvider = ({ children }) => {
         item.edited = true;
         item[type] = e.target.value;
       }
-
       return item;
     });
     setFormState(result);
   };
-
+  state.loading = loading;
   return (
     <BillingContext.Provider
       value={{
