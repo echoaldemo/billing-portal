@@ -1,12 +1,17 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { get, patch } from "utils/api";
+import { mockCompanies } from "components/new-invoice/mock/index";
 const initialState = {
   data: [],
-  loading: false
+  loading: false,
+  companies: mockCompanies,
+  selectedCompany: false
 };
 const TrashBinContext = React.createContext();
 
 const TrashBinProvider = ({ children }) => {
+  const [originalData, setOriginalData] = useState([]);
+
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-data":
@@ -15,7 +20,11 @@ const TrashBinProvider = ({ children }) => {
           data: action.payload.data,
           loading: action.payload.loading
         };
-
+      case "set-selected-company":
+        return {
+          ...state,
+          selectedCompany: action.payload.selectedCompany
+        };
       default:
         return null;
     }
@@ -28,6 +37,7 @@ const TrashBinProvider = ({ children }) => {
         data: []
       }
     });
+
     get("/api/pending/deleted/list").then(result => {
       dispatch({
         type: "set-data",
@@ -36,6 +46,7 @@ const TrashBinProvider = ({ children }) => {
           data: result.data
         }
       });
+      setOriginalData(result.data);
     });
   };
 
@@ -48,6 +59,7 @@ const TrashBinProvider = ({ children }) => {
     getTrashedItems();
   }, []);
 
+  state.originalData = originalData;
   return (
     <TrashBinContext.Provider
       value={{

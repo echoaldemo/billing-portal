@@ -2,23 +2,32 @@ import React, { useContext } from "react";
 import { TrashBinProvider, TrashBinContext } from "context/TrashBinContext";
 import TrashBinItems from "./TrashBinItems";
 import { TableLoader } from "common-components";
-import { Button } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
+import SelectCompanyField from "./SelectCompanyField";
 const TrashBin = () => {
   const {
     state: { loading }
   } = useContext(TrashBinContext);
   return (
     <React.Fragment>
-      <div
+      <Grid
+        container
         style={{
+          justifyContent: "space-between",
+          alignItems: "center",
           padding: 15,
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center"
+          paddingLeft: 0,
+          paddingRight: 0
         }}
       >
-        <Button variant="contained">Delete All</Button>
-      </div>
+        <Grid item xs={4}>
+          <SelectCompanyField />
+        </Grid>
+        <Grid item xs={2} style={{ textAlign: "right" }}>
+          <Button variant="contained">Delete All</Button>
+        </Grid>
+      </Grid>
+
       <div style={{ border: "solid 1px #F1F1F1", minHeight: 600 }}>
         {loading ? <TableLoader /> : <TrashBinItems />}
       </div>
