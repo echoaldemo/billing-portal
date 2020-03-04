@@ -63,7 +63,7 @@ const StateProvider = ({ children }) => {
     if (filterOpt.status !== false) {
       filterOptions["status"] = filterOpt.status;
     }
-    let filtered = data.filter(item => {
+    let filtered = data.filter((item) => {
       for (let key in filterOptions) {
         if (item[key] === undefined || item[key] !== filterOptions[key])
           return false;
@@ -71,10 +71,10 @@ const StateProvider = ({ children }) => {
       return true;
     });
     if (dateRange.startDate && dateRange.endDate) {
-      let startDate = moment(dateRange.startDate).subtract(1, "days");
-      let endDate = moment(dateRange.endDate).add(1, "days");
+      let startDate = moment(dateRange.startDate);
+      let endDate = moment(dateRange.endDate);
       const range = moment().range(startDate, endDate);
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         return (
           range.contains(new Date(item.startDate)) ||
           range.contains(new Date(item.endDate))
@@ -96,28 +96,29 @@ const StateProvider = ({ children }) => {
   useEffect(() => {
     filter();
   }, [filterOpt, dateRange]);
-  const setLoading = value => {
+  const setLoading = (value) => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
-  const setData = value => {
+  const setData = (value) => {
     dispatch({ type: "set-data", payload: { data: value } });
   };
-  const setEditModal = value => {
+  const setEditModal = (value) => {
     dispatch({ type: "set-edit-modal", payload: { openEdit: value } });
   };
-  const setTab = value => {
+  const setTab = (value) => {
     dispatch({ type: "set-tab", payload: { active_tab: value } });
   };
   const getPendingInvoicesData = (status = filterStatus) => {
     console.log(filterStatus);
     setLoading(true);
-    get("/api/pending/list").then(res => {
+    get("/api/pending/list").then((res) => {
       setOriginalData(res.data);
       filter(res.data);
+      console.log(res.data);
       setLoading(false);
     });
   };
-  const deletePendingStatus = id => {
+  const deletePendingStatus = (id) => {
     dispatch({
       type: "set-update-loading",
       payload: { updateLoading: true }
