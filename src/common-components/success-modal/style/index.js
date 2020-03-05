@@ -93,6 +93,16 @@ const Text = styled.div`
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   text-transform: uppercase;
 `;
+const TextLower = styled.div`
+  margin-top: 20px;
+  width: 340px;
+  min-height: 42px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  color: #7c8a97;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+`;
 const P = styled.p`
   color: #7c8a97;
   margin: 10px 0 40px 0;
@@ -139,5 +149,6 @@ export {
   P,
   NewUserBtn,
   NewUserText,
-  Great
+  Great,
+  TextLower
 };
