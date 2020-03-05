@@ -5,7 +5,8 @@ const initialState = {
   data: [],
   loading: false,
   companies: mockCompanies,
-  selectedCompany: false
+  selectedCompany: false,
+  warningModal: false
 };
 const TrashBinContext = React.createContext();
 
@@ -25,6 +26,14 @@ const TrashBinProvider = ({ children }) => {
           ...state,
           selectedCompany: action.payload.selectedCompany
         };
+
+      case "set-warning-modal": {
+        return {
+          ...state,
+          warningModal: action.payload.warningModal
+        };
+      }
+
       default:
         return null;
     }
@@ -65,7 +74,8 @@ const TrashBinProvider = ({ children }) => {
       value={{
         state,
         dispatch,
-        updateTrashItem
+        updateTrashItem,
+        getTrashedItems
       }}
     >
       {children}
