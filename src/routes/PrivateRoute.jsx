@@ -6,12 +6,10 @@ function PrivateRoute(props) {
   let { component: Component, path, ...rest } = props
 
   const protectedComponent = componentProps => {
-    return isAuth() ? (
+    return (
       <MainPage {...componentProps}>
         <Component {...componentProps} />
       </MainPage>
-    ) : (
-      <Redirect push to="/" />
     )
   }
 

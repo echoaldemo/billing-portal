@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 import logo from 'assets/pp_logo_white_font.png'
 import { StateContext } from 'context/StateContext'
-import { get, post } from 'utils/api'
+import { get } from 'utils/api'
 import { ExpandMore, PowerSettingsNew } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -27,8 +27,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-let token = null
-
 export default function MenuAppBar({ history }) {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -42,32 +40,30 @@ export default function MenuAppBar({ history }) {
     setAnchorEl(null)
   }
 
+  let googleId = localStorage.getItem('googleId')
+
   useEffect(() => {
-    token = localStorage.getItem('gooleToken')
-    if (!token) {
+    if (!googleId) {
       history.push('/')
-    } else if (!state.userProfile.id) {
+    } else {
       getUser()
-    }
-    return () => {
-      token = null
     }
     // eslint-disable-next-line
   }, [])
 
   const getUser = async () => {
-    const { data: googleId } = await post(`/api/users/auth`, {
-      token
-    }).catch(() => {
-      localStorage.clear()
-      window.location.href = '/'
-    })
     const { data } = await get(`/api/users/${googleId}`)
     if (data) {
       dispatch({
         type: 'set-user-profile',
         payload: { userProfile: data }
       })
+      if (data.status === 'active') {
+        dispatch({ type: 'set-auth', payload: { auth: true } })
+      } else {
+        localStorage.clear()
+        window.location.href = '/'
+      }
     } else {
       localStorage.clear()
       window.location.href = '/'
