@@ -29,22 +29,10 @@ export default function Navlinks() {
       disabled: false
     },
     {
-      link: "/profile",
-      icon: <AccountCircle className="tab-icon" />,
-      name: "Profile",
-      disabled: true
-    },
-    {
-      link: "/about-us",
-      icon: <Settings className="tab-icon" />,
-      name: "About Us",
-      disabled: true
-    },
-    {
       link: "/support",
       icon: <ContactSupport className="tab-icon" />,
       name: "Contact Support",
-      disabled: true
+      disabled: false
     }
   ];
   const handleClick = (e, disabled) => {
@@ -60,7 +48,7 @@ export default function Navlinks() {
             to={item.disabled ? " " : item.link}
             className="tab-item"
             activeClassName="active-link"
-            onClick={(e) => handleClick(e, item.disabled)}
+            onClick={e => handleClick(e, item.disabled)}
           >
             <div className="tab-text">
               <div className="tab-text-container">

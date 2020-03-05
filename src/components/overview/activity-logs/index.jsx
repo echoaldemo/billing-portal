@@ -45,14 +45,6 @@ const ActivityLogsComponent = props => {
   useEffect(() => {
     let temp = state.logs;
     temp.map(e => {
-      /* if (e.type === "create-draft") e["icon"] = <Add />;
-      if (e.type === "sent-invoice") e["icon"] = <Email />;
-      if (e.type === "delete-invoice") e["icon"] = <Delete />;
-      if (e.type === "edit-invoice") e["icon"] = <Edit />;
-      if (e.type === "approve-invoice") e["icon"] = <Check />;
-      if (e.type === "mark-draft") e["icon"] = <Draft />;
-      if (e.type === "mark-review") e["icon"] = <Review />;
-      if (e.type === "mark-review") e["icon"] */
       switch (e.type) {
         case "create-draft":
           e["icon"] = <Add />;

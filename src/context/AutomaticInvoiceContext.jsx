@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, useState, useContext } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
-import { getMock, post, get } from "utils/api";
+import { post, get } from "utils/api";
 import { postLog } from "utils/time";
 import { StateContext } from "context/StateContext";
 
@@ -122,25 +122,31 @@ const AutomaticInvoiceProvider = ({ children }) => {
   console.log(formState.campaign);
   const handleBillingChange = e => {
     get(`/api/rate/${formState.company}`).then(res => {
-      let temp = formState.campaign;
-      let rates = res.data;
-      temp.forEach(item1 => {
-        const result = rates.find(item2 => {
-          return item2.campaign_uuid === item1.uuid;
+      if (res.data.length) {
+        let temp = formState.campaign;
+        let rates = res.data;
+        temp.forEach(item1 => {
+          const result = rates.find(item2 => {
+            return item2.campaign_uuid === item1.uuid;
+          });
+          const { billable_rate, performance_rate, did_rate } = result;
+          item1["content"] = {
+            ...item1["content"],
+            bill_rate: billable_rate,
+            performance_rate,
+            did_rate
+          };
         });
-        const { billable_rate, performance_rate, did_rate } = result;
-        item1["content"] = {
-          ...item1["content"],
-          bill_rate: billable_rate,
-          performance_rate,
-          did_rate
-        };
-      });
-      setFormState({
-        ...formState,
-        billingType: e.target.value,
-        campaign: temp
-      });
+        setFormState({
+          ...formState,
+          billingType: e.target.value,
+          campaign: temp
+        });
+      } else
+        setFormState({
+          ...formState,
+          billingType: e.target.value
+        });
     });
   };
   const handleAddFees = (e, label) => {
