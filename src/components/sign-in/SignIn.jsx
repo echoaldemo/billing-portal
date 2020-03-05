@@ -14,6 +14,7 @@ const SignIn = ({ history }) => {
   const [load, setLoad] = useState(true)
   const [request, setRequest] = useState(false)
   const [inactive, setInactive] = useState(false)
+  const [invalid, setInvalid] = useState(false)
 
   useEffect(() => {
     if (state.auth) {
@@ -50,20 +51,31 @@ const SignIn = ({ history }) => {
 
   const responseGoogle = async res => {
     if (res.googleId) {
+      const {
+        profileObj: { email }
+      } = res
       const find = await get(`/api/users/${res.googleId}`)
       if (find.data) {
         getUser(res.googleId)
       } else {
         res.profileObj.status = 'request'
         res.profileObj.type = 'user'
-        post('/api/users/create', res.profileObj).then(res => {
+        if (email.match(/@boomsoourcing/i) || email.match(/@boom.camp/i)) {
+          post('/api/users/create', res.profileObj).then(res => {
+            dispatch({
+              type: 'set-user-profile',
+              payload: { userProfile: res.data }
+            })
+            localStorage.setItem('googleId', res.data.googleId)
+            setRequest(true)
+          })
+        } else {
           dispatch({
             type: 'set-user-profile',
-            payload: { userProfile: res.data }
+            payload: { userProfile: res.profileObj }
           })
-          localStorage.setItem('googleId', res.data.googleId)
-          setRequest(true)
-        })
+          setInvalid(true)
+        }
       }
     }
   }
@@ -98,6 +110,18 @@ const SignIn = ({ history }) => {
                     <p className="message-text">
                       Your account have been disabled. Please ask the
                       Administrator to activate your account
+                    </p>
+                  </div>
+                </div>
+              ) : invalid ? (
+                <div className="message-container">
+                  <h2 className="message-header">
+                    Welcome {state.userProfile.name}
+                  </h2>
+                  <div>
+                    <p className="message-text">
+                      Your email is invalid. Only @boomsoourcing or @boom.camp
+                      can use the application
                     </p>
                   </div>
                 </div>
