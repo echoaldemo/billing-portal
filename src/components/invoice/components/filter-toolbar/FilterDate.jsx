@@ -13,28 +13,20 @@ import { extendMoment } from "moment-range";
 
 const moment = extendMoment(Moment);
 const FilterDate = () => {
-  const { dateRange, setDateRange, setData, state, originalData } = useContext(
-    StateContext
-  );
+  const { dateRange, setDateRange } = useContext(StateContext);
 
-  useEffect(() => {
-    filterDataByDate();
-  }, [dateRange]);
-
-  const filterDataByDate = () => {
-    let startDate = moment(dateRange.startDate).subtract(1, "days");
-    let endDate = moment(dateRange.endDate).add(1, "days");
-    const range = moment().range(startDate, endDate);
-    const result = originalData.filter(item => {
-      return (
-        range.contains(new Date(item.startDate)) ||
-        range.contains(new Date(item.endDate))
-      );
-    });
-    setData(result);
-  };
   const handleDateChange = (date, type) => {
-    setDateRange({ ...dateRange, [type]: formatDate(date) });
+    if (type === "startDate") {
+      const futureMonth = moment(date).add(30, "days");
+      const futureMonthEnd = moment(futureMonth).endOf("days");
+      setDateRange({
+        ...dateRange,
+        startDate: formatDate(date),
+        endDate: formatDate(new Date(futureMonthEnd._d))
+      });
+    } else {
+      setDateRange({ ...dateRange, [type]: formatDate(date) });
+    }
   };
 
   return (
@@ -49,7 +41,7 @@ const FilterDate = () => {
             variant="inline"
             format="MM/dd/yyyy"
             value={dateRange.startDate}
-            onChange={date => {
+            onChange={(date) => {
               handleDateChange(date, "startDate");
             }}
           />
@@ -65,7 +57,7 @@ const FilterDate = () => {
             variant="inline"
             format="MM/dd/yyyy"
             value={dateRange.endDate}
-            onChange={date => {
+            onChange={(date) => {
               handleDateChange(date, "endDate");
             }}
           />

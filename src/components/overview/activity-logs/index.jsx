@@ -79,11 +79,20 @@ const ActivityLogsComponent = props => {
       payload: { logs: temp }
     });
   }, [state.logs]);
-  const clickEvent = id => {
-    props.history.push({
-      pathname: "/invoices",
-      state: { invoiceId: id }
-    });
+  const clickEvent = (id, type) => {
+    console.log(type);
+    if (type !== "delete-invoice") {
+      props.history.push({
+        pathname: "/invoices",
+        state: { invoiceId: id }
+      });
+    } else {
+      localStorage.setItem("localTab", 3);
+      props.history.push({
+        pathname: `/settings`,
+        state: { invoiceId: id }
+      });
+    }
   };
   return (
     <Paper>
@@ -110,7 +119,7 @@ const ActivityLogsComponent = props => {
                   createdAt={getFromNow(item.date, item.time)}
                   icon={item.icon}
                   bubbleStyle={bubbleColor(item.description)}
-                  onIconClick={() => clickEvent(item.invoiceId)}
+                  onIconClick={() => clickEvent(item.id, item.type)}
                 />
                 <div className={classes.root}></div>
               </React.Fragment>

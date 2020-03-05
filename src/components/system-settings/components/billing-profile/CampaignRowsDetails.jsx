@@ -35,10 +35,11 @@ const ShowExpand = ({ index }) => {
   );
 };
 
-const CampaignRowsDetails = ({ item, index, campaignRate }) => {
+const CampaignRowsDetails = ({ item, index }) => {
   const {
     rowCollapse,
-    state: { edit }
+    state: { edit },
+    handleFieldChange
   } = useContext(BillingContext);
 
   const initalRowData = [
@@ -72,19 +73,19 @@ const CampaignRowsDetails = ({ item, index, campaignRate }) => {
     },
     {
       label: "Billable Hours",
-      size: 4
+      size: 5
     },
-    {
-      label: <CustomCheckbox checked={true} />,
-      size: 1,
-      style: { textAlign: "right" }
-    },
+
     {
       label: (
         <InputField
-          value={campaignRate.billable_rate}
+          type="number"
+          value={item.billable_rate}
           placeholder="Hourly rate"
           disabled={!edit}
+          onChange={e => {
+            handleFieldChange(e, index, "billable_rate");
+          }}
         />
       ),
       size: 2,
@@ -104,19 +105,19 @@ const CampaignRowsDetails = ({ item, index, campaignRate }) => {
     },
     {
       label: "DID Billing",
-      size: 4
+      size: 5
     },
-    {
-      label: <CustomCheckbox checked={true} />,
-      size: 1,
-      style: { textAlign: "right" }
-    },
+
     {
       label: (
         <InputField
-          value={campaignRate.did_rate}
+          value={item.did_rate}
+          type="number"
           placeholder="DID rate"
           disabled={!edit}
+          onChange={e => {
+            handleFieldChange(e, index, "did_rate");
+          }}
         />
       ),
       size: 2,
@@ -136,19 +137,19 @@ const CampaignRowsDetails = ({ item, index, campaignRate }) => {
     },
     {
       label: "Performance",
-      size: 4
+      size: 5
     },
-    {
-      label: <CustomCheckbox checked={true} />,
-      size: 1,
-      style: { textAlign: "right" }
-    },
+
     {
       label: (
         <InputField
-          value={campaignRate.performance_rate}
+          type="number"
+          value={item.performance_rate}
           placeholder="Performance rate"
           disabled={!edit}
+          onChange={e => {
+            handleFieldChange(e, index, "performance_rate");
+          }}
         />
       ),
       size: 2,

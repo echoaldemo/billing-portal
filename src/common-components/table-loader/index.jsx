@@ -1,9 +1,20 @@
-import React from 'react'
-import * as Styled from './style'
+import React from "react";
+import * as Styled from "./style";
 
-const TableLoader = () => {
+const TableLoader = ({ style }) => {
   return (
-    <Styled.Container>
+    <div
+      style={{
+        height: 600,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        color: "#7c8a97",
+        width: "100%",
+        ...style
+      }}
+    >
       <div>
         <Styled.LoadingIcon />
       </div>
@@ -17,8 +28,8 @@ const TableLoader = () => {
           browser and try again.
         </span>
       </Styled.SubMsgCont>
-    </Styled.Container>
-  )
-}
+    </div>
+  );
+};
 
-export default TableLoader
+export default TableLoader;

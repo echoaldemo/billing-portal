@@ -1,16 +1,16 @@
-@import "https://fonts.googleapis.com/css?family=Roboto&display=swap";
+@import 'https://fonts.googleapis.com/css?family=Roboto&display=swap';
 body {
   color: #444851;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
@@ -39,6 +39,10 @@ input[type="number"] {
   border-bottom: solid 1px #f1f1f1 !important;
   display: flex;
   flex-direction: row;
+}
+
+svg > g > g:last-child {
+  pointer-events: none;
 }
 
 .tab-text {

@@ -2,9 +2,9 @@ import React from 'react'
 
 import SettingsIcon from '@material-ui/icons/Settings'
 import PeopleIcon from '@material-ui/icons/People'
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney'
 import PaymentIcon from '@material-ui/icons/Payment'
-const TabsOptions = [
+import DeleteIcon from '@material-ui/icons/Delete'
+const TabsOptionsAdmin = [
   {
     icon: <SettingsIcon />,
     label: 'General settings'
@@ -16,11 +16,22 @@ const TabsOptions = [
   {
     icon: <PaymentIcon />,
     label: 'Billing Profile'
+  },
+  {
+    icon: <DeleteIcon />,
+    label: 'Trash Bin'
   }
-  // {
-  //   icon: <AttachMoneyIcon />,
-  //   label: "Manage Tax"
-  // }
 ]
 
-export default TabsOptions
+const TabsOptionsUser = [
+  {
+    icon: <SettingsIcon />,
+    label: 'General settings'
+  },
+  {
+    icon: <PaymentIcon />,
+    label: 'Billing Profile'
+  }
+]
+
+export { TabsOptionsAdmin, TabsOptionsUser }
