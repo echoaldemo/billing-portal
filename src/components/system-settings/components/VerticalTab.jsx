@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
-import { Box, Typography, Tab, Tabs, Paper } from "@material-ui/core";
-import "../style/index.scss";
+import React, { useEffect, useContext } from 'react'
+import PropTypes from 'prop-types'
+import { Tab, Tabs, Paper } from '@material-ui/core'
+import { StateContext } from 'context/StateContext'
+import '../style/index.scss'
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props
 
   return (
     <div
@@ -13,7 +14,7 @@ function TabPanel(props) {
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
-      style={{ width: "100%" }}
+      style={{ width: '100%' }}
     >
       {value === index && (
         <div
@@ -27,35 +28,38 @@ function TabPanel(props) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired
-};
+}
 
 function a11yProps(index) {
   return {
     id: `vertical-tab-${index}`,
-    "aria-controls": `vertical-tabpanel-${index}`
-  };
+    'aria-controls': `vertical-tabpanel-${index}`
+  }
 }
 
 export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
-  const [value, setValue] = React.useState(0);
+  const {
+    state: { userProfile }
+  } = useContext(StateContext)
+  const [value, setValue] = React.useState(0)
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
-    localStorage.setItem("localTab", newValue);
-  };
+    setValue(newValue)
+    localStorage.setItem('localTab', newValue)
+  }
   useEffect(() => {
-    const prevTab = localStorage.getItem("localTab");
+    const prevTab = localStorage.getItem('localTab')
     if (prevTab) {
-      setValue(parseInt(prevTab));
+      setValue(parseInt(prevTab))
     }
-  }, []);
+  }, [])
 
   return (
     <Paper className="vertical-tab-container" square={true}>
@@ -66,25 +70,21 @@ export default function VerticalTabs({ TabsOptions, TabPanelOptions }) {
         aria-label="Vertical tabs example"
         className="vertical-tabs"
       >
-        {TabsOptions.map((tab, i) => {
-          return (
-            <Tab
-              icon={tab.icon}
-              key={i}
-              label={<span className="tab-item-text">&nbsp; {tab.label}</span>}
-              {...a11yProps(i)}
-              className="tab-item"
-            />
-          );
-        })}
+        {TabsOptions.map((tab, i) => (
+          <Tab
+            icon={tab.icon}
+            key={i}
+            label={<span className="tab-item-text">&nbsp; {tab.label}</span>}
+            {...a11yProps(i)}
+            className="tab-item"
+          />
+        ))}
       </Tabs>
-      {TabPanelOptions.map((item, i) => {
-        return (
-          <TabPanel value={value} index={i} key={i}>
-            {item}
-          </TabPanel>
-        );
-      })}
+      {TabPanelOptions.map((item, i) => (
+        <TabPanel value={value} index={i} key={i}>
+          {item}
+        </TabPanel>
+      ))}
     </Paper>
-  );
+  )
 }
