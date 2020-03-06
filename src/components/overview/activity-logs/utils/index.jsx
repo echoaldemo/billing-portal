@@ -20,13 +20,15 @@ const getFromNow = (date, time) => {
   );
 };
 const bubbleColor = summary => {
-  if (summary.indexOf("deleted") !== -1) {
+  if (summary.indexOf("deleted") !== -1 || summary.indexOf("moved") !== -1) {
     return { border: "2px solid rgb(255, 43, 43)" };
   } else if (
     summary.indexOf("modified") !== -1 ||
     summary.indexOf("marked") !== -1
   ) {
     return { border: "2px solid rgb(206, 193, 44)" };
+  } else if (summary.indexOf("restored") !== -1) {
+    return { border: "2px solid rgb(15, 151, 252)" };
   } else {
     return { border: "2px solid rgb(33, 154, 42)" };
   }

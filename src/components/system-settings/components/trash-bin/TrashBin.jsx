@@ -7,6 +7,8 @@ import SelectCompanyField from "./SelectCompanyField";
 import { WarningModal } from "common-components";
 import { remove, patch } from "utils/api";
 import { NoResult } from "common-components";
+import { postLog } from "utils/time";
+import { StateContext } from "context/StateContext";
 const TrashBin = () => {
   const {
     state: { loading, warningModal, data },
@@ -14,6 +16,7 @@ const TrashBin = () => {
     getTrashedItems,
     updateTrashItem
   } = useContext(TrashBinContext);
+  const { state: profile } = React.useContext(StateContext);
 
   const handleCloseModal = () => {
     dispatch({
@@ -29,11 +32,25 @@ const TrashBin = () => {
         getTrashedItems();
       });
     });
+    postLog({
+      type: "delete-permanently",
+      description: `${profile.userProfile.name} permanently deleted ${
+        data.length
+      } invoice${data.length > 1 ? "s." : "."}`,
+      invoiceId: null
+    });
   };
 
   const restoreAllTrash = () => {
     data.forEach(element => {
       updateTrashItem(element.id);
+    });
+    postLog({
+      type: "restore-invoice",
+      description: `${profile.userProfile.name} restored ${
+        data.length
+      } invoice${data.length > 1 ? "s." : "."}`,
+      invoiceId: null
     });
   };
 

@@ -12,7 +12,6 @@ const TrashBinContext = React.createContext();
 
 const TrashBinProvider = ({ children }) => {
   const [originalData, setOriginalData] = useState([]);
-
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "set-data":
