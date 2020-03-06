@@ -20,5 +20,4 @@ const getAPI = (endpoint, data) =>
 
 const getMock = (endpoint, data) =>
   axios.get(`${baseMock}${endpoint}`, { data });
-
 export { get, patch, post, getMock, auth, getAPI, remove };
