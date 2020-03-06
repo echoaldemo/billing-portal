@@ -47,6 +47,7 @@ const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { state: state2, getPendingInvoicesData } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
+
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [addFee, setAddFee] = useState(initialAddFee);
   const [state, dispatch] = useReducer((state, action) => {
@@ -120,9 +121,11 @@ const AutomaticInvoiceProvider = ({ children }) => {
     setSelectedCampaign([]);
     getGeneralData();
   };
-  console.log(formState.campaign);
+
   const handleBillingChange = e => {
-    get(`/api/rate/${formState.company}`).then(res => {
+    get(
+      `/api/rate/${formState.company}?original_data=${!state2.applyPrevious}`
+    ).then(res => {
       if (res.data.length) {
         let temp = formState.campaign;
         let rates = res.data;

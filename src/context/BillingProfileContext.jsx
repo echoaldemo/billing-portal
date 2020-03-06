@@ -4,7 +4,7 @@ import {
   mockCampaigns
 } from "components/new-invoice/mock/index";
 import { get } from "utils/api";
-
+import BillingProfileReducer from "reducers/BillingProfileReducer";
 const initialState = {
   companies: mockCompanies,
   selectedCompany: mockCompanies[0].uuid,
@@ -14,23 +14,11 @@ const initialState = {
 
 const BillingContext = React.createContext(); // eslint-disable-line
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "set-companies":
-      return { ...state, companies: action.payload.companies };
-    case "set-selected-company":
-      return { ...state, selectedCompany: action.payload.selectedCompany };
-    case "set-edit":
-      return { ...state, edit: action.payload.edit };
-    default:
-      return null;
-  }
-};
-
 const BillingProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(BillingProfileReducer, initialState);
+
   const [rowCollapse, setRowCollapse] = useState([0, 1]);
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
-  const [state, dispatch] = useReducer(reducer, initialState);
   const [formState, setFormState] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -60,13 +48,17 @@ const BillingProvider = ({ children }) => {
   useEffect(() => {
     setLoading(true);
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
-    get(`/api/rate/${state.selectedCompany}`).then(result => {
+
+    let url = state.applyPrevious
+      ? `/api/rate/${state.selectedCompany}?original_data=false`
+      : `/api/rate/${state.selectedCompany}?original_data=true`;
+    get(url).then(result => {
       setFormState(
         addRateObj(getCompanyCampaigns(state.selectedCompany), result.data)
       );
       setLoading(false);
     });
-  }, [state.selectedCompany]);
+  }, [state.selectedCompany, state.applyPrevious]);
 
   const handleFieldChange = (e, index, type) => {
     let result = formState.map((item, i) => {
