@@ -123,9 +123,14 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
 
   const handleBillingChange = e => {
-    get(
-      `/api/rate/${formState.company}?original_data=${!state2.applyPrevious}`
-    ).then(res => {
+    const url = `/api/rate/${
+      formState.company
+    }?original_data=${!state2.applyPrevious}`;
+
+    console.log(url);
+    console.log(!state2.applyPrevious);
+
+    get(url).then(res => {
       if (res.data.length) {
         let temp = formState.campaign;
         let rates = res.data;
