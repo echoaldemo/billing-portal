@@ -1,4 +1,3 @@
-import React from "react";
 import { Invoice, Overview, SystemSettings, ContactSupport } from "components";
 
 const componentData = [

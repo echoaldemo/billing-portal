@@ -5,14 +5,9 @@ import {
   LoadingNoDialog as LoadingModal
 } from "common-components";
 import { StateContext } from "context/StateContext";
-import { remove, patch } from "utils/api";
+import { patch } from "utils/api";
 import { postLog } from "utils/time";
-const appendLeadingZeroes = n => {
-  if (n <= 9) {
-    return "0" + n;
-  }
-  return n;
-};
+
 const DeleteModal = () => {
   const {
     selectedItems,

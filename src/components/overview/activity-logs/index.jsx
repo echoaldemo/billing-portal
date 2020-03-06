@@ -73,12 +73,14 @@ const ActivityLogsComponent = props => {
         default:
           break;
       }
+
+      return null;
     });
     dispatch({
       type: "set-logs",
       payload: { logs: temp }
     });
-  }, [state.logs]);
+  }, [state.logs]); // eslint-disable-line
   const clickEvent = (id, type) => {
     console.log(type);
     if (type !== "delete-invoice") {

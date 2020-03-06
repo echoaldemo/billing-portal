@@ -25,6 +25,8 @@ const ShowValidations = props => {
               </li>
             );
           }
+
+          return null;
         })}
       </ul>
     </Collapse>

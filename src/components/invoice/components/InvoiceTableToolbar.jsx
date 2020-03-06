@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Button,
-  Toolbar,
-  Tooltip,
-  Menu,
-  MenuItem,
-  Dialog
-} from "@material-ui/core";
+import { Button, Tooltip, Menu, MenuItem, Dialog } from "@material-ui/core";
 
 import { Add } from "@material-ui/icons";
 import Manual from "../../new-invoice/manual/ManualInvoice";

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { InputField } from "common-components";
 import {
   MuiPickersUtilsProvider,
@@ -44,8 +44,8 @@ export default function GeneralForm({ duplicate }) {
             item => item.uuid === uuid
           );
           let billingData = {
-            billableHrsQty: "9",
-            billableHrsRate: "9",
+            billableHrsQty: "",
+            billableHrsRate: "",
             billableHrsTotalAmount: "",
 
             didQty: "",
@@ -61,7 +61,7 @@ export default function GeneralForm({ duplicate }) {
         setBillingFormState(campaignsDetails);
       }
     }
-  }, [state, duplicate]);
+  }, [state, duplicate]); // eslint-disable-line
 
   return (
     <div

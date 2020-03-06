@@ -1,43 +1,21 @@
 import React, { useReducer, useEffect, useState } from "react";
 import { get, patch } from "utils/api";
 import { mockCompanies } from "components/new-invoice/mock/index";
+import TrashBinReducer from "reducers/TrashBinReducer";
 const initialState = {
   data: [],
   loading: false,
   companies: mockCompanies,
   selectedCompany: false,
-  warningModal: false
+  warningModal: false,
+  restoreModal: false
 };
 const TrashBinContext = React.createContext();
 
 const TrashBinProvider = ({ children }) => {
   const [originalData, setOriginalData] = useState([]);
 
-  const [state, dispatch] = useReducer((state, action) => {
-    switch (action.type) {
-      case "set-data":
-        return {
-          ...state,
-          data: action.payload.data,
-          loading: action.payload.loading
-        };
-      case "set-selected-company":
-        return {
-          ...state,
-          selectedCompany: action.payload.selectedCompany
-        };
-
-      case "set-warning-modal": {
-        return {
-          ...state,
-          warningModal: action.payload.warningModal
-        };
-      }
-
-      default:
-        return null;
-    }
-  }, initialState);
+  const [state, dispatch] = useReducer(TrashBinReducer, initialState);
   const getTrashedItems = () => {
     dispatch({
       type: "set-data",
@@ -46,7 +24,6 @@ const TrashBinProvider = ({ children }) => {
         data: []
       }
     });
-
     get("/api/pending/deleted/list").then(result => {
       dispatch({
         type: "set-data",

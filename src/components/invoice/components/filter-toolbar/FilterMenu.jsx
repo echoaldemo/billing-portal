@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Grid, MenuItem } from "@material-ui/core";
 import { InputField } from "common-components";
 import { StateContext } from "context/StateContext";
@@ -28,7 +28,7 @@ const FilterMenu = () => {
         }}
       >
         <InputField
-          onChange={(e) => {
+          onChange={e => {
             handleFilterChange(e, "invoiceType");
           }}
           fullWidth
@@ -36,7 +36,7 @@ const FilterMenu = () => {
           label="Select Invoice Type"
           select
         >
-          {invoiceTypeOptions.map((item) => {
+          {invoiceTypeOptions.map(item => {
             return (
               <MenuItem key={item.value} value={item.value}>
                 {item.label}
@@ -56,7 +56,7 @@ const FilterMenu = () => {
         }}
       >
         <InputField
-          onChange={(e) => {
+          onChange={e => {
             handleFilterChange(e, "billingType");
           }}
           fullWidth
@@ -64,7 +64,7 @@ const FilterMenu = () => {
           label="Select Billing Type"
           select
         >
-          {billingTypeOptions.map((item) => {
+          {billingTypeOptions.map(item => {
             return (
               <MenuItem key={item.value} value={item.value}>
                 {item.label}

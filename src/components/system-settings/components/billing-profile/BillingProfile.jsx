@@ -1,4 +1,4 @@
-import React, { Profiler } from "react";
+import React, { useContext } from "react";
 import { Grid, Button } from "@material-ui/core";
 import { BillingProvider, BillingContext } from "context/BillingProfileContext";
 import SelectCompanyField from "./SelectCompanyField";
@@ -7,12 +7,18 @@ import { CustomCheckbox } from "common-components";
 import SEO from "utils/seo";
 import { patch } from "utils/api";
 import { post } from "utils/api";
+import { StateContext } from "context/StateContext";
 const BillingProfile = () => {
   const {
     state: { edit },
     dispatch,
     formState
-  } = React.useContext(BillingContext);
+  } = useContext(BillingContext);
+
+  const {
+    state: { applyPrevious },
+    dispatch: stateDispatch
+  } = useContext(StateContext);
 
   const updateProfile = () => {
     dispatch({ type: "set-edit", payload: { edit: false } });
@@ -31,7 +37,8 @@ const BillingProfile = () => {
               campaign_uuid: item.uuid,
               billable_rate: item.billable_rate,
               did_rate: item.did_rate,
-              performance_rate: item.performance_rate
+              performance_rate: item.performance_rate,
+              original_data: true
             });
           }
         });
@@ -69,7 +76,17 @@ const BillingProfile = () => {
       <Grid container>
         <CampaignRows />
         <h5>
-          <CustomCheckbox checked={true} />
+          <CustomCheckbox
+            checked={applyPrevious}
+            onClick={e => {
+              stateDispatch({
+                type: "set-apply-prev",
+                payload: {
+                  applyPrevious: e.target.checked
+                }
+              });
+            }}
+          />
           &nbsp;
           <span>Apply previous invoice data for campaign's rate values.</span>
         </h5>
