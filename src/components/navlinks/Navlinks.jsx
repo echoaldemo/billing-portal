@@ -2,7 +2,6 @@ import React from "react";
 import {
   RecordVoiceOver,
   Settings,
-  AccountCircle,
   Timeline,
   ContactSupport
 } from "@material-ui/icons";

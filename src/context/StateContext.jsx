@@ -23,7 +23,8 @@ const initialState = {
   userProfile: {},
   editManageData: false,
   updateLoading: false,
-  auth: false
+  auth: false,
+  applyPrevious: true
 };
 const confirmModalInitial = {
   approve: false,
@@ -32,7 +33,6 @@ const confirmModalInitial = {
 
 const StateContext = React.createContext();
 
-const today = new Date();
 const dateRangeInitial = {
   startDate: null,
   endDate: null
@@ -96,7 +96,7 @@ const StateProvider = ({ children }) => {
   };
   useEffect(() => {
     filter();
-  }, [filterOpt, dateRange]);
+  }, [filterOpt, dateRange]); // eslint-disable-line
   const setLoading = value => {
     dispatch({ type: "set-loading", payload: { loading: value } });
   };
@@ -167,6 +167,8 @@ const StateProvider = ({ children }) => {
         return { ...state, updateLoading: action.payload.updateLoading };
       case "set-user-profile":
         return { ...state, userProfile: action.payload.userProfile };
+      case "set-apply-prev":
+        return { ...state, applyPrevious: action.payload.applyPrevious };
       default:
         return null;
     }

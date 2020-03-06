@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { BillingContext } from "context/BillingProfileContext";
-import { Row, CustomCheckbox, InputField } from "common-components";
+import { Row, InputField } from "common-components";
 import { IconButton, Collapse } from "@material-ui/core";
 import { ExpandMore, ExpandLess } from "@material-ui/icons";
 

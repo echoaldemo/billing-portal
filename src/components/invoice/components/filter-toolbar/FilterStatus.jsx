@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Grid, MenuItem } from "@material-ui/core";
+import React, { useContext } from "react";
+import { MenuItem } from "@material-ui/core";
 import { InputField } from "common-components";
 import { StateContext } from "context/StateContext";
 
@@ -8,7 +8,7 @@ const FilterStatus = () => {
 
   return (
     <InputField
-      onChange={(e) => {
+      onChange={e => {
         handleFilterChange(e, "status");
       }}
       fullWidth
