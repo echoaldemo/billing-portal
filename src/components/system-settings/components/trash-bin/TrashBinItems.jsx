@@ -5,11 +5,15 @@ import { Row, RowHeader } from "common-components";
 import { formatter } from "utils/func";
 import RestoreIcon from "@material-ui/icons/Restore";
 import { IconButton, Tooltip } from "@material-ui/core";
+import { StateContext } from "context/StateContext";
+import { postLog } from "utils/time";
+
 export default function TrashBinItems() {
   const {
     state: { data },
     updateTrashItem
   } = useContext(TrashBinContext);
+  const { state: profile } = useContext(StateContext);
   return (
     <div>
       <RowHeader rowHeaderData={headerData} />
@@ -61,6 +65,11 @@ export default function TrashBinItems() {
                       style={{ padding: 5 }}
                       onClick={() => {
                         updateTrashItem(item.id);
+                        postLog({
+                          type: "restore-invoice",
+                          description: `${profile.userProfile.name} restored invoice #${item.id}.`,
+                          invoiceId: item.id
+                        });
                       }}
                     >
                       <RestoreIcon />

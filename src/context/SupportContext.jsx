@@ -5,6 +5,7 @@ import { post } from "utils/api";
 const initialState = {
   subject: "",
   description: "",
+  attachment: "",
   modal: null
 };
 const SupportContext = React.createContext();
@@ -17,6 +18,8 @@ const SupportProvider = ({ children }) => {
         return { ...state, subject: action.payload.subject };
       case "set-description":
         return { ...state, description: action.payload.description };
+      case "set-attachment":
+        return { ...state, attachment: action.payload.attachment };
       case "set-modal":
         return { ...state, modal: action.payload.modal };
       case "reset-state":
@@ -25,6 +28,7 @@ const SupportProvider = ({ children }) => {
         return null;
     }
   }, initialState);
+  console.log(state);
   const handleSubmit = () => {
     dispatch({
       type: "set-modal",
@@ -36,7 +40,7 @@ const SupportProvider = ({ children }) => {
       email,
       subject: state.subject,
       description: state.description,
-      attachment: ""
+      attachment: state.attachment
     };
     const req1 = post("/api/zapier/gmail", postObject);
     const req2 = post("/api/zapier/slack", postObject);

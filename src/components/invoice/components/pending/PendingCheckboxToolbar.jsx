@@ -33,7 +33,7 @@ export default function PendingCheckboxToolbar() {
       type: "duplicate-invoice",
       description: `${state.userProfile.name} duplicated invoice ${formatArray(
         nameArr
-      )}`,
+      )}.`,
       invoiceId: null
     });
     setDuplicateLoading(false);

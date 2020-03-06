@@ -115,7 +115,6 @@ const StateProvider = ({ children }) => {
     get("/api/pending/list").then(res => {
       setOriginalData(res.data);
       filter(res.data);
-      console.log(res.data);
       setLoading(false);
     });
   };
@@ -138,7 +137,7 @@ const StateProvider = ({ children }) => {
     });
     postLog({
       type: "delete-invoice",
-      description: `${state.userProfile.name} deleted invoice #${id}.`,
+      description: `${state.userProfile.name} moved invoice #${id} to the trash.`,
       invoiceID: id
     });
   };

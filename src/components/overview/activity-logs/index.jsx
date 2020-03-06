@@ -9,6 +9,7 @@ import {
   CircularProgress as Loader
 } from "@material-ui/core";
 import Add from "@material-ui/icons/PostAdd";
+import Trash from "@material-ui/icons/Delete";
 import Delete from "@material-ui/icons/DeleteForever";
 import Edit from "@material-ui/icons/Edit";
 import Email from "@material-ui/icons/Email";
@@ -16,6 +17,7 @@ import Check from "@material-ui/icons/Check";
 import Draft from "@material-ui/icons/Drafts";
 import Review from "@material-ui/icons/RateReview";
 import Duplicate from "@material-ui/icons/FileCopy";
+import Restore from "@material-ui/icons/Restore";
 import { Timeline, TimelineEvent } from "react-event-timeline";
 import { makeStyles } from "@material-ui/core/styles";
 import { NoResult } from "common-components";
@@ -53,7 +55,7 @@ const ActivityLogsComponent = props => {
           e["icon"] = <Email />;
           break;
         case "delete-invoice":
-          e["icon"] = <Delete />;
+          e["icon"] = <Trash />;
           break;
         case "edit-invoice":
           e["icon"] = <Edit />;
@@ -69,6 +71,12 @@ const ActivityLogsComponent = props => {
           break;
         case "duplicate-invoice":
           e["icon"] = <Duplicate />;
+          break;
+        case "restore-invoice":
+          e["icon"] = <Restore />;
+          break;
+        case "delete-permanently":
+          e["icon"] = <Delete />;
           break;
         default:
           break;

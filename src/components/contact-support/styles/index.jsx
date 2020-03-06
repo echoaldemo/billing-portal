@@ -52,6 +52,22 @@ const Container = styled.div`
 const Divider = styled.div`
   height: 20px;
 `;
+const UploadBtn = styled.button`
+  min-width: 150px;
+  height: 56px;
+  margin-right: -14px;
+  background-color: #ffba6b;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-left: 1px solid #c38f52;
+`;
+
+const BtnText = styled.span`
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #ffffff;
+`;
 
 export {
   HeaderCont,
@@ -62,5 +78,7 @@ export {
   BtnCont,
   Label,
   Container,
-  Divider
+  Divider,
+  UploadBtn,
+  BtnText
 };

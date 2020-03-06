@@ -36,9 +36,9 @@ const DeleteModal = () => {
 
     let desc;
     if (selectedItems.length > 1)
-      desc = `${state.userProfile.name} deleted ${selectedItems.length} invoices.`;
+      desc = `${state.userProfile.name} moved ${selectedItems.length} invoices to the trash.`;
     else
-      desc = `${state.userProfile.name} deleted an invoice for ${selectedItems[0].company.name}.`;
+      desc = `${state.userProfile.name} moved invoice #${selectedItems[0].id} to the trash.`;
     postLog({
       type: "delete-invoice",
       description: desc,
