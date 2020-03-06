@@ -26,8 +26,6 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
     billingFormState,
     setBillingFormState,
     tax,
-    allChecked,
-    setTaxChecked,
     taxableTotal
   } = useContext(ManualInvoiceContext);
   let isTaxed = Boolean(tax === 0);

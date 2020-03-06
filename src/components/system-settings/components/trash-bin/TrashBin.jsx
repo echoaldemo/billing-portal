@@ -5,25 +5,33 @@ import { TableLoader } from "common-components";
 import { Button, Grid, Dialog } from "@material-ui/core";
 import SelectCompanyField from "./SelectCompanyField";
 import { WarningModal } from "common-components";
-import { remove, patch } from "utils/api";
+import { remove } from "utils/api";
 import { NoResult } from "common-components";
+import { SuccessModal } from "common-components";
 const TrashBin = () => {
   const {
-    state: { loading, warningModal, data },
+    state: { loading, warningModal, restoreModal, data },
     dispatch,
     getTrashedItems,
     updateTrashItem
   } = useContext(TrashBinContext);
 
-  const handleCloseModal = () => {
+  const handleCloseWarningModal = () => {
     dispatch({
       type: "set-warning-modal",
       payload: { warningModal: false }
     });
   };
-
+  const handleCloseRestoreModal = () => {
+    dispatch({
+      type: "set-restore-modal",
+      payload: {
+        restoreModal: false
+      }
+    });
+  };
   const deleteAllTrash = () => {
-    handleCloseModal();
+    handleCloseWarningModal();
     data.forEach(element => {
       remove(`/api/pending/delete/${element.id}`).then(() => {
         getTrashedItems();
@@ -32,6 +40,7 @@ const TrashBin = () => {
   };
 
   const restoreAllTrash = () => {
+    handleCloseRestoreModal();
     data.forEach(element => {
       updateTrashItem(element.id);
     });
@@ -53,40 +62,45 @@ const TrashBin = () => {
           <Grid item xs={4}>
             <SelectCompanyField />
           </Grid>
-          <Grid item xs={4} style={{ textAlign: "right" }}>
-            <Button
-              variant="contained"
-              onClick={() => {
-                restoreAllTrash();
-              }}
-              style={{
-                textTransform: "none",
-                fontWeight: "bold",
-                backgroundColor: "#0f97fc",
-                color: "#FFF"
-              }}
-            >
-              Restore All
-            </Button>
-            &emsp;
-            <Button
-              variant="contained"
-              onClick={() => {
-                dispatch({
-                  type: "set-warning-modal",
-                  payload: { warningModal: true }
-                });
-              }}
-              style={{
-                textTransform: "none",
-                fontWeight: "bold",
-                backgroundColor: "#e0505c",
-                color: "#FFF"
-              }}
-            >
-              Empty Trash
-            </Button>
-          </Grid>
+          {data.length > 0 ? (
+            <Grid item xs={4} style={{ textAlign: "right" }}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  dispatch({
+                    type: "set-restore-modal",
+                    payload: { restoreModal: true }
+                  });
+                }}
+                style={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  backgroundColor: "#0f97fc",
+                  color: "#FFF"
+                }}
+              >
+                Restore All
+              </Button>
+              &emsp;
+              <Button
+                variant="contained"
+                onClick={() => {
+                  dispatch({
+                    type: "set-warning-modal",
+                    payload: { warningModal: true }
+                  });
+                }}
+                style={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  backgroundColor: "#e0505c",
+                  color: "#FFF"
+                }}
+              >
+                Empty Trash
+              </Button>
+            </Grid>
+          ) : null}
         </Grid>
 
         {loading ? (
@@ -108,12 +122,28 @@ const TrashBin = () => {
             </span>
           }
           closeFn={() => {
-            handleCloseModal();
+            handleCloseWarningModal();
           }}
           secondaryFn={() => {
             deleteAllTrash();
           }}
           btnText="Delete All"
+        />
+      </Dialog>
+
+      <Dialog open={restoreModal}>
+        <SuccessModal
+          text="Confirmation"
+          content={
+            <span style={{ textAlign: "center", lineHeight: 1.5 }}>
+              Are you sure you really want to restore all this invoices?
+            </span>
+          }
+          closeFn={() => {}}
+          secondaryFn={() => {
+            restoreAllTrash();
+          }}
+          btnText="Restore All"
         />
       </Dialog>
     </React.Fragment>

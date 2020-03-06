@@ -6,7 +6,8 @@ const initialState = {
   loading: false,
   companies: mockCompanies,
   selectedCompany: false,
-  warningModal: false
+  warningModal: false,
+  restoreModal: false
 };
 const TrashBinContext = React.createContext();
 
@@ -31,6 +32,12 @@ const TrashBinProvider = ({ children }) => {
         return {
           ...state,
           warningModal: action.payload.warningModal
+        };
+      }
+      case "set-restore-modal": {
+        return {
+          ...state,
+          restoreModal: action.payload.restoreModal
         };
       }
 

@@ -1,6 +1,7 @@
+/* eslint-disable */
 import React, { useReducer, useEffect, useState, useContext } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
-import { getMock, post, get } from "utils/api";
+import { post, get } from "utils/api";
 import { postLog } from "utils/time";
 import { StateContext } from "context/StateContext";
 

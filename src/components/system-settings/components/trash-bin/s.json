@@ -1,0 +1,641 @@
+[
+  {
+    "jobOpeningUuid": "f7985ef6-d58c-4d80-ab20-b5b988491f58",
+    "candidateUuid": "c0986610-a275-426f-8fcf-f0a962ba58f0",
+    "dateApplied": "2019-05-16T00:41:15.043Z",
+    "position": "Operations Manager",
+    "firstName": "Mervin Jorge",
+    "lastName": "Young",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": null,
+    "email": "merv1028@gmail.com",
+    "phone": "(917) 307-6171"
+  },
+  {
+    "jobOpeningUuid": "6a0e71b8-33e8-44a5-81ea-fc0e9c74627b",
+    "candidateUuid": "2a067c0d-4b67-4ff8-9647-f753f8a1f24d",
+    "dateApplied": "2019-03-19T18:35:18.536Z",
+    "position": "Sales Development Representative- GDL",
+    "firstName": " Erick ",
+    "lastName": "Zaballa",
+    "averageRating": null,
+    "tags": [],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "erickzaballa4_kpc@indeedemail.com",
+    "phone": "(333) 589-2707"
+  },
+  {
+    "jobOpeningUuid": "34bdda42-7bf6-41b7-8b34-1cac2e1ec9eb",
+    "candidateUuid": "f223faca-6356-4d26-b061-33799818f2dc",
+    "dateApplied": "2019-09-22T22:16:51.4Z",
+    "position": "Credit Repair Specialist- Rexburg- #0919",
+    "firstName": "Jessica",
+    "lastName": "Zahn",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      },
+      {
+        "id": 147,
+        "name": "INDEED",
+        "color": "#834C19",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "jessicazahn82@gmail.com ",
+    "phone": "(801) 694-4315"
+  },
+  {
+    "jobOpeningUuid": "f9e380df-0865-450e-8b8b-217f422fdbcf",
+    "candidateUuid": "5645a592-5c41-4dbf-945c-40b601684bec",
+    "dateApplied": "2019-07-08T18:45:43.634Z",
+    "position": "Education Lead Generation Agent- PVR- #0719",
+    "firstName": "Rodríguez Tejeda",
+    "lastName": "Zaida Adoración",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(229) 902-7623"
+  },
+  {
+    "jobOpeningUuid": "c0bb8add-ced2-4995-ab48-6366e910a50e",
+    "candidateUuid": "2f7ced3a-03f6-42ce-b376-11dd835ddb16",
+    "dateApplied": "2019-06-25T21:01:17Z",
+    "position": "Contact Center Representative- GDL",
+    "firstName": "Jose",
+    "lastName": "Zaid Pantoja",
+    "averageRating": null,
+    "tags": [],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "averagejoe3225@gmail.com",
+    "phone": "(333) 723-1770"
+  },
+  {
+    "jobOpeningUuid": "da5368df-b3e9-413f-a803-eb5a8f34710f",
+    "candidateUuid": "da56e006-88e9-43da-81c4-36f1996a8e8c",
+    "dateApplied": "2019-11-26T20:58:39.471Z",
+    "position": "Inbound Customer Service Representative- PVR- #1119",
+    "firstName": "Jesus ",
+    "lastName": "Zalazar",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 169,
+        "name": "YESI",
+        "color": "#000000",
+        "system": false
+      },
+      {
+        "id": 1,
+        "name": "REFERRAL",
+        "color": "#0083C6",
+        "system": true
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "Aldo Torres *CriCut",
+    "email": "",
+    "phone": "(322) 189-5023"
+  },
+  {
+    "jobOpeningUuid": "f9e380df-0865-450e-8b8b-217f422fdbcf",
+    "candidateUuid": "c58058d2-4be1-4745-86a5-7cdf972dfb1c",
+    "dateApplied": "2019-07-25T23:45:04.862Z",
+    "position": "Education Lead Generation Agent- PVR- #0719",
+    "firstName": "Erika Alejandra",
+    "lastName": "Zamarron",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(656) 704-3226"
+  },
+  {
+    "jobOpeningUuid": "c0bb8add-ced2-4995-ab48-6366e910a50e",
+    "candidateUuid": "5641760f-8e56-48f9-a22b-67a4446a7537",
+    "dateApplied": "2019-03-28T21:07:11.352Z",
+    "position": "Contact Center Representative- GDL",
+    "firstName": "Raul ",
+    "lastName": "Zapata",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "raulmaciaszapata9_ymd@indeedemail.com",
+    "phone": "(333) 207-3461"
+  },
+  {
+    "jobOpeningUuid": "b4b184cc-c34c-485a-b546-554cd2660230",
+    "candidateUuid": "c83b58bc-5713-4fe7-baf3-86130fa2513f",
+    "dateApplied": "2020-02-12T21:41:37Z",
+    "position": "Lead Generation Specialist- PVR- #0220",
+    "firstName": "Diandra ",
+    "lastName": "Zapata Ruelas",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 169,
+        "name": "YESI",
+        "color": "#000000",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(322) 210-9240"
+  },
+  {
+    "jobOpeningUuid": "6a0e71b8-33e8-44a5-81ea-fc0e9c74627b",
+    "candidateUuid": "58370c85-def8-4730-86cc-4416328e9982",
+    "dateApplied": "2019-04-08T16:44:21.024Z",
+    "position": "Sales Development Representative- GDL",
+    "firstName": "Samuel ",
+    "lastName": "Zaragoza",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "samzaragoza1988@gmail.com",
+    "phone": "(449) 383-5322"
+  },
+  {
+    "jobOpeningUuid": "aa7564b3-3868-4e80-836c-c1cc2df00f6f",
+    "candidateUuid": "e1166306-00bd-4955-91db-96fddc97d220",
+    "dateApplied": "2019-08-25T22:22:59.535Z",
+    "position": "Accounting Clerk Assistant- LGP- #0819",
+    "firstName": "Maharai ",
+    "lastName": "Zaragoza ",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      },
+      {
+        "id": 151,
+        "name": "BOOMCAREERS",
+        "color": "#0083C6",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": null,
+    "email": "zaragozamaharai5@gmail.com",
+    "phone": "(093) 085-3934"
+  },
+  {
+    "jobOpeningUuid": "c0bb8add-ced2-4995-ab48-6366e910a50e",
+    "candidateUuid": "5e677ef7-0f0e-41d5-980c-cf70e0e242fa",
+    "dateApplied": "2019-05-14T16:26:19.867Z",
+    "position": "Contact Center Representative- GDL",
+    "firstName": "Paola",
+    "lastName": "Zaragoza Ruvalcaba",
+    "averageRating": null,
+    "tags": [],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(332) 506-7096"
+  },
+  {
+    "jobOpeningUuid": "2e74df4f-8560-46ac-9687-9f883e220c60",
+    "candidateUuid": "7c7b0372-1d4f-4fca-895d-6e076ce1a3d4",
+    "dateApplied": "2019-09-09T22:47:41.3Z",
+    "position": "Phone Sales Representative- GDL- #0919 ",
+    "firstName": "Alma Vanessa",
+    "lastName": "Zaragoza Serna",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      },
+      {
+        "id": 1,
+        "name": "REFERRAL",
+        "color": "#0083C6",
+        "system": true
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "Brenda Guerrero",
+    "email": "almazaragoza03@gmail.com",
+    "phone": "(332) 681-9990"
+  },
+  {
+    "jobOpeningUuid": "71e7fbc4-4f77-4e33-8dfd-667bb38e39f1",
+    "candidateUuid": "e2a0f4c9-35d8-49e5-8f60-b03bd8e647f9",
+    "dateApplied": "2019-09-22T23:22:57.473Z",
+    "position": "Sales Development Representative- GDL- #0919 ",
+    "firstName": "Teodoro",
+    "lastName": "Zarate Sandria",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      },
+      {
+        "id": 150,
+        "name": "FACEBOOK",
+        "color": "#777777",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(228) 278-0310"
+  },
+  {
+    "jobOpeningUuid": "623380a5-7462-4119-904c-173899bac976",
+    "candidateUuid": "184b8a13-0f2c-4741-a3da-f8dfe423248d",
+    "dateApplied": "2020-01-22T20:23:44.89Z",
+    "position": "DevOps Engineer- MX- #0120",
+    "firstName": "Manuel",
+    "lastName": "Zatarain",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 169,
+        "name": "YESI",
+        "color": "#000000",
+        "system": false
+      },
+      {
+        "id": 147,
+        "name": "INDEED",
+        "color": "#834C19",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "mzatarainhotmailcom8_8ze@indeedemail.com",
+    "phone": "(526) 862-2799"
+  },
+  {
+    "jobOpeningUuid": "f9e380df-0865-450e-8b8b-217f422fdbcf",
+    "candidateUuid": "9b0b6f48-39e1-42d9-924b-8f06a8d34faa",
+    "dateApplied": "2019-07-29T23:02:43.383Z",
+    "position": "Education Lead Generation Agent- PVR- #0719",
+    "firstName": "JJ",
+    "lastName": "Zavala",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(322) 142-5737"
+  },
+  {
+    "jobOpeningUuid": "09518b39-bad3-48c0-b6b2-f3623b2dd6c2",
+    "candidateUuid": "8688d1fd-00ad-484c-9c31-132e23ebd67d",
+    "dateApplied": "2019-09-23T17:42:58.508Z",
+    "position": "Sales Development Representative- Rexburg- #0919",
+    "firstName": "Serinna",
+    "lastName": "Zavala",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      },
+      {
+        "id": 147,
+        "name": "INDEED",
+        "color": "#834C19",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "serinnazavala4_dm4@indeedemail.com",
+    "phone": "(208) 360-4095"
+  },
+  {
+    "jobOpeningUuid": "da5368df-b3e9-413f-a803-eb5a8f34710f",
+    "candidateUuid": "a84dc44d-c14f-458e-af9f-b34748bd64bb",
+    "dateApplied": "2019-11-25T17:08:31.787Z",
+    "position": "Inbound Customer Service Representative- PVR- #1119",
+    "firstName": "Fernando ",
+    "lastName": "Zavala ",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "Samanta Bernal ",
+    "email": "ronderospv@gmail.com",
+    "phone": "(322) 369-4532"
+  },
+  {
+    "jobOpeningUuid": "a9fb0146-e510-4ef1-b1a3-647e8e3d3464",
+    "candidateUuid": "8d041145-36d8-4ac6-959e-2dc2b5710b1c",
+    "dateApplied": "2020-02-24T22:13:33.456Z",
+    "position": "Creative Content Writers (English)- PVR- #0220",
+    "firstName": "Vianey Alejandra",
+    "lastName": "Zavala Zacarias",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 169,
+        "name": "YESI",
+        "color": "#000000",
+        "system": false
+      },
+      {
+        "id": 147,
+        "name": "INDEED",
+        "color": "#834C19",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(844) 318-9398"
+  },
+  {
+    "jobOpeningUuid": "c0bb8add-ced2-4995-ab48-6366e910a50e",
+    "candidateUuid": "b775e65c-67e4-4bdf-b59c-20face990a19",
+    "dateApplied": "2019-04-23T15:39:57.564Z",
+    "position": "Contact Center Representative- GDL",
+    "firstName": "Juan Pablo ",
+    "lastName": "Zazueta Escamilla",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "juanpablozazuetaescamilla7_9nz@indeedemail.com",
+    "phone": "(331) 141-0179"
+  },
+  {
+    "jobOpeningUuid": "de68cf08-b933-4781-b97a-ae1b4fd9faf8",
+    "candidateUuid": "3a666105-4a0e-4d13-8302-56e132f8d605",
+    "dateApplied": "2019-04-02T16:30:33.663Z",
+    "position": "Sales Development Representative",
+    "firstName": "Cynthia Adele ",
+    "lastName": "Zepeda Barrios",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "heather_299@hotmail.com",
+    "phone": "(322) 109-6187"
+  },
+  {
+    "jobOpeningUuid": "97840d57-e0ad-46ef-b897-5a9d53925a11",
+    "candidateUuid": "81525e26-1779-4a8f-997a-61d9f0296049",
+    "dateApplied": "2019-10-18T21:09:32.55Z",
+    "position": "Inbound Customer Service Representative- PVR- #1019",
+    "firstName": "Elda ",
+    "lastName": "Zepeda Pena ",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "Karen Medina ",
+    "email": "eldapena5@gmail.com",
+    "phone": "(322) 191-6155"
+  },
+  {
+    "jobOpeningUuid": "de68cf08-b933-4781-b97a-ae1b4fd9faf8",
+    "candidateUuid": "b327f98d-f185-4fc1-a64d-a7c2af93fb58",
+    "dateApplied": "2019-03-14T22:13:28Z",
+    "position": "Sales Development Representative",
+    "firstName": "i: Alexandra ",
+    "lastName": "Zipprich",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "alexandrazipprich7_opb@indeedemail.com",
+    "phone": "(253) 509-4860"
+  },
+  {
+    "jobOpeningUuid": "919ab185-ca69-43c5-a1a3-e029b5ccf221",
+    "candidateUuid": "f954b3d2-63ba-4683-9460-e6027f5eeaa9",
+    "dateApplied": "2019-05-20T15:57:17.764Z",
+    "position": "Contact Center Representative",
+    "firstName": "Oneiris",
+    "lastName": "Zorrilla",
+    "averageRating": 1.0,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "",
+    "phone": "(958) 117-6454"
+  },
+  {
+    "jobOpeningUuid": "1a6f988f-d116-4fd1-8fa0-9139be2061f9",
+    "candidateUuid": "1fb01649-2f3b-48ab-8d78-999d9654bc19",
+    "dateApplied": "2019-09-26T18:52:53.188Z",
+    "position": "Inbound Customer Service Representative- PVR- #0919",
+    "firstName": "Jesus Antonio ",
+    "lastName": "Zubia Rodriguez",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 148,
+        "name": "WALK-IN",
+        "color": "#D13F63",
+        "system": false
+      },
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "walk in ",
+    "email": "TonyRo9681@gmail.com",
+    "phone": "(322) 182-0098"
+  },
+  {
+    "jobOpeningUuid": "6674e307-970b-41b0-8516-a3eb16789bc1",
+    "candidateUuid": "6064c76e-b203-4c08-946f-fb04beec4001",
+    "dateApplied": "2019-09-05T20:13:34.403Z",
+    "position": "SEO/Marketing Comment Agent- GDL- #0919 ",
+    "firstName": "Samuel",
+    "lastName": "Zuluaga",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 23,
+        "name": "BEGO",
+        "color": "#FFA900",
+        "system": false
+      },
+      {
+        "id": 1,
+        "name": "REFERRAL",
+        "color": "#0083C6",
+        "system": true
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "",
+    "email": "samuelzc_kite23@homtail.com",
+    "phone": "(333) 103-5503"
+  },
+  {
+    "jobOpeningUuid": "97840d57-e0ad-46ef-b897-5a9d53925a11",
+    "candidateUuid": "59de2a7a-6618-4e35-8cf8-42284a8c04a6",
+    "dateApplied": "2019-10-08T19:06:50.906Z",
+    "position": "Inbound Customer Service Representative- PVR- #1019",
+    "firstName": "Fabian ",
+    "lastName": "Zuñiga ",
+    "averageRating": null,
+    "tags": [
+      {
+        "id": 19,
+        "name": "IOANA",
+        "color": "#7928E0",
+        "system": false
+      },
+      {
+        "id": 1,
+        "name": "REFERRAL",
+        "color": "#0083C6",
+        "system": true
+      }
+    ],
+    "reactions": null,
+    "jobCandidateStatus": "ACTIVE",
+    "referrerName": "Marco Antonio Betancourt",
+    "email": "fabianzuniga16@gmail.com",
+    "phone": "(322) 109-8767"
+  }
+]

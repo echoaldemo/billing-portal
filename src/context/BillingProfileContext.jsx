@@ -12,7 +12,7 @@ const initialState = {
   campaignRates: []
 };
 
-const BillingContext = React.createContext();
+const BillingContext = React.createContext(); // eslint-disable-line
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -39,7 +39,7 @@ const BillingProvider = ({ children }) => {
     return result;
   };
   const addRateObj = (companyDetails, campRates) => {
-    companyDetails.map(item => {
+    companyDetails.forEach(item => {
       const result = campRates.find(camp => camp.campaign_uuid === item.uuid);
       if (result) {
         item.edited = false;

@@ -1,4 +1,4 @@
-import React, { Profiler } from "react";
+import React from "react";
 import { Grid, Button } from "@material-ui/core";
 import { BillingProvider, BillingContext } from "context/BillingProfileContext";
 import SelectCompanyField from "./SelectCompanyField";

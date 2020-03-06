@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { Grid, InputLabel } from "@material-ui/core";
+import React, { useContext } from "react";
+import { Grid } from "@material-ui/core";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
@@ -41,7 +41,7 @@ const FilterDate = () => {
             variant="inline"
             format="MM/dd/yyyy"
             value={dateRange.startDate}
-            onChange={(date) => {
+            onChange={date => {
               handleDateChange(date, "startDate");
             }}
           />
@@ -57,7 +57,7 @@ const FilterDate = () => {
             variant="inline"
             format="MM/dd/yyyy"
             value={dateRange.endDate}
-            onChange={(date) => {
+            onChange={date => {
               handleDateChange(date, "endDate");
             }}
           />
