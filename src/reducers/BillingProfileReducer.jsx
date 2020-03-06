@@ -6,8 +6,6 @@ const BillingProfileReducer = (state, action) => {
       return { ...state, selectedCompany: action.payload.selectedCompany };
     case "set-edit":
       return { ...state, edit: action.payload.edit };
-    case "set-apply-prev":
-      return { ...state, applyPrevious: action.payload.applyPrevious };
 
     default:
       return null;
