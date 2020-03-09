@@ -3,6 +3,7 @@ import { postLog } from "utils/time";
 import { get, patch } from "utils/api";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
+import { getAPI } from "utils/api";
 
 const moment = extendMoment(Moment);
 const initialState = {
@@ -24,7 +25,8 @@ const initialState = {
   editManageData: false,
   updateLoading: false,
   auth: false,
-  applyPrevious: true
+  applyPrevious: true,
+  companies: []
 };
 const confirmModalInitial = {
   approve: false,
@@ -169,11 +171,27 @@ const StateProvider = ({ children }) => {
         return { ...state, userProfile: action.payload.userProfile };
       case "set-apply-prev":
         return { ...state, applyPrevious: action.payload.applyPrevious };
+      case "set-companies":
+        return { ...state, companies: action.payload.companies };
       default:
         return null;
     }
   }, initialState);
 
+  useEffect(() => {
+    getAPI("/identity/company/list")
+      .then(result => {
+        dispatch({
+          type: "set-companies",
+          payload: {
+            companies: result.data
+          }
+        });
+      })
+      .catch(err => {
+        console.log(err.response);
+      });
+  }, []);
   return (
     <StateContext.Provider
       value={{
