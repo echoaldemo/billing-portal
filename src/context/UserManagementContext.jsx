@@ -10,6 +10,7 @@ const initialState = {
   openManage: false,
   editLoading: false,
   delLoading: false,
+  del: false,
   search: '',
   copy: false,
   count: 0
@@ -51,6 +52,10 @@ const StateProvider = ({ children }) => {
         return { ...state, editLoading: true }
       case 'EDIT_LOAD_CLOSE':
         return { ...state, editLoading: false }
+      case 'SET_DELETE_OPEN':
+        return { ...state, del: true }
+      case 'SET_DELETE_CLOSE':
+        return { ...state, del: false }
       case 'DELETE_LOAD_OPEN':
         return { ...state, delLoading: true }
       case 'DELETE_LOAD_CLOSE':
