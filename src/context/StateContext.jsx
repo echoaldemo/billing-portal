@@ -3,6 +3,7 @@ import { postLog } from "utils/time";
 import { get, patch } from "utils/api";
 import Moment from "moment";
 import { extendMoment } from "moment-range";
+import { getAPI } from "utils/api";
 
 const moment = extendMoment(Moment);
 const initialState = {
@@ -24,7 +25,8 @@ const initialState = {
   editManageData: false,
   updateLoading: false,
   auth: false,
-  applyPrevious: true
+  applyPrevious: true,
+  companies: []
 };
 const confirmModalInitial = {
   approve: false,
@@ -174,6 +176,15 @@ const StateProvider = ({ children }) => {
     }
   }, initialState);
 
+  useEffect(() => {
+    getAPI("/identity/company/list")
+      .then(result => {
+        console.log("Company", result.data);
+      })
+      .catch(err => {
+        console.log(err.response);
+      });
+  }, []);
   return (
     <StateContext.Provider
       value={{
