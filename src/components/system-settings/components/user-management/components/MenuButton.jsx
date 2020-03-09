@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
-import { Menu, MenuItem } from '@material-ui/core'
+import { Menu, MenuItem, Dialog } from '@material-ui/core'
 import { Edit, Delete, Check } from '@material-ui/icons'
-import { LoadingModal } from 'common-components'
+import { LoadingModal, WarningModal } from 'common-components'
 import { store } from 'context/UserManagementContext'
 import { remove, get, patch } from 'utils/api'
 
 const MenuButton = () => {
   const {
-    state: { anchorEl, delLoading, selectedUser },
+    state: { anchorEl, delLoading, selectedUser, del },
     dispatch
   } = useContext(store)
 
@@ -18,12 +18,12 @@ const MenuButton = () => {
 
   const handleDelete = () => {
     dispatch({ type: 'DELETE_LOAD_OPEN' })
-    dispatch({ type: 'MENU_CLOSE' })
     remove(`/api/users/delete/${selectedUser.id}`).then(() => {
       dispatch({ type: 'DELETE_LOAD_CLOSE' })
       dispatch({ type: 'LOADING_ON' })
       get('/api/users/list').then(res => {
         dispatch({ type: 'SET_USERS', payload: { users: res.data } })
+        dispatch({ type: 'SET_DELETE_CLOSE' })
         dispatch({ type: 'LOADING_OFF' })
       })
     })
@@ -62,7 +62,13 @@ const MenuButton = () => {
             <Edit /> Manage
           </MenuItem>
         )}
-        <MenuItem className="menu-manage-user" onClick={handleDelete}>
+        <MenuItem
+          className="menu-manage-user"
+          onClick={() => {
+            dispatch({ type: 'MENU_CLOSE' })
+            dispatch({ type: 'SET_DELETE_OPEN' })
+          }}
+        >
           <Delete /> Delete
         </MenuItem>
       </Menu>
@@ -71,6 +77,15 @@ const MenuButton = () => {
         text="Deleting user..."
         cancelFn={() => {}}
       />
+      <Dialog open={del}>
+        <WarningModal
+          text="Confirmation"
+          content={`Are you sure want to remove ${selectedUser.name}?`}
+          closeFn={() => dispatch({ type: 'SET_DELETE_CLOSE' })}
+          secondaryFn={handleDelete}
+          btnText="Continue"
+        />
+      </Dialog>
     </>
   )
 }
