@@ -6,7 +6,7 @@ import { store } from 'context/UserManagementContext'
 
 const UserTableBody = () => {
   const {
-    state: { search, users, rowsPerPage, page },
+    state: { search, users, rowsPerPage, page, filter },
     dispatch
   } = useContext(store)
   return (
@@ -14,8 +14,10 @@ const UserTableBody = () => {
       {search
         ? users
             .filter(u => u.name.match(new RegExp(search, 'i')))
-            .map((user, i) => {
-              return i < rowsPerPage ? (
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((user, i) =>
+              (filter.status === 'all' || filter.status === user.status) &&
+              (filter.type === 'all' || filter.type === user.type) ? (
                 <TableRow key={i}>
                   <TableCell>
                     <img src={user.imageUrl} alt="" />
@@ -40,34 +42,37 @@ const UserTableBody = () => {
                   </TableCell>
                 </TableRow>
               ) : null
-            })
+            )
         : users
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((user, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <img src={user.imageUrl} alt="" />
-                </TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <StatusCell status={user.status} />
-                <TableCell>{user.type}</TableCell>
-                <TableCell align="center">
-                  <Settings
-                    onClick={e =>
-                      dispatch({
-                        type: 'MENU_OPEN',
-                        payload: {
-                          anchorEl: e.currentTarget,
-                          selectedUser: user
-                        }
-                      })
-                    }
-                    className="settings-icon"
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
+            .map((user, i) =>
+              (filter.status === 'all' || filter.status === user.status) &&
+              (filter.type === 'all' || filter.type === user.type) ? (
+                <TableRow key={i}>
+                  <TableCell>
+                    <img src={user.imageUrl} alt="" />
+                  </TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <StatusCell status={user.status} />
+                  <TableCell>{user.type}</TableCell>
+                  <TableCell align="center">
+                    <Settings
+                      onClick={e =>
+                        dispatch({
+                          type: 'MENU_OPEN',
+                          payload: {
+                            anchorEl: e.currentTarget,
+                            selectedUser: user
+                          }
+                        })
+                      }
+                      className="settings-icon"
+                    />
+                  </TableCell>
+                </TableRow>
+              ) : null
+            )}
     </TableBody>
   )
 }
