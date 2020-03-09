@@ -1,6 +1,7 @@
 import React, { useReducer, useContext } from "react";
 import { StateContext } from "context/StateContext";
 import { post } from "utils/api";
+import { template } from "../layout/EmailTemp";
 
 const initialState = {
   subject: "",
@@ -39,12 +40,16 @@ const SupportProvider = ({ children }) => {
       name: `${givenName} ${familyName}`,
       email,
       subject: state.subject,
-      description: state.description,
+      description: template(
+        `${givenName} ${familyName}`,
+        email,
+        state.description
+      ),
       attachment: state.attachment
     };
     const req1 = post("/api/zapier/gmail", postObject);
-    const req2 = post("/api/zapier/slack", postObject);
-    Promise.all([req1, req2]).then(() => {
+    // const req2 = post("/api/zapier/slack", postObject);
+    Promise.all([req1]).then(() => {
       setTimeout(() => {
         dispatch({
           type: "set-modal",
