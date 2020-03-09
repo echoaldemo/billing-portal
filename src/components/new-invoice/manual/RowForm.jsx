@@ -39,7 +39,8 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   };
 
   const hourMinToDec = (value, label) => {
-    if ((parseFloat(value) <= 59 && parseFloat(value) > 0) || value === "") {
+    if (label === "min" && value > 59) {
+    } else if (parseFloat(value) > 0 || value === "") {
       setTimeState({ ...timeState, [label]: value });
       let temp;
       if (value === "") {
