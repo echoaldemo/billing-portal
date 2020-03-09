@@ -9,13 +9,13 @@ export default function SimplePopover({ item }) {
     dispatch,
     setModalLoading,
     deletePendingStatus,
-    state
+    state,
+    selectedItems
   } = React.useContext(StateContext);
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
     dispatch({ type: "set-selected-data", payload: { selectedData: item } });
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -33,9 +33,17 @@ export default function SimplePopover({ item }) {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
+  const getDisabled = () => {
+    if (selectedItems.length > 1) {
+      if (selectedItems.filter(e => e.id === item.id).length === 1) return true;
+    }
+    return false;
+  };
+
   return (
     <div style={{ paddingLeft: 15 }}>
       <IconButton
+        disabled={getDisabled()}
         aria-describedby={id}
         onClick={handleClick}
         style={{ padding: 0, color: "#444851" }}
