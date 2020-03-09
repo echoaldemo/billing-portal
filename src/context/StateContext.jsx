@@ -171,6 +171,8 @@ const StateProvider = ({ children }) => {
         return { ...state, userProfile: action.payload.userProfile };
       case "set-apply-prev":
         return { ...state, applyPrevious: action.payload.applyPrevious };
+      case "set-companies":
+        return { ...state, companies: action.payload.companies };
       default:
         return null;
     }
@@ -179,7 +181,12 @@ const StateProvider = ({ children }) => {
   useEffect(() => {
     getAPI("/identity/company/list")
       .then(result => {
-        console.log("Company", result.data);
+        dispatch({
+          type: "set-companies",
+          payload: {
+            companies: result.data
+          }
+        });
       })
       .catch(err => {
         console.log(err.response);
