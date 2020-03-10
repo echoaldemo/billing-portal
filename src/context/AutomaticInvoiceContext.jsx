@@ -139,6 +139,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       campaign: camp
     });
     console.log(formState.billingType);
+    console.log(e.target.value);
     const url = `/api/rate/${
       e.target.value
     }?original_data=${!state2.applyPrevious}&billing_type=${
@@ -172,12 +173,12 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
 
   const handleBillingChange = e => {
+    console.log(e.target.value, "eeee");
     const url = `/api/rate/${
-      e.target.value
-    }?original_data=${!state2.applyPrevious}&billing_type=${
-      formState.billingType
-    }`;
+      formState.company
+    }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
     get(url).then(res => {
+      console.log(res);
       if (res.data.length) {
         let temp = formState.campaign;
         let rates = res.data;
