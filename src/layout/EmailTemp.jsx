@@ -130,6 +130,12 @@ export const template = (name, email, message) => {
            -o-animation:ripple 0.65s linear;
               animation:ripple 0.65s linear;
       }
+      .header-image {
+        background-image: url(https://media.giphy.com/media/GZd8nPH3TcNSU/giphy.gif);
+        height: 450px;
+        background-size: cover;
+        transform: scale(1.01);
+      }
       @-webkit-keyframes ripple {
           100% {opacity: 0; -webkit-transform: scale(2.5);}
       }
@@ -219,11 +225,12 @@ export const template = (name, email, message) => {
                               <!-- START HEADER IMAGE -->
                               <tr>
                                 <td align="center" class="hund ripplelink" width="600">
-                                  <img 
-                                  align="left" 
-                                  width="600" 
-                                  style="border-radius: 3px 3px 0px 0px;width: 100%;max-width: 599px!important;border-left: 1px solid #dea846;
-                                  border-right: 1px solid #dea846" class="hund" src="https://media.giphy.com/media/GZd8nPH3TcNSU/giphy.gif">
+                                  <div style="background-image: url(https://media.giphy.com/media/GZd8nPH3TcNSU/giphy.gif);
+                                  height: 440px;
+                                  background-size: cover;
+                                  border-radius: 3px 3px 0px 0px;
+                                  background-position: center;">
+                                  </div>
                                 </td>
                               </tr>
                               <!-- END HEADER IMAGE -->

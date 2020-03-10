@@ -29,14 +29,13 @@ const SupportProvider = ({ children }) => {
         return null;
     }
   }, initialState);
-  console.log(state);
   const handleSubmit = () => {
     dispatch({
       type: "set-modal",
       payload: { modal: "loading" }
     });
     const { familyName, givenName, email } = profile.userProfile;
-    const postObject = {
+    const postObjectGmail = {
       name: `${givenName} ${familyName}`,
       email,
       subject: state.subject,
@@ -47,9 +46,16 @@ const SupportProvider = ({ children }) => {
       ),
       attachment: state.attachment
     };
-    const req1 = post("/api/zapier/gmail", postObject);
-    // const req2 = post("/api/zapier/slack", postObject);
-    Promise.all([req1]).then(() => {
+    const postObjectSlack = {
+      name: `${givenName} ${familyName}`,
+      email,
+      subject: state.subject,
+      description: state.description,
+      attachment: state.attachment
+    };
+    const req1 = post("/api/zapier/gmail", postObjectGmail);
+    const req2 = post("/api/zapier/slack", postObjectSlack);
+    Promise.all([req1, req2]).then(() => {
       setTimeout(() => {
         dispatch({
           type: "set-modal",
