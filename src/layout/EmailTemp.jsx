@@ -304,7 +304,7 @@ export const template = (name, email, message) => {
                       
                         <tr>
                           <td class="td-padding" align="center" style="font-family: 'Roboto Mono', monospace; color: #212121!important; font-size: 16px; line-height: 24px; padding-top: 0px; padding-left: 0px!important; padding-right: 0px!important; padding-bottom: 0px!important; mso-line-height-rule: exactly; mso-padding-alt: 0px 0px 0px 0px;">
-                           <span>© 2019 &nbsp;<b style="color: rgb(248, 146, 34);">Perfect Pitch Tech</b> . All Rights Reserved. </span>
+                           <span>© 2020 &nbsp;<b style="color: rgb(248, 146, 34);">Perfect Pitch Tech</b> . All Rights Reserved. </span>
                           </td>
                         </tr>
                         

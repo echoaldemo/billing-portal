@@ -16,17 +16,9 @@ export default function GeneralForm() {
     selectedCampaign,
     setSelectedCampaign,
     handleBillingChange,
+    handleCompanyChange,
     getBalance
   } = useContext(AutomaticInvoiceContext);
-
-  const filterCampaign = uuid => {
-    const filteredCampaign = state.campaigns.filter(
-      camp => camp.company === uuid
-    );
-
-    setSelectedCampaign(filteredCampaign.map(item => item.uuid));
-    return filteredCampaign;
-  };
   return (
     <div
       style={{
@@ -40,13 +32,7 @@ export default function GeneralForm() {
         <InputField
           label="Company"
           value={formState.company}
-          onChange={e => {
-            setFormState({
-              ...formState,
-              company: e.target.value,
-              campaign: filterCampaign(e.target.value)
-            });
-          }}
+          onChange={e => handleCompanyChange(e)}
           disabled={false}
           fullWidth
           select

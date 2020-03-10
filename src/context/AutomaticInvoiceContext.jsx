@@ -122,14 +122,55 @@ const AutomaticInvoiceProvider = ({ children }) => {
     getGeneralData();
   };
 
+  const filterCampaign = uuid => {
+    const filteredCampaign = state.campaigns.filter(
+      camp => camp.company === uuid
+    );
+
+    setSelectedCampaign(filteredCampaign.map(item => item.uuid));
+    return filteredCampaign;
+  };
+
+  const handleCompanyChange = e => {
+    const camp = filterCampaign(e.target.value);
+    setFormState({
+      ...formState,
+      company: e.target.value,
+      campaign: camp
+    });
+    const url = `/api/rate/${
+      e.target.value
+    }?original_data=${!state2.applyPrevious}`;
+
+    get(url).then(res => {
+      if (res.data.length) {
+        let temp = camp;
+        let rates = res.data;
+        temp.forEach(item1 => {
+          const result = rates.find(item2 => {
+            return item2.campaign_uuid === item1.uuid;
+          });
+          const { billable_rate, performance_rate, did_rate } = result;
+          item1["content"] = {
+            ...item1["content"],
+            bill_rate: billable_rate,
+            performance_rate,
+            did_rate
+          };
+        });
+        setFormState({
+          ...formState,
+          company: e.target.value,
+          campaign: temp
+        });
+      }
+    });
+  };
+
   const handleBillingChange = e => {
     const url = `/api/rate/${
       formState.company
     }?original_data=${!state2.applyPrevious}`;
-
-    console.log(url);
-    console.log(!state2.applyPrevious);
-
     get(url).then(res => {
       if (res.data.length) {
         let temp = formState.campaign;
@@ -493,6 +534,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
         setActiveCampaigns,
         selectedCampaign,
         setSelectedCampaign,
+        handleCompanyChange,
         handleBillingChange,
         addFee,
         setAddFee,
