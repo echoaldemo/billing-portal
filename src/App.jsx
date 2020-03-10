@@ -3,11 +3,9 @@ import Routes from "routes/index";
 import { StateProvider } from "context/StateContext";
 const App = () => {
   return (
-    <div>
-      <StateProvider>
-        <Routes />
-      </StateProvider>
-    </div>
+    <StateProvider>
+      <Routes />
+    </StateProvider>
   );
 };
 
