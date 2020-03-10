@@ -138,8 +138,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
       company: e.target.value,
       campaign: camp
     });
-    console.log(formState.billingType);
-    console.log(e.target.value);
     const url = `/api/rate/${
       e.target.value
     }?original_data=${!state2.applyPrevious}&billing_type=${
@@ -147,7 +145,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
     }`;
 
     get(url).then(res => {
-      console.log("res", res);
       if (res.data.length) {
         let temp = camp;
         let rates = res.data;
@@ -173,14 +170,12 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
 
   const handleBillingChange = e => {
-    console.log(e.target.value, "eeee");
     const url = `/api/rate/${
       formState.company
     }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
     get(url).then(res => {
-      console.log(res);
+      let temp = formState.campaign;
       if (res.data.length) {
-        let temp = formState.campaign;
         let rates = res.data;
         temp.forEach(item1 => {
           const result = rates.find(item2 => {
@@ -199,11 +194,20 @@ const AutomaticInvoiceProvider = ({ children }) => {
           billingType: e.target.value,
           campaign: temp
         });
-      } else
+      } else {
+        temp.forEach(item1 => {
+          item1["content"] = {
+            ...item1["content"],
+            bill_rate: " ",
+            performance_rate: " ",
+            did_rate: " "
+          };
+        });
         setFormState({
           ...formState,
           billingType: e.target.value
         });
+      }
     });
   };
   const handleAddFees = (e, label) => {

@@ -59,7 +59,7 @@ const Message = () => {
           }}
         />
       </Container>
-      <Divider />
+      {/* <Divider />
       <Container>
         <Label>ATTACH IMAGE</Label>
         <input
@@ -90,7 +90,7 @@ const Message = () => {
           value={state.attachment}
           placeholder="No image selected."
         />
-      </Container>
+      </Container> */}
       <BtnCont>
         <SaveButton
           disabled={subject.length && description.length ? false : true}
