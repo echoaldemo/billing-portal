@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useReducer, useEffect, useState, useContext } from "react";
 import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
-import { post, get } from "utils/api";
+import { post, get, getMock } from "utils/api";
 import { postLog } from "utils/time";
 import { StateContext } from "context/StateContext";
 
@@ -143,29 +143,48 @@ const AutomaticInvoiceProvider = ({ children }) => {
     }?original_data=${!state2.applyPrevious}&billing_type=${
       formState.billingType
     }`;
-
     get(url).then(res => {
-      if (res.data.length) {
+      getMock("/company1", {}).then(res2 => {
+        let data = res2.data[Math.floor(Math.random() * 10)];
         let temp = camp;
-        let rates = res.data;
-        temp.forEach(item1 => {
-          const result = rates.find(item2 => {
-            return item2.campaign_uuid === item1.uuid;
+        if (res.data.length) {
+          let rates = res.data;
+          temp.forEach(item1 => {
+            const result = rates.find(item2 => {
+              return item2.campaign_uuid === item1.uuid;
+            });
+            const { billable_rate, performance_rate, did_rate } = result;
+            item1["content"] = {
+              ...item1["content"],
+              bill_rate: billable_rate,
+              performance_rate,
+              did_rate,
+              billable_hours: data.billable_hours,
+              did: data.did,
+              performance: data.performance
+            };
           });
-          const { billable_rate, performance_rate, did_rate } = result;
-          item1["content"] = {
-            ...item1["content"],
-            bill_rate: billable_rate,
-            performance_rate,
-            did_rate
-          };
-        });
-        setFormState({
-          ...formState,
-          company: e.target.value,
-          campaign: temp
-        });
-      }
+          setFormState({
+            ...formState,
+            company: e.target.value,
+            campaign: temp
+          });
+        } else {
+          temp.forEach(item1 => {
+            item1["content"] = {
+              ...item1["content"],
+              billable_hours: data.billable_hours,
+              did: data.did,
+              performance: data.performance
+            };
+          });
+          setFormState({
+            ...formState,
+            company: e.target.value,
+            campaign: temp
+          });
+        }
+      });
     });
   };
 
@@ -174,40 +193,50 @@ const AutomaticInvoiceProvider = ({ children }) => {
       formState.company
     }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
     get(url).then(res => {
-      let temp = formState.campaign;
-      if (res.data.length) {
-        let rates = res.data;
-        temp.forEach(item1 => {
-          const result = rates.find(item2 => {
-            return item2.campaign_uuid === item1.uuid;
+      getMock("/company1", {}).then(res2 => {
+        let temp = formState.campaign;
+        let data = res2.data[Math.floor(Math.random() * 10)];
+        if (res.data.length) {
+          let rates = res.data;
+          temp.forEach(item1 => {
+            const result = rates.find(item2 => {
+              return item2.campaign_uuid === item1.uuid;
+            });
+            const { billable_rate, performance_rate, did_rate } = result;
+            item1["content"] = {
+              ...item1["content"],
+              bill_rate: billable_rate,
+              performance_rate,
+              did_rate,
+              billable_hours: data.billable_hours,
+              did: data.did,
+              performance: data.performance
+            };
           });
-          const { billable_rate, performance_rate, did_rate } = result;
-          item1["content"] = {
-            ...item1["content"],
-            bill_rate: billable_rate,
-            performance_rate,
-            did_rate
-          };
-        });
-        setFormState({
-          ...formState,
-          billingType: e.target.value,
-          campaign: temp
-        });
-      } else {
-        temp.forEach(item1 => {
-          item1["content"] = {
-            ...item1["content"],
-            bill_rate: " ",
-            performance_rate: " ",
-            did_rate: " "
-          };
-        });
-        setFormState({
-          ...formState,
-          billingType: e.target.value
-        });
-      }
+          setFormState({
+            ...formState,
+            billingType: e.target.value,
+            campaign: temp
+          });
+        } else {
+          temp.forEach(item1 => {
+            item1["content"] = {
+              ...item1["content"],
+              bill_rate: " ",
+              performance_rate: " ",
+              did_rate: " ",
+              billable_hours: data.billable_hours,
+              did: data.did,
+              performance: data.performance
+            };
+          });
+          setFormState({
+            ...formState,
+            billingType: e.target.value,
+            campaign: temp
+          });
+        }
+      });
     });
   };
   const handleAddFees = (e, label) => {
