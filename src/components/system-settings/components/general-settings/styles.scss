@@ -1,0 +1,20 @@
+.section-2-container {
+  color: #444851;
+  .section-2-item {
+    border: solid 1px #f1f1f1;
+    padding: 0;
+  }
+  .row-container {
+    height: 320px;
+    overflow: auto;
+  }
+  .section-title {
+    padding: 15px;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-bottom: solid 1px #f1f1f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

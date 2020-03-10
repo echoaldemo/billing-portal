@@ -35,7 +35,7 @@ const ShowExpand = ({ index }) => {
   );
 };
 
-const CampaignRowsDetails = ({ item, index }) => {
+const CampaignRowsDetails = ({ item, index, services }) => {
   const {
     rowCollapse,
     state: { edit },
@@ -48,7 +48,7 @@ const CampaignRowsDetails = ({ item, index }) => {
       size: 3
     },
     {
-      label: <small>Billable Hours, DID Billing, Performance</small>,
+      label: <small>{services}</small>,
       size: 4
     },
 

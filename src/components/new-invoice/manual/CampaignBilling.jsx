@@ -36,7 +36,6 @@ const CampaignBilling = ({ campaignDetails }) => {
     getTaxableAdditionalFees
   } = React.useContext(ManualInvoiceContext);
   useEffect(() => {
-    console.log("campaignDetails", campaignDetails);
     setBillingFormState(campaignDetails);
   }, [campaignDetails]);
 

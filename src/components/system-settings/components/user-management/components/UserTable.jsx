@@ -1,11 +1,10 @@
 import React, { useContext } from 'react'
 import { Table, TablePagination } from '@material-ui/core'
-import { Search } from '@material-ui/icons'
 import UserTableHeader from './UserTableHeader'
 import UserTableBody from './UserTableBody'
 import MenuButton from './MenuButton'
 import ManageModal from './ManageModal'
-import { InputField } from 'common-components'
+import HeaderToolBar from './HeaderToolBar'
 import { store } from 'context/UserManagementContext'
 
 const UserTable = () => {
@@ -20,33 +19,7 @@ const UserTable = () => {
 
   return (
     <>
-      <div style={{ width: '50%', marginBottom: 16 }}>
-        <InputField
-          fullWidth
-          label="Search by name"
-          InputProps={{
-            endAdornment: <Search style={{ color: '#CCC' }} />
-          }}
-          value={search}
-          onChange={e => {
-            if (e.target.value) {
-              dispatch({ type: 'SET_PAGE', payload: { page: 0 } })
-              dispatch({
-                type: 'SET_COUNT',
-                payload: {
-                  count: users.filter(user =>
-                    user.name.match(new RegExp(e.target.value, 'i'))
-                  ).length
-                }
-              })
-            }
-            dispatch({
-              type: 'HANDLE_SEARCH',
-              payload: { search: e.target.value }
-            })
-          }}
-        />
-      </div>
+      <HeaderToolBar />
       <div className="users-table-container">
         <Table>
           <UserTableHeader />

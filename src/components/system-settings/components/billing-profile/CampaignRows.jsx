@@ -27,12 +27,27 @@ const CampaignRows = () => {
 const RowBody = () => {
   const { formState } = useContext(BillingContext);
 
+  const handleServices = item => {
+    let newArr = [];
+    item["billable_rate"] && newArr.push("Billable Hours");
+    item["did_rate"] && newArr.push("DID");
+    item["performance_rate"] && newArr.push("Performance");
+    return newArr.length > 0 ? newArr.join(", ") : "Field not set";
+  };
+
   return (
     <React.Fragment>
       {formState.length > 0 && (
         <React.Fragment>
           {formState.map((item, i) => {
-            return <CampaignRowDetails item={item} key={i} index={i} />;
+            return (
+              <CampaignRowDetails
+                item={item}
+                services={handleServices(item)}
+                key={i}
+                index={i}
+              />
+            );
           })}
         </React.Fragment>
       )}

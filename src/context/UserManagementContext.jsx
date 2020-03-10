@@ -13,7 +13,11 @@ const initialState = {
   del: false,
   search: '',
   copy: false,
-  count: 0
+  count: 0,
+  filter: {
+    status: 'all',
+    type: 'all'
+  }
 }
 
 const store = createContext(initialState)
@@ -70,6 +74,8 @@ const StateProvider = ({ children }) => {
         return { ...state, search: payload.search }
       case 'SET_COUNT':
         return { ...state, count: payload.count }
+      case 'SET_FILTER':
+        return { ...state, filter: payload.filter }
       default:
         return null
     }
