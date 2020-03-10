@@ -10,7 +10,8 @@ const initialState = {
   companies: mockCompanies,
   selectedCompany: mockCompanies[0].uuid,
   edit: false,
-  campaignRates: []
+  campaignRates: [],
+  selectedBillingType: "1"
 };
 
 const BillingContext = React.createContext(); // eslint-disable-line
@@ -55,8 +56,8 @@ const BillingProvider = ({ children }) => {
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
 
     let url = applyPrevious
-      ? `/api/rate/${state.selectedCompany}?original_data=false`
-      : `/api/rate/${state.selectedCompany}?original_data=true`;
+      ? `/api/rate/${state.selectedCompany}?original_data=false&billing_type=${state.selectedBillingType}`
+      : `/api/rate/${state.selectedCompany}?original_data=true&billing_type=${state.selectedBillingType}`;
     get(url).then(result => {
       console.log(result);
       setFormState(
@@ -64,7 +65,7 @@ const BillingProvider = ({ children }) => {
       );
       setLoading(false);
     });
-  }, [state.selectedCompany, applyPrevious]);
+  }, [state.selectedCompany, applyPrevious, state.selectedBillingType]);
 
   const handleFieldChange = (e, index, type) => {
     let result = formState.map((item, i) => {

@@ -10,14 +10,15 @@
   }
 }
 .billing-profile-container {
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-  }
   .edit-btn-container {
     display: flex !important;
     align-items: center !important;
     justify-content: flex-end;
+    border: solid 1px;
+  }
+  .billing-header-container {
+    display: flex;
+    justify-content: space-between;
   }
   button {
     text-transform: none;

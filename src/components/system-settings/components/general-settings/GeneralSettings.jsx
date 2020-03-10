@@ -12,14 +12,14 @@ export default function GeneralSettings() {
       <QuickbooksConnect />
       <Divider />
       <br />
-      <Grid container className="section-2-container" spacing={5}>
+      {/* <Grid container className="section-2-container" spacing={5}>
         <Grid item xs={6}>
           <Companies className="section-2-item" />
         </Grid>
         <Grid item xs={6}>
           <Services className="section-2-item" />
         </Grid>
-      </Grid>
+      </Grid> */}
     </div>
   );
 }
