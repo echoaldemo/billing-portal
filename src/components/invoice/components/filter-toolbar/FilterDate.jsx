@@ -38,7 +38,7 @@ const FilterDate = () => {
             name="billingPeriod"
             label="From"
             disableToolbar
-            variant="inline"
+            variant="inline" 
             format="MM/dd/yyyy"
             value={dateRange.startDate}
             onChange={date => {
@@ -57,6 +57,8 @@ const FilterDate = () => {
             variant="inline"
             format="MM/dd/yyyy"
             value={dateRange.endDate}
+            minDate={dateRange.startDate}
+            minDateMessage="Date should not be before the start date"
             onChange={date => {
               handleDateChange(date, "endDate");
             }}

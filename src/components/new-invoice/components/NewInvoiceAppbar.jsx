@@ -81,7 +81,6 @@ export default function NewInvoiceAppbar({
             horizontal: "center"
           }}
         >
-          <MenuItem style={{ padding: "15px 20px" }}>Save and send</MenuItem>
           <MenuItem
             style={{ padding: "15px 20px" }}
             onClick={() => {

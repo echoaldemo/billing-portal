@@ -230,9 +230,6 @@ const CampaignBilling = ({ campaignDetails }) => {
             setFormState({ ...formState, taxation: e.target.value })
           }
         >
-          <MenuItem value=" " disabled>
-            Select tax rate
-          </MenuItem>
           {mockTaxation.map(item => (
             <MenuItem value={item.percentage}>
               {item.name} ({item.percentage}%)

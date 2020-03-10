@@ -31,7 +31,7 @@ const initialFormState = {
   billingType: "1",
   billingPeriod: { start, end },
   total: " ",
-  taxation: " "
+  taxation: 6.1
 };
 
 const initialAddFee = {

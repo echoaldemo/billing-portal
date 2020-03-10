@@ -133,7 +133,7 @@ export default function GeneralForm() {
                 label="End of Period"
                 name="billingPeriod"
                 minDate={formState.billingPeriod.start}
-                minDateMessage="Date should not be before minimal date"
+                minDateMessage="Date should not be before the start of the period"
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
