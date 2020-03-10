@@ -138,11 +138,15 @@ const AutomaticInvoiceProvider = ({ children }) => {
       company: e.target.value,
       campaign: camp
     });
+    console.log(formState.billingType);
     const url = `/api/rate/${
       e.target.value
-    }?original_data=${!state2.applyPrevious}`;
+    }?original_data=${!state2.applyPrevious}&billing_type=${
+      formState.billingType
+    }`;
 
     get(url).then(res => {
+      console.log("res", res);
       if (res.data.length) {
         let temp = camp;
         let rates = res.data;
@@ -169,8 +173,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
 
   const handleBillingChange = e => {
     const url = `/api/rate/${
-      formState.company
-    }?original_data=${!state2.applyPrevious}`;
+      e.target.value
+    }?original_data=${!state2.applyPrevious}&billing_type=${
+      formState.billingType
+    }`;
     get(url).then(res => {
       if (res.data.length) {
         let temp = formState.campaign;
