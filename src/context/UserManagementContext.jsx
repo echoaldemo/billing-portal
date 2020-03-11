@@ -76,6 +76,15 @@ const StateProvider = ({ children }) => {
         return { ...state, count: payload.count }
       case 'SET_FILTER':
         return { ...state, filter: payload.filter }
+      case 'RESET_FILTER':
+        return {
+          ...state,
+          filter: {
+            status: 'all',
+            type: 'all'
+          },
+          search: ''
+        }
       default:
         return null
     }

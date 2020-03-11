@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { MenuItem, Grid } from '@material-ui/core'
+import { MenuItem, Grid, Button } from '@material-ui/core'
 import { Search } from '@material-ui/icons'
 import { InputField } from 'common-components'
 import { store } from 'context/UserManagementContext'
@@ -17,7 +17,7 @@ const HeaderToolBar = () => {
       alignItems="flex-end"
       style={{ marginBottom: 16 }}
     >
-      <Grid item sm={6}>
+      <Grid item sm={4}>
         <InputField
           fullWidth
           label="Search by name"
@@ -80,6 +80,14 @@ const HeaderToolBar = () => {
           <MenuItem value="admin">Admin</MenuItem>
           <MenuItem value="user">User</MenuItem>
         </InputField>
+      </Grid>
+      <Grid item sm={2} container justify="flex-end">
+        <Button
+          onClick={() => dispatch({ type: 'RESET_FILTER' })}
+          className="add-btn"
+        >
+          Reset Filter
+        </Button>
       </Grid>
     </Grid>
   )
