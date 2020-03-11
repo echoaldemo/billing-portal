@@ -29,39 +29,56 @@ const SupportProvider = ({ children }) => {
         return null;
     }
   }, initialState);
+  const upload = () => {
+    const file = state.attachment;
+    const data = new FormData();
+    data.append("profileImage", file, file.name);
+    return post("/aws/upload/profile-img-upload", data, {
+      headers: {
+        accept: "application/json",
+        "Accept-Language": "en-US,en;q=0.8",
+        "Content-Type": `multipart/form-data; boundary=${data._boundary}`
+      }
+    });
+  };
   const handleSubmit = () => {
     dispatch({
       type: "set-modal",
       payload: { modal: "loading" }
     });
-    const { familyName, givenName, email } = profile.userProfile;
-    const postObjectGmail = {
-      name: `${givenName} ${familyName}`,
-      email,
-      subject: state.subject,
-      description: template(
-        `${givenName} ${familyName}`,
+    const up = upload();
+    up.then(res => {
+      const image = res.data.location;
+      const { familyName, givenName, email } = profile.userProfile;
+      const postObjectGmail = {
+        name: `${givenName} ${familyName}`,
         email,
-        state.description
-      ),
-      attachment: state.attachment
-    };
-    const postObjectSlack = {
-      name: `${givenName} ${familyName}`,
-      email,
-      subject: state.subject,
-      description: state.description,
-      attachment: state.attachment
-    };
-    const req1 = post("/api/zapier/gmail", postObjectGmail);
-    const req2 = post("/api/zapier/slack", postObjectSlack);
-    Promise.all([req1, req2]).then(() => {
-      setTimeout(() => {
-        dispatch({
-          type: "set-modal",
-          payload: { modal: "success" }
-        });
-      }, 1000);
+        subject: state.subject,
+        description: template(
+          `${givenName} ${familyName}`,
+          email,
+          state.description,
+          image
+        ),
+        attachment: image
+      };
+      const postObjectSlack = {
+        name: `${givenName} ${familyName}`,
+        email,
+        subject: state.subject,
+        description: state.description,
+        attachment: image
+      };
+      const req1 = post("/api/zapier/gmail", postObjectGmail);
+      const req2 = post("/api/zapier/slack", postObjectSlack);
+      Promise.all([req1, req2]).then(() => {
+        setTimeout(() => {
+          dispatch({
+            type: "set-modal",
+            payload: { modal: "success" }
+          });
+        }, 1000);
+      });
     });
   };
   return (

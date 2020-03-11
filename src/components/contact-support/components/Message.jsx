@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { InputField, SaveButton } from "common-components";
 import { SupportContext } from "context/SupportContext";
-import { InputAdornment } from "@material-ui/core";
+import { post } from "utils/api";
 
 import {
   BtnCont,
@@ -16,6 +16,7 @@ const Message = () => {
   const { state, dispatch, handleSubmit } = useContext(SupportContext);
   const { subject, description } = state;
   const inputEl = React.useRef(null);
+  const el = React.useRef(null);
   return (
     <>
       <Container>
@@ -59,7 +60,7 @@ const Message = () => {
           }}
         />
       </Container>
-      {/* <Divider />
+      <Divider />
       <Container>
         <Label>ATTACH IMAGE</Label>
         <input
@@ -70,7 +71,7 @@ const Message = () => {
           onChange={e =>
             dispatch({
               type: "set-attachment",
-              payload: { attachment: e.target.files[0].name }
+              payload: { attachment: e.target.files[0] }
             })
           }
         />
@@ -85,16 +86,21 @@ const Message = () => {
             style: { borderRadius: 0 }
           }}
           inputProps={{
-            readOnly: true
+            readOnly: true,
+            ref: el
           }}
-          value={state.attachment}
+          value={state.attachment.name}
           placeholder="No image selected."
         />
-      </Container> */}
+      </Container>
       <BtnCont>
         <SaveButton
           disabled={subject.length && description.length ? false : true}
-          handleClick={handleSubmit}
+          handleClick={() => {
+            handleSubmit();
+            el.current.value = null;
+            inputEl.current.value = null;
+          }}
         >
           SUBMIT
         </SaveButton>
