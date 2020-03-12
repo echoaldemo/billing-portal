@@ -16,7 +16,6 @@ const Message = () => {
   const { state, dispatch, handleSubmit } = useContext(SupportContext);
   const { subject, description } = state;
   const inputEl = React.useRef(null);
-  const el = React.useRef(null);
   return (
     <>
       <Container>
@@ -86,10 +85,9 @@ const Message = () => {
             style: { borderRadius: 0 }
           }}
           inputProps={{
-            readOnly: true,
-            ref: el
+            readOnly: true
           }}
-          value={state.attachment.name}
+          value={state.attachment ? state.attachment.name : ""}
           placeholder="No image selected."
         />
       </Container>
@@ -98,8 +96,6 @@ const Message = () => {
           disabled={subject.length && description.length ? false : true}
           handleClick={() => {
             handleSubmit();
-            el.current.value = null;
-            inputEl.current.value = null;
           }}
         >
           SUBMIT

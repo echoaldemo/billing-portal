@@ -6,7 +6,7 @@ import { template } from "../layout/EmailTemp";
 const initialState = {
   subject: "",
   description: "",
-  attachment: "",
+  attachment: null,
   modal: null
 };
 const SupportContext = React.createContext();
@@ -69,16 +69,16 @@ const SupportProvider = ({ children }) => {
         description: state.description,
         attachment: image
       };
-      const req1 = post("/api/zapier/gmail", postObjectGmail);
-      const req2 = post("/api/zapier/slack", postObjectSlack);
-      Promise.all([req1, req2]).then(() => {
-        setTimeout(() => {
-          dispatch({
-            type: "set-modal",
-            payload: { modal: "success" }
-          });
-        }, 1000);
-      });
+      /* const req1 = post("/api/zapier/gmail", postObjectGmail);
+      const req2 = post("/api/zapier/slack", postObjectSlack); */
+      /* Promise.all([req1, req2]).then(() => { */
+      setTimeout(() => {
+        dispatch({
+          type: "set-modal",
+          payload: { modal: "success" }
+        });
+      }, 1000);
+      /* }); */
     });
   };
   return (
