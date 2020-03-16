@@ -1,9 +1,7 @@
 import React from "react";
-import { Divider, Grid } from "@material-ui/core";
+import { Divider } from "@material-ui/core";
 import SEO from "utils/seo";
-import Companies from "./Companies";
 import "./styles.scss";
-import Services from "./Services";
 import QuickbooksConnect from "./QuickbooksConnect";
 export default function GeneralSettings() {
   return (

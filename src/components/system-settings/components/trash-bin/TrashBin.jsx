@@ -156,7 +156,9 @@ const TrashBin = () => {
               Are you sure you really want to restore all this invoices?
             </span>
           }
-          closeFn={() => {}}
+          closeFn={() => {
+            handleCloseRestoreModal();
+          }}
           secondaryFn={() => {
             restoreAllTrash();
           }}
