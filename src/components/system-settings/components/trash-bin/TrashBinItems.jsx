@@ -1,14 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { TrashBinContext } from "context/TrashBinContext";
-import EllipsisText from "react-ellipsis-text";
 import { Row, RowHeader } from "common-components";
 import { formatter } from "utils/func";
 import RestoreIcon from "@material-ui/icons/Restore";
 import { IconButton, Tooltip } from "@material-ui/core";
 import { StateContext } from "context/StateContext";
 import { postLog } from "utils/time";
-
+import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
+import EllipsisText from "react-ellipsis-text";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 export default function TrashBinItems() {
+  const [copy, setCopy] = useState(false);
   const {
     state: { data },
     updateTrashItem
@@ -25,8 +27,36 @@ export default function TrashBinItems() {
             key={i}
             rowData={[
               {
-                size: 1,
-                label: item.id
+                size: 2,
+                style: {
+                  padding: 0
+                },
+                label: (
+                  <React.Fragment>
+                    <CopyToClipboard
+                      text={item.id}
+                      onCopy={() => {
+                        setCopy(true);
+                      }}
+                      onPointerLeave={() => {
+                        setCopy(false);
+                      }}
+                    >
+                      <Tooltip
+                        title={copy ? "UUID copied!" : "Copy UUID"}
+                        placement="top"
+                      >
+                        <FileCopyOutlinedIcon
+                          style={{ fontSize: 15, cursor: "pointer" }}
+                        />
+                      </Tooltip>
+                    </CopyToClipboard>
+                    &nbsp;&nbsp;
+                    <Tooltip title={item.id} placement="top">
+                      <EllipsisText text={item.id} length={16} />
+                    </Tooltip>
+                  </React.Fragment>
+                )
               },
               {
                 size: 2,
@@ -34,7 +64,7 @@ export default function TrashBinItems() {
                 style: { textAlign: "right" }
               },
               {
-                size: 2,
+                size: 1,
                 label: item.billingType === 1 ? "Monthly" : "Weekly",
                 style: { textAlign: "right" }
               },
@@ -87,9 +117,9 @@ export default function TrashBinItems() {
 }
 
 const headerData = [
-  { size: 1, label: "Invoice" },
+  { size: 2, label: "Invoice" },
   { size: 2, label: "Invoice Type", style: { textAlign: "right" } },
-  { size: 2, label: "Billing Type", style: { textAlign: "right" } },
+  { size: 1, label: "Type", style: { textAlign: "right" } },
   { size: 2, label: "Company", style: { textAlign: "right" } },
   { size: 2, label: "Date Created", style: { textAlign: "right" } },
   { size: 2, label: "Total", style: { textAlign: "right" } },

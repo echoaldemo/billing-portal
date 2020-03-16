@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { InputField, SaveButton } from "common-components";
 import { SupportContext } from "context/SupportContext";
-import { post } from "utils/api";
 
 import {
   BtnCont,
