@@ -28,6 +28,9 @@ export default function TrashBinItems() {
             rowData={[
               {
                 size: 2,
+                style: {
+                  padding: 0
+                },
                 label: (
                   <React.Fragment>
                     <CopyToClipboard
@@ -50,7 +53,7 @@ export default function TrashBinItems() {
                     </CopyToClipboard>
                     &nbsp;&nbsp;
                     <Tooltip title={item.id} placement="top">
-                      <EllipsisText text={item.id} length={18} />
+                      <EllipsisText text={item.id} length={16} />
                     </Tooltip>
                   </React.Fragment>
                 )
