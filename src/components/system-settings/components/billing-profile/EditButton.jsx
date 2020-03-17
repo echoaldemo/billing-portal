@@ -4,12 +4,13 @@ import { Button } from "@material-ui/core";
 import { post, patch } from "utils/api";
 const EditButton = () => {
   const {
-    state: { edit },
+    state: { edit, selectedBillingType },
     dispatch,
     formState
   } = useContext(BillingContext);
 
   const updateProfile = () => {
+    console.log(selectedBillingType);
     dispatch({ type: "set-edit", payload: { edit: false } });
     formState.forEach(item => {
       if (item.profile_id && item.edited) {
@@ -27,7 +28,8 @@ const EditButton = () => {
               billable_rate: item.billable_rate,
               did_rate: item.did_rate,
               performance_rate: item.performance_rate,
-              original_data: true
+              original_data: true,
+              billing_type: selectedBillingType
             });
           }
         });
