@@ -33,7 +33,7 @@ const SupportProvider = ({ children }) => {
     const file = state.attachment;
     const data = new FormData();
     data.append("profileImage", file, file.name);
-    return post("/aws/upload/profile-img-upload", data, {
+    return post("/api/aws/upload", data, {
       headers: {
         accept: "application/json",
         "Accept-Language": "en-US,en;q=0.8",
@@ -62,23 +62,23 @@ const SupportProvider = ({ children }) => {
         ),
         attachment: image
       };
-      const postObjectSlack = {
+      const postObjectTrello = {
         name: `${givenName} ${familyName}`,
         email,
         subject: state.subject,
         description: state.description,
         attachment: image
       };
-      /* const req1 = post("/api/zapier/gmail", postObjectGmail);
-      const req2 = post("/api/zapier/slack", postObjectSlack); */
-      /* Promise.all([req1, req2]).then(() => { */
-      setTimeout(() => {
-        dispatch({
-          type: "set-modal",
-          payload: { modal: "success" }
-        });
-      }, 1000);
-      /* }); */
+      const req1 = post("/api/zapier/gmail", postObjectGmail);
+      const req2 = post("/api/zapier/trello", postObjectTrello);
+      Promise.all([req1, req2]).then(() => {
+        setTimeout(() => {
+          dispatch({
+            type: "set-modal",
+            payload: { modal: "success" }
+          });
+        }, 1000);
+      });
     });
   };
   return (
