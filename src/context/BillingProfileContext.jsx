@@ -58,6 +58,7 @@ const BillingProvider = ({ children }) => {
     let url = applyPrevious
       ? `/api/rate/${state.selectedCompany}?original_data=false&billing_type=${state.selectedBillingType}`
       : `/api/rate/${state.selectedCompany}?original_data=true&billing_type=${state.selectedBillingType}`;
+    console.log(url);
     get(url).then(result => {
       console.log(result);
       setFormState(
