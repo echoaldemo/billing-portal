@@ -10,7 +10,7 @@ function SelectBillingTypeField() {
 
   return (
     <InputField
-      label="Select company"
+      label="Select Type"
       value={selectedBillingType || "1"}
       onChange={e => {
         dispatch({

@@ -15,7 +15,7 @@ import DuplicateModal from "./duplicate-modal/DuplicateModal";
 
 const headCells = [
   { id: "status", label: "Status" },
-  { id: "invoice", label: "Invoice" },
+  { id: "invoice", label: "Invoice UUID" },
   { id: "invoice_type", label: "Type" },
   { id: "billing_type", label: "Billing Type" },
   { id: "company", label: "Company" },
@@ -91,43 +91,43 @@ const PendingTable = () => {
       {state.loading ? (
         <TableLoader />
       ) : (
-        <React.Fragment>
-          {state.data.length > 0 ? (
-            <TableContainer>
-              <Table>
-                <InvoiceTableHeader
-                  headCells={headCells}
-                  onSelectAllClick={e => {
-                    if (e.target.checked) {
-                      setSelectedItems(state.data);
-                    } else {
-                      setSelectedItems([]);
-                    }
-                  }}
-                  check={checked()}
-                />
-                <PendingTableBody
-                  data={sortData(state.data)}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                />
-              </Table>
-            </TableContainer>
-          ) : (
-            <NoResult />
-          )}
-          <Divider />
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={state.data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-          />
-        </React.Fragment>
-      )}
+          <React.Fragment>
+            {state.data.length > 0 ? (
+              <TableContainer>
+                <Table>
+                  <InvoiceTableHeader
+                    headCells={headCells}
+                    onSelectAllClick={e => {
+                      if (e.target.checked) {
+                        setSelectedItems(state.data);
+                      } else {
+                        setSelectedItems([]);
+                      }
+                    }}
+                    check={checked()}
+                  />
+                  <PendingTableBody
+                    data={sortData(state.data)}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                  />
+                </Table>
+              </TableContainer>
+            ) : (
+                <NoResult />
+              )}
+            <Divider />
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={state.data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </React.Fragment>
+        )}
       <ManagePendingInvoice />
       <DuplicateModal />
     </div>
