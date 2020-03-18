@@ -33,7 +33,7 @@ const FilterMenu = () => {
           }}
           fullWidth
           value={filterOpt.invoiceType}
-          label="Select Invoice Type"
+          label="Invoice Type"
           select
         >
           {invoiceTypeOptions.map(item => {
@@ -61,7 +61,7 @@ const FilterMenu = () => {
           }}
           fullWidth
           value={filterOpt.billingType}
-          label="Select Billing Type"
+          label="Billing Type"
           select
         >
           {billingTypeOptions.map(item => {
