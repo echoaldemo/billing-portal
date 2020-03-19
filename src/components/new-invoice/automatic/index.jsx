@@ -81,25 +81,27 @@ const NewInvoice = ({ handleClose }) => {
         disableBackdropClick
         disableEscapeKeyDown
       >
-        {state.modalType === 'loading' ? (
-          <LoadingModal text={`One moment. We're saving the invoice...`} />
-        ) : state.modalType === 'warning' ? (
-          <WarningModal
-            text="Confirmation"
-            content="Are you sure you want to close this dialog? Your progress will not be saved."
-            closeFn={closePopUp}
-            secondaryFn={closeAll}
-            btnText="Close"
-          />
-        ) : state.modalType === 'success' ? (
-          <SuccessModal
-            text="Success"
-            content="Invoice successfully saved."
-            closeFn={closeAll}
-            secondaryFn={create}
-            btnText="Create another"
-          />
-        ) : null}
+        <React.Fragment>
+          {state.modalType === 'loading' ? (
+            <LoadingModal text={`One moment. We're saving the invoice...`} />
+          ) : state.modalType === 'warning' ? (
+            <WarningModal
+              text="Confirmation"
+              content="Are you sure you want to close this dialog? Your progress will not be saved."
+              closeFn={closePopUp}
+              secondaryFn={closeAll}
+              btnText="Close"
+            />
+          ) : state.modalType === 'success' ? (
+            <SuccessModal
+              text="Success"
+              content="Invoice successfully saved."
+              closeFn={closeAll}
+              secondaryFn={create}
+              btnText="Create another"
+            />
+          ) : null}
+        </React.Fragment>
       </Dialog>
     </React.Fragment>
   )

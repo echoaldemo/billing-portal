@@ -230,8 +230,8 @@ const CampaignBilling = ({ campaignDetails }) => {
             setFormState({ ...formState, taxation: e.target.value })
           }
         >
-          {mockTaxation.map(item => (
-            <MenuItem value={item.percentage}>
+          {mockTaxation.map((item, i) => (
+            <MenuItem value={item.percentage} key={i}>
               {item.name} ({item.percentage}%)
             </MenuItem>
           ))}
