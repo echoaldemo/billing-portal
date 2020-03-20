@@ -178,20 +178,6 @@ const StateProvider = ({ children }) => {
     }
   }, initialState);
 
-  useEffect(() => {
-    getAPI("/identity/company/list")
-      .then(result => {
-        dispatch({
-          type: "set-companies",
-          payload: {
-            companies: result.data
-          }
-        });
-      })
-      .catch(err => {
-        console.log(err.response);
-      });
-  }, []);
   return (
     <StateContext.Provider
       value={{

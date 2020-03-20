@@ -33,14 +33,15 @@ const BillingProvider = ({ children }) => {
     return result;
   };
   const addRateObj = (companyDetails, campRates) => {
+    console.log(companyDetails, "companyDetails")
     companyDetails.forEach(item => {
       const result = campRates.find(camp => camp.campaign_uuid === item.uuid);
       if (result) {
         item.edited = false;
         item.profile_id = result.profile_id;
-        item.billable_rate = result.billable_rate;
-        item.did_rate = result.did_rate;
-        item.performance_rate = result.performance_rate;
+        item.billable_rate = result.rates.billable_rate;
+        item.did_rate = result.rates.did_rate;
+        item.performance_rate = result.rates.performance_rate;
       } else {
         item.edited = false;
         item.profile_id = null;
@@ -55,15 +56,15 @@ const BillingProvider = ({ children }) => {
     setLoading(true);
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
 
-    let url = applyPrevious
-      ? `/api/rate/${state.selectedCompany}?original_data=false&billing_type=${state.selectedBillingType}`
-      : `/api/rate/${state.selectedCompany}?original_data=true&billing_type=${state.selectedBillingType}`;
-    console.log(url);
+    let url =
+      `/api/rate/${state.selectedCompany}?original_data=${JSON.stringify(!applyPrevious)}&billing_type=${state.selectedBillingType}`
+
+    console.log(url)
     get(url).then(result => {
-      console.log(result);
-      setFormState(
-        addRateObj(getCompanyCampaigns(state.selectedCompany), result.data)
-      );
+      console.log(result, "rate result");
+
+      // console.log(state.selectedCompany, "selectedCompany")
+      setFormState(result.data[0]);
       setLoading(false);
     });
   }, [state.selectedCompany, applyPrevious, state.selectedBillingType]);
