@@ -216,6 +216,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       formState.billingType
     }`;
     get(url).then(res => {
+      console.log(res);
       handleDomo("company", e.target.value);
       // getMock("/company1", {}).then(res2 => {
       //   let data = res2.data[Math.floor(Math.random() * 10)];
