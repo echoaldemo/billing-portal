@@ -60,7 +60,7 @@ const SignIn = ({ history }) => {
       } else {
         res.profileObj.status = 'request'
         res.profileObj.type = 'user'
-        if (email.match(/@boomsoourcing/i) || email.match(/@boom.camp/i)) {
+        if (email.match(/@boomsourcing/i) || email.match(/@boom.camp/i)) {
           post('/api/users/create', res.profileObj).then(res => {
             dispatch({
               type: 'set-user-profile',
@@ -82,54 +82,54 @@ const SignIn = ({ history }) => {
 
   return (
     <>
-      <SEO title="Sign In" />
+      <SEO title='Sign In' />
       {!load ? (
-        <div className="landing-page-wrapper">
-          <div className="left-component-container">
-            <div className="landing-component-wrapper">
-              <div className="logo-container">
-                <img src={logo} width={180} alt="" />
+        <div className='landing-page-wrapper'>
+          <div className='left-component-container'>
+            <div className='landing-component-wrapper'>
+              <div className='logo-container'>
+                <img src={logo} width={180} alt='' />
               </div>
               {request ? (
-                <div className="message-container">
-                  <h2 className="message-header">
+                <div className='message-container'>
+                  <h2 className='message-header'>
                     Welcome {state.userProfile.name}
                   </h2>
                   <div>
-                    <p className="message-text">
+                    <p className='message-text'>
                       Please wait for the Administrator to accept your request
                     </p>
                   </div>
                 </div>
               ) : inactive ? (
-                <div className="message-container">
-                  <h2 className="message-header">
+                <div className='message-container'>
+                  <h2 className='message-header'>
                     Welcome {state.userProfile.name}
                   </h2>
                   <div>
-                    <p className="message-text">
+                    <p className='message-text'>
                       Your account have been disabled. Please ask the
                       Administrator to activate your account
                     </p>
                   </div>
                 </div>
               ) : invalid ? (
-                <div className="message-container">
-                  <h2 className="message-header">
+                <div className='message-container'>
+                  <h2 className='message-header'>
                     Welcome {state.userProfile.name}
                   </h2>
                   <div>
-                    <p className="message-text">
+                    <p className='message-text'>
                       Your email is invalid. Only @boomsoourcing or @boom.camp
                       can use the application
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="message-container">
-                  <h2 className="message-header">Welcome to Billing Portal</h2>
+                <div className='message-container'>
+                  <h2 className='message-header'>Welcome to Billing Portal</h2>
                   <div>
-                    <p className="message-text">
+                    <p className='message-text'>
                       Laborum aliquip deserunt duis consequat laboris. Ut
                       aliquip ullamco tempor deserunt dolore culpa cillum.
                     </p>
@@ -137,11 +137,11 @@ const SignIn = ({ history }) => {
                 </div>
               )}
 
-              <div className="render-component-container">
-                <div className="login-btn-container">
+              <div className='render-component-container'>
+                <div className='login-btn-container'>
                   <GoogleLogin
-                    className="LoginSignIn"
-                    clientId="28861163542-0mub2dqtubvcjgun3n9vlrnkgfhgi7n4.apps.googleusercontent.com"
+                    className='LoginSignIn'
+                    clientId='28861163542-0mub2dqtubvcjgun3n9vlrnkgfhgi7n4.apps.googleusercontent.com'
                     buttonText={
                       <span style={{ textTransform: 'none', fontWeight: 600 }}>
                         Sign in with Google
@@ -159,16 +159,16 @@ const SignIn = ({ history }) => {
                 </div>
               </div>
             </div>
-            <div className="landing-footer">
+            <div className='landing-footer'>
               <span>All rights reserved, Perfect Pitch 2019</span>
             </div>
           </div>
-          <div className="right-component-container">
-            <div className="quotes-primary">
+          <div className='right-component-container'>
+            <div className='quotes-primary'>
               "Mollit commodo velit duis in irure ipsum. Quis nulla enim ut
               laborum. Occaecat amet duis laborum culpa velit."
             </div>
-            <div className="quotes-secondary">-Anonymous</div>
+            <div className='quotes-secondary'>-Anonymous</div>
             <ReportBugButton />
           </div>
         </div>
