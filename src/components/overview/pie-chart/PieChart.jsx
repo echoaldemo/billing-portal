@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from "react";
-import Chart from "react-google-charts";
-import { makeStyles } from "@material-ui/core/styles";
-import { CircularProgress } from "@material-ui/core";
-import { get } from "utils/api";
+import React, { useContext } from 'react'
+import Chart from 'react-google-charts'
+import { makeStyles } from '@material-ui/core/styles'
+import { CircularProgress } from '@material-ui/core'
+import { OverviewContext } from 'context/OverviewContext'
 
 const pieOptions = {
-  title: "",
+  title: '',
   pieHole: 0.6,
   slices: [
     {
-      color: "#2BB673"
+      color: '#2BB673'
     },
     {
-      color: "#d91e48"
+      color: '#d91e48'
     },
     {
-      color: "#007fad"
+      color: '#007fad'
     },
     {
-      color: "#e9a227"
+      color: '#e9a227'
     }
   ],
   legend: {
-    position: "bottom",
-    alignment: "center",
+    position: 'bottom',
+    alignment: 'center',
     textStyle: {
-      color: "233238",
+      color: '233238',
       fontSize: 14
     }
   },
@@ -35,64 +35,54 @@ const pieOptions = {
   chartArea: {
     left: 0,
     top: 0,
-    width: "100%",
-    height: "80%"
+    width: '100%',
+    height: '80%'
   },
-  fontName: "Roboto"
-};
+  fontName: 'Roboto'
+}
 
 const useStyles = makeStyles({
   con: {
-    position: "relative"
+    position: 'relative'
   },
   loaderDiv: {
-    position: "absolute",
-    minWidth: "100%",
-    height: "100%",
+    position: 'absolute',
+    minWidth: '100%',
+    height: '100%',
     zIndex: 10,
-    backgroundColor: "rgba(255,255,255,0.95)",
+    backgroundColor: 'rgba(255,255,255,0.95)',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0
   },
   loader: {
-    position: "absolute",
-    top: "50%",
-    left: "50%"
+    position: 'absolute',
+    top: '50%',
+    left: '50%'
   }
-});
+})
 
 const PieChart = () => {
-  const classes = useStyles();
-  const [automatic, setAutomatic] = useState(1);
-  const [manual, setManual] = useState(1);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setLoading(true);
-    get("/api/pending/list").then((res) => {
-      setAutomatic(
-        res.data.filter((c) => c.invoiceType === "Automatic").length
-      );
-      setManual(res.data.filter((c) => c.invoiceType === "Manual").length);
+  const classes = useStyles()
+  const {
+    state: { manual, automatic, loading }
+  } = useContext(OverviewContext)
 
-      setLoading(false);
-    });
-  }, []);
   return (
     <>
       <div className={classes.con}>
         <Chart
-          chartType="PieChart"
+          chartType='PieChart'
           data={[
-            ["Automatic", "Manual"],
-            ["Automatic", automatic],
-            ["Manual", manual]
+            ['Automatic', 'Manual'],
+            ['Automatic', automatic],
+            ['Manual', manual]
           ]}
           options={pieOptions}
-          graph_id="PieChart"
-          width={"100%"}
-          height={"400px"}
+          graph_id='PieChart'
+          width={'100%'}
+          height={'400px'}
           legend_toggle
         />
         {loading && (
@@ -102,6 +92,6 @@ const PieChart = () => {
         )}
       </div>
     </>
-  );
-};
-export default PieChart;
+  )
+}
+export default PieChart
