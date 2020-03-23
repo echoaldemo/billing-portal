@@ -80,11 +80,11 @@ const CampaignRowsDetails = ({ item, index, services }) => {
       label: (
         <InputField
           type="number"
-          value={item.content.billable_rate || ""}
+          value={item.content.bill_rate || ""}
           placeholder="Hourly rate"
           disabled={!edit}
           onChange={e => {
-            handleFieldChange(e, index, "billable_rate");
+            handleFieldChange(e, index, "bill_rate");
           }}
         />
       ),
@@ -164,9 +164,6 @@ const CampaignRowsDetails = ({ item, index, services }) => {
 
   return (
     <div style={{ borderBottom: "solid 1px #F1f1f1" }}>
-      {
-        console.log(item, "services")
-      }
 
       <Row
         key={index}

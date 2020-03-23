@@ -27,7 +27,7 @@ const BillingProvider = ({ children }) => {
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
   const [formState, setFormState] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [rateProfile, setRateProfile] = useState(null)
   const getCompanyCampaigns = company_uuid => {
     const result = mockCampaigns.filter(item => item.company === company_uuid);
     return result;
@@ -62,9 +62,11 @@ const BillingProvider = ({ children }) => {
     console.log(url)
     get(url).then(result => {
       console.log(result, "rate result");
+      let profile_id = result.data[0] ? result.data[0].profile_id : null
+      setRateProfile(profile_id)
+      let rates = result.data[0] ? result.data[0].rates : null
 
-      // console.log(state.selectedCompany, "selectedCompany")
-      setFormState(result.data[0]);
+      setFormState(rates);
       setLoading(false);
     });
   }, [state.selectedCompany, applyPrevious, state.selectedBillingType]);
@@ -72,12 +74,12 @@ const BillingProvider = ({ children }) => {
   const handleFieldChange = (e, index, type) => {
     let result = formState.map((item, i) => {
       if (i === index) {
-        item.edited = true;
-        item[type] = e.target.value;
+        item.content[type] = e.target.value;
       }
       return item;
     });
-    setFormState(result);
+    setFormState(result)
+
   };
   state.loading = loading;
   return (
@@ -90,7 +92,8 @@ const BillingProvider = ({ children }) => {
         setRowCollapse,
         formState,
         setFormState,
-        handleFieldChange
+        handleFieldChange,
+        rateProfile
       }}
     >
       {children}
