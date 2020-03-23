@@ -125,7 +125,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     setSelectedCampaign([]);
     getGeneralData();
   };
-
+  console.log(formState.campaign);
   const filterCampaign = uuid => {
     const filteredCampaign = state.campaigns.filter(
       camp => camp.company === uuid
