@@ -29,7 +29,8 @@ const EditButton = () => {
         original_data: false,
         rates: formState
       }).then(result => {
-        setFormState(result.data)
+        console.log(result.data.rates)
+        setFormState(result.data.rates)
       })
 
     }
