@@ -22,15 +22,15 @@ const ShowExpand = ({ index }) => {
           <ExpandMore />
         </IconButton>
       ) : (
-        <IconButton
-          style={{ padding: 5 }}
-          onClick={() => {
-            setRowCollapse(removeElement());
-          }}
-        >
-          <ExpandLess />
-        </IconButton>
-      )}
+          <IconButton
+            style={{ padding: 5 }}
+            onClick={() => {
+              setRowCollapse(removeElement());
+            }}
+          >
+            <ExpandLess />
+          </IconButton>
+        )}
     </div>
   );
 };
@@ -80,11 +80,11 @@ const CampaignRowsDetails = ({ item, index, services }) => {
       label: (
         <InputField
           type="number"
-          value={item.billable_rate || ""}
+          value={item.content.bill_rate || ""}
           placeholder="Hourly rate"
           disabled={!edit}
           onChange={e => {
-            handleFieldChange(e, index, "billable_rate");
+            handleFieldChange(e, index, "bill_rate");
           }}
         />
       ),
@@ -111,7 +111,7 @@ const CampaignRowsDetails = ({ item, index, services }) => {
     {
       label: (
         <InputField
-          value={item.did_rate || ""}
+          value={item.content.did_rate || ""}
           type="number"
           placeholder="DID rate"
           disabled={!edit}
@@ -144,7 +144,7 @@ const CampaignRowsDetails = ({ item, index, services }) => {
       label: (
         <InputField
           type="number"
-          value={item.performance_rate || ""}
+          value={item.content.performance_rate || ""}
           placeholder="Performance rate"
           disabled={!edit}
           onChange={e => {
@@ -164,6 +164,7 @@ const CampaignRowsDetails = ({ item, index, services }) => {
 
   return (
     <div style={{ borderBottom: "solid 1px #F1f1f1" }}>
+
       <Row
         key={index}
         rowData={!rowCollapse.includes(index) ? initalRowData : rowData1}
