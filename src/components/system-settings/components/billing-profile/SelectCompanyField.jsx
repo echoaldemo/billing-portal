@@ -13,7 +13,7 @@ export default function SelectCompanyField() {
         dispatch({
           type: "set-selected-company",
           payload: {
-            selectedCompany: e.target.value
+            selectedCompany: e.target.value,
           }
         });
       }}

@@ -4,21 +4,35 @@ import { Button } from "@material-ui/core";
 import { post, patch } from "utils/api";
 const EditButton = () => {
   const {
-    state: { edit, selectedBillingType },
+    state: { edit, selectedBillingType, companyDetails },
     dispatch,
     formState,
-    rateProfile
+    rateProfile,
+    setFormState
   } = useContext(BillingContext);
 
   const updateProfile = () => {
     console.log(selectedBillingType);
     dispatch({ type: "set-edit", payload: { edit: false } });
     console.log(rateProfile, "rateProfile")
-    patch(`/api/rate/${rateProfile}`, {
-      rates: formState
-    }).then(result => {
-      console.log("Patch res", result)
-    })
+    if (rateProfile) {
+      patch(`/api/rate/${rateProfile}`, {
+        rates: formState
+      })
+    } else {
+      console.log(companyDetails, "compansadas")
+      post(`/api/rate`, {
+        company_uuid: companyDetails.uuid,
+        company_name: companyDetails.name,
+        company_slug: companyDetails.slug,
+        billing_type: selectedBillingType,
+        original_data: false,
+        rates: formState
+      }).then(result => {
+        setFormState(result.data)
+      })
+
+    }
 
     // formState.forEach(item => {
     //   if (item.profile_id && item.edited) {
