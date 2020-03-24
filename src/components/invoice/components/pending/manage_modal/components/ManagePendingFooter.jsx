@@ -3,7 +3,6 @@ import { Button } from '@material-ui/core'
 import { StateContext } from 'context/StateContext'
 import { patch, post } from 'utils/api'
 import { handleAmt, handleTaxAmt } from '../constVar'
-import { remove } from 'utils/api'
 import { postLog } from 'utils/time'
 
 export default function ManagePendingFooter() {
