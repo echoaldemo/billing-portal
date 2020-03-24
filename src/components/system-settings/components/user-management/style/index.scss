@@ -20,15 +20,16 @@
 }
 
 .cell-status-span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-transform: capitalize;
-  display: block;
   color: white;
   width: 60px;
   height: 20px;
   border-radius: 3px;
   font-size: 12px;
   text-align: center;
-  font-weight: 600;
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
@@ -76,7 +77,6 @@
   }
   span {
     margin-left: 12px;
-    font-weight: 600;
   }
 }
 
@@ -90,6 +90,7 @@
   width: 165px;
   height: 40px;
   border-radius: 3px;
+  color: #444851;
   background-color: #eeeeee;
   outline: none;
   border: none;
