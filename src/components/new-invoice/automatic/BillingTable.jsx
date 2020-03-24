@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import CampaignBilling from "./CampaignBilling";
+import { TableLoader } from "common-components";
 const BillingTable = () => {
   const { selectedCampaign, state } = useContext(AutomaticInvoiceContext);
   const [campaignDetails, setCampaignDetails] = useState([]);
@@ -19,13 +20,21 @@ const BillingTable = () => {
     <div>
       {campaignDetails.length > 0 ? (
         <React.Fragment>
+          {
+            console.log("LOADING =>>", state.formLoading)
+          }
           <div style={{ paddingTop: 0 }}>
-            <CampaignBilling campaignDetails={campaignDetails} />
+            {
+              state.formLoading ?
+                <TableLoader />
+
+                : <CampaignBilling campaignDetails={campaignDetails} />
+            }
           </div>
         </React.Fragment>
       ) : (
-        <h3>Please select a campaign</h3>
-      )}
+          <h3>Please select a campaign</h3>
+        )}
     </div>
   );
 };

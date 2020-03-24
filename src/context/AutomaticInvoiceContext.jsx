@@ -47,7 +47,7 @@ const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { state: state2, getPendingInvoicesData } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
-
+  const [formLoading, setFormLoading] = useState(false)
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [addFee, setAddFee] = useState(initialAddFee);
   const [state, dispatch] = useReducer((state, action) => {
@@ -132,17 +132,19 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
 
   const handleCompanyChange = e => {
+    setFormLoading(true)
     const camp = filterCampaign(e.target.value);
     setFormState({
       ...formState,
       company: e.target.value,
       campaign: camp
     });
+
     const url = `/api/rate/${
       e.target.value
-    }?original_data=${!state2.applyPrevious}&billing_type=${
+      }?original_data=${!state2.applyPrevious}&billing_type=${
       formState.billingType
-    }`;
+      }`;
     get(url).then(res => {
       getMock("/company1", {}).then(res2 => {
         let data = res2.data[Math.floor(Math.random() * 10)];
@@ -185,13 +187,15 @@ const AutomaticInvoiceProvider = ({ children }) => {
           });
         }
       });
+    }).then(() => {
+      setFormLoading(false)
     });
   };
 
   const handleBillingChange = e => {
     const url = `/api/rate/${
       formState.company
-    }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
+      }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
     get(url).then(res => {
       getMock("/company1", {}).then(res2 => {
         let temp = formState.campaign;
@@ -286,7 +290,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     );
     let total = 0;
     let mer =
-        Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
+      Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
       lit = litigator.qty * litigator.rate;
     if (merchant.tax && merchant.rate) total += mer;
     if (litigator.tax) total += lit;
@@ -319,8 +323,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const tax =
       formState.taxation !== " "
         ? Math.round(
-            (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
-          ) / 100
+          (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
+        ) / 100
         : 0;
     return tax;
   };
@@ -564,6 +568,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
         console.log(err);
       });
   };
+
+  state.formLoading = formLoading
   return (
     <AutomaticInvoiceContext.Provider
       value={{
