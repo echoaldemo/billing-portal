@@ -3,9 +3,8 @@ import axios from 'axios'
 // const baseUrl = "http://phdev.perfectpitchtech.com:8001";
 // const baseUrl = "http://localhost:3000";
 // const baseUrl = "http://localhost:15001";
-const baseUrl = "https://6so59hwb30.execute-api.us-east-1.amazonaws.com/dev";
-
-const baseMock = "http://5e2fcff79c29c900145db496.mockapi.io";
+const baseUrl = 'https://6so59hwb30.execute-api.us-east-1.amazonaws.com/dev'
+const baseMock = 'http://5e2fcff79c29c900145db496.mockapi.io'
 const req = {
   headers: {
     Authorization: 'Token 821a7d6aeb62468bf051fbb0efb65d8e2607009d'

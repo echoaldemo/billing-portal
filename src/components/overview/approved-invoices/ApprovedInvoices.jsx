@@ -1,39 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Check } from "@material-ui/icons";
-import CardInfo from "../card-info";
-import { get } from "utils/api";
+import React, { useContext } from 'react'
+import { Check } from '@material-ui/icons'
+import CardInfo from '../card-info'
+import { OverviewContext } from 'context/OverviewContext'
 
 const ApprovedInvoices = () => {
-  const [approved, setApproved] = useState([]);
-  const [all, setAll] = useState([]);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setLoading(true);
-    get("/api/pending/list").then((res) => {
-      setAll(res.data);
-      const approvedInvoices = res.data.filter(
-        (invoices) => invoices.status === 2
-      );
-      console.log(approvedInvoices);
-      setApproved(approvedInvoices);
-      setLoading(false);
-    });
-  }, []);
-  const formatNumber = (num) => {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-  };
+  const {
+    state: { loading, approved, all }
+  } = useContext(OverviewContext)
+
+  const formatNumber = num => {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  }
 
   return (
     <CardInfo
-      primaryLabel="Approved Invoices"
-      secondaryLabel={
-        formatNumber(approved.length) + " / " + formatNumber(all.length)
-      }
+      primaryLabel='Approved Invoices'
+      secondaryLabel={formatNumber(approved) + ' / ' + formatNumber(all)}
       loading={loading}
       status={2}
-      icon={() => <Check fontSize="large" style={{ marginRight: 20 }} />}
+      icon={() => <Check fontSize='large' style={{ marginRight: 20 }} />}
     />
-  );
-};
+  )
+}
 
-export default ApprovedInvoices;
+export default ApprovedInvoices

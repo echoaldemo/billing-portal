@@ -1,39 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { RateReview } from "@material-ui/icons";
-import CardInfo from "../card-info";
-import { get } from "utils/api";
+import React, { useContext } from 'react'
+import { RateReview } from '@material-ui/icons'
+import CardInfo from '../card-info'
+import { OverviewContext } from 'context/OverviewContext'
 
 const ReviewedInvoices = () => {
-  const [reviewed, setReviewed] = useState([]);
-  const [all, setAll] = useState([]);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setLoading(true);
-    get("/api/pending/list").then((res) => {
-      setAll(res.data);
-      const reviewedInvoices = res.data.filter(
-        (invoices) => invoices.status === 1
-      );
-      console.log(reviewedInvoices);
-      setReviewed(reviewedInvoices);
-      setLoading(false);
-    });
-  }, []);
-  const formatNumber = (num) => {
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-  };
+  const {
+    state: { loading, reviewed, all }
+  } = useContext(OverviewContext)
+
+  const formatNumber = num => {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  }
 
   return (
     <CardInfo
-      primaryLabel="Reviewed Invoices"
-      secondaryLabel={
-        formatNumber(reviewed.length) + " / " + formatNumber(all.length)
-      }
+      primaryLabel='Reviewed Invoices'
+      secondaryLabel={formatNumber(reviewed) + ' / ' + formatNumber(all)}
       loading={loading}
       status={1}
-      icon={() => <RateReview fontSize="large" style={{ marginRight: 20 }} />}
+      icon={() => <RateReview fontSize='large' style={{ marginRight: 20 }} />}
     />
-  );
-};
+  )
+}
 
-export default ReviewedInvoices;
+export default ReviewedInvoices
