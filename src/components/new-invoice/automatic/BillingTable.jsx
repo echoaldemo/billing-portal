@@ -18,23 +18,22 @@ const BillingTable = () => {
   }, [selectedCampaign, state]);
   return (
     <div>
-      {campaignDetails.length > 0 ? (
-        <React.Fragment>
-          {
-            console.log("LOADING =>>", state.formLoading)
-          }
-          <div style={{ paddingTop: 0 }}>
-            {
-              state.formLoading ?
-                <TableLoader />
-
-                : <CampaignBilling campaignDetails={campaignDetails} />
-            }
-          </div>
-        </React.Fragment>
-      ) : (
-          <h3>Please select a campaign</h3>
-        )}
+      {
+        state.formLoading ?
+          <TableLoader />
+          :
+          <React.Fragment>
+            {campaignDetails.length > 0 ? (
+              <React.Fragment>
+                <div style={{ paddingTop: 0 }}>
+                  <CampaignBilling campaignDetails={campaignDetails} />
+                </div>
+              </React.Fragment>
+            ) : (
+                <h3>Please select a campaign</h3>
+              )}
+          </React.Fragment>
+      }
     </div>
   );
 };

@@ -85,8 +85,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
   const getGeneralData = async () => {
     dispatch({ type: "set-loading", payload: { loading: true } });
+
     try {
       const { data: companies } = await getAPI("/identity/company/list");
+
       dispatch({
         type: "set-companies",
         payload: { companies }
@@ -215,6 +217,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     });
   };
   const handleCompanyChange = e => {
+    setFormLoading(true)
     setFormState({
       ...formState,
       company: e.target.value
@@ -231,7 +234,10 @@ const AutomaticInvoiceProvider = ({ children }) => {
         e.target.value,
         res.data[0] ? res.data[0].rates : null
       );
-    });
+    }).then(() => {
+      setFormLoading(false)
+    })
+
   };
 
   const handleBillingChange = e => {
