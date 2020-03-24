@@ -135,32 +135,45 @@ const AutomaticInvoiceProvider = ({ children }) => {
     let dt = new Date(date);
     return dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
   };
+  const dateFunc = (date, type) => {
+    console.log(type);
+    let value = type ? type : formState.billingType;
+    let dt = new Date(date);
+    if (value === "1") dt.setMonth(dt.getMonth() + 1);
+    else dt.setDate(dt.getDate() + 7);
+    const dueDate =
+      dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
+    return dueDate;
+  };
   const handleDomo = (type, value, rates) => {
-    let data, filteredCompany;
+    let data,
+      filteredCompany =
+        type === "company"
+          ? state.companies.filter(comp => comp.uuid === value)[0]
+          : state.companies.filter(comp => comp.uuid === formState.company)[0];
     if (type === "company") {
-      filteredCompany = state.companies.filter(comp => comp.uuid === value)[0];
       data = sql({
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: formatDate(formState.billingPeriod.end)
       });
     } else if (type === "start") {
-      filteredCompany = state.companies.filter(
-        comp => comp.uuid === formState.company
-      )[0];
       data = sql({
         company: filteredCompany.slug,
         start: formatDate(value),
-        end: formatDate(formState.billingPeriod.end)
+        end: dateFunc(value)
       });
     } else if (type === "end") {
-      filteredCompany = state.companies.filter(
-        comp => comp.uuid === formState.company
-      )[0];
       data = sql({
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: formatDate(value)
+      });
+    } else if (type === "billing") {
+      data = sql({
+        company: filteredCompany.slug,
+        start: formatDate(formState.billingPeriod.start),
+        end: dateFunc(formState.billingPeriod.start, value)
       });
     }
     getDomo(data).then(res => {
@@ -213,6 +226,16 @@ const AutomaticInvoiceProvider = ({ children }) => {
             campaign: camp
           });
         }
+      } else {
+        if (type === "company") {
+          const camp = filterCampaign(value);
+          setFormState({
+            ...formState,
+            company: value,
+            campaign: camp
+          });
+          setSelectedCampaign(camp.map(item => item.uuid));
+        }
       }
     });
   };
@@ -243,52 +266,17 @@ const AutomaticInvoiceProvider = ({ children }) => {
   const handleBillingChange = e => {
     const url = `/api/rate/${
       formState.company
-      }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
+    }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
+    setFormState({
+      ...formState,
+      billingType: e.target.value
+    });
     get(url).then(res => {
-      getMock("/company1", {}).then(res2 => {
-        let temp = formState.campaign;
-        let data = res2.data[Math.floor(Math.random() * 10)];
-        if (res.data.length) {
-          let rates = res.data;
-          temp.forEach(item1 => {
-            const result = rates.find(item2 => {
-              return item2.campaign_uuid === item1.uuid;
-            });
-            const { billable_rate, performance_rate, did_rate } = result;
-            item1["content"] = {
-              ...item1["content"],
-              bill_rate: billable_rate,
-              performance_rate,
-              did_rate,
-              billable_hours: data.billable_hours,
-              did: data.did,
-              performance: data.performance
-            };
-          });
-          setFormState({
-            ...formState,
-            billingType: e.target.value,
-            campaign: temp
-          });
-        } else {
-          temp.forEach(item1 => {
-            item1["content"] = {
-              ...item1["content"],
-              bill_rate: " ",
-              performance_rate: " ",
-              did_rate: " ",
-              billable_hours: data.billable_hours,
-              did: data.did,
-              performance: data.performance
-            };
-          });
-          setFormState({
-            ...formState,
-            billingType: e.target.value,
-            campaign: temp
-          });
-        }
-      });
+      handleDomo(
+        "billing",
+        e.target.value,
+        res.data[0] ? res.data[0].rates : null
+      );
     });
   };
   const handleAddFees = (e, label) => {
