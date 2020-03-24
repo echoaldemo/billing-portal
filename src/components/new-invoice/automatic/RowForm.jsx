@@ -91,7 +91,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const handleChange = (e, type) => {
     let temp = formState.campaign;
     temp.map((item, i) => {
-      if (i === index) {
+      if (item.uuid === campDetail.uuid) {
         item.content[type] = e.target.value;
       }
     });
@@ -100,12 +100,13 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
   const handleTaxChange = (e, type) => {
     let temp = formState.campaign;
     temp.map((item, i) => {
-      if (i === index) {
+      if (item.uuid === campDetail.uuid) {
         item.tax[type] = e.target.checked;
       }
     });
     setFormState({ ...formState, campaign: temp });
   };
+
   const hourMinToDec = (value, label) => {
     if (label === "min" && value > 59) {
     } else if (parseFloat(value) > 0 || value === "") {
@@ -125,7 +126,7 @@ const RowForm = ({ campDetail, rowCollapse, setRowCollapse, index }) => {
 
       temp = formState.campaign;
       temp.map((item, i) => {
-        if (i === index) {
+        if (item.uuid === campDetail.uuid) {
           item.content["billable_hours"] = final;
         }
       });
