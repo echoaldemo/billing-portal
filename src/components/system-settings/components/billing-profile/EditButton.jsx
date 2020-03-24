@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { BillingContext } from "context/BillingProfileContext";
+import { StateContext } from "context/StateContext";
 import { Button } from "@material-ui/core";
 import { post, patch } from "utils/api";
 const EditButton = () => {
@@ -10,7 +11,9 @@ const EditButton = () => {
     rateProfile,
     setFormState
   } = useContext(BillingContext);
-
+  const {
+    state: { applyPrevious }
+  } = useContext(StateContext);
   const updateProfile = () => {
     console.log(selectedBillingType);
     dispatch({ type: "set-edit", payload: { edit: false } });
@@ -26,38 +29,13 @@ const EditButton = () => {
         company_name: companyDetails.name,
         company_slug: companyDetails.slug,
         billing_type: selectedBillingType,
-        original_data: false,
+        original_data: applyPrevious ? false : true,
         rates: formState
       }).then(result => {
         console.log(result.data.rates)
         setFormState(result.data.rates)
       })
-
     }
-
-    // formState.forEach(item => {
-    //   if (item.profile_id && item.edited) {
-    //     patch(`/api/rate/${item.profile_id}`, {
-    //       billable_rate: item.billable_rate,
-    //       did_rate: item.did_rate,
-    //       performance_rate: item.performance_rate
-    //     });
-    //   } else {
-    //     formState.forEach(item => {
-    //       if (item.edited) {
-    //         post("/api/rate", {
-    //           company_uuid: item.company,
-    //           campaign_uuid: item.uuid,
-    //           billable_rate: item.billable_rate,
-    //           did_rate: item.did_rate,
-    //           performance_rate: item.performance_rate,
-    //           original_data: true,
-    //           billing_type: selectedBillingType
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
   };
 
   return (
