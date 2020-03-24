@@ -123,7 +123,7 @@ export default function GeneralForm() {
                     ...formState,
                     billingPeriod: { ...formState.billingPeriod, start: date }
                   });
-                  handleDomo("start", date)
+                  if (formState.company) handleDomo("start", date);
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -145,7 +145,7 @@ export default function GeneralForm() {
                     ...formState,
                     billingPeriod: { ...formState.billingPeriod, end: date }
                   });
-                  handleDomo("end", date)
+                  if (formState.company) handleDomo("end", date);
                 }}
               />
             </MuiPickersUtilsProvider>

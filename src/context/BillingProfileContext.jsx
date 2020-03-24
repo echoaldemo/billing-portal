@@ -1,15 +1,11 @@
 import React, { useReducer, useState, useEffect, useContext } from "react";
-import {
-  mockCompanies,
-  mockCampaigns
-} from "components/new-invoice/mock/index";
 import { get, getAPI } from "utils/api";
 import BillingProfileReducer from "reducers/BillingProfileReducer";
 import { StateContext } from "./StateContext";
 const initialState = {
   companies: [],
   campaigns: [],
-  selectedCompany: null,
+  selectedCompany: "",
   edit: false,
   campaignRates: [],
   selectedBillingType: "1"
@@ -30,27 +26,21 @@ const BillingProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [rateProfile, setRateProfile] = useState(null);
   const [companyDetails, setCompanyDetails] = useState(null);
-  const addRateObj = companyDetails => {
-    companyDetails.forEach(item => {
-      item.content = {
-        bill_rate: "",
-        perfomance_rate: "",
-        did_rate: ""
-      };
-    });
-    return companyDetails;
-  };
-  const getCompanyCampaigns = company_uuid => {
-    const result = state.campaigns.filter(
-      item => item.company === company_uuid
-    );
-    return result;
-  };
-  const getCompanyDetails = selectedCompany => {
-    const result = state.companies.find(comp => comp.uuid === selectedCompany);
-    return result;
-  };
-  useEffect(async () => {
+  useEffect(() => {
+    apiCall();
+  }, []);
+  useEffect(() => {
+    if (state.selectedCompany && state.campaigns.length) {
+      fetchData();
+    }
+  }, [
+    state.campaigns,
+    state.selectedCompany,
+    applyPrevious,
+    state.selectedBillingType
+  ]);
+  const apiCall = async () => {
+    setLoading(true);
     const { data: companies } = await getAPI("/identity/company/list");
     dispatch({
       type: "set-companies",
@@ -65,9 +55,8 @@ const BillingProvider = ({ children }) => {
       type: "set-campaigns",
       payload: { campaigns }
     });
-  }, []);
+  };
   const fetchData = () => {
-    console.log(state);
     setLoading(true);
     setCompanyDetails(getCompanyDetails(state.selectedCompany));
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
@@ -89,12 +78,26 @@ const BillingProvider = ({ children }) => {
       setLoading(false);
     });
   };
-  useEffect(() => {
-    if (state.selectedCompany) {
-      fetchData();
-    }
-  }, [state.selectedCompany, applyPrevious, state.selectedBillingType]);
-
+  const addRateObj = companyDetails => {
+    companyDetails.forEach(item => {
+      item.content = {
+        bill_rate: "",
+        performance_rate: "",
+        did_rate: ""
+      };
+    });
+    return companyDetails;
+  };
+  const getCompanyCampaigns = company_uuid => {
+    const result = state.campaigns.filter(
+      item => item.company === company_uuid
+    );
+    return result;
+  };
+  const getCompanyDetails = selectedCompany => {
+    const result = state.companies.find(comp => comp.uuid === selectedCompany);
+    return result;
+  };
   const handleFieldChange = (e, index, type) => {
     let result = formState.map((item, i) => {
       if (i === index) {
