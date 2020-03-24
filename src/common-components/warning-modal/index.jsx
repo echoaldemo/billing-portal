@@ -1,11 +1,22 @@
-import React from "react";
-import * as Styled from "./style";
+import React from 'react'
+import { Close } from '@material-ui/icons'
+import * as Styled from './style'
 
-const WarningModal = ({ text, content, btnText, closeFn, secondaryFn }) => {
+const WarningModal = ({
+  text,
+  content,
+  icon,
+  btnText,
+  closeFn,
+  secondaryFn
+}) => {
   return (
-    <Styled.Center data-cy="success-modal">
+    <Styled.Center data-cy='success-modal'>
       <Styled.Card>
-        <Styled.WarningIcon />
+        <Styled.CloseCont>
+          <Close onClick={closeFn} />
+        </Styled.CloseCont>
+        {icon ? icon : <Styled.WarningIcon />}
         <Styled.Text>{text}</Styled.Text>
         <Styled.P>{content}</Styled.P>
 
@@ -19,10 +30,10 @@ const WarningModal = ({ text, content, btnText, closeFn, secondaryFn }) => {
         </Styled.BtnCont>
       </Styled.Card>
     </Styled.Center>
-  );
-};
+  )
+}
 
-const WarningIcon = Styled.WarningIcon;
+const WarningIcon = Styled.WarningIcon
 
-export default WarningModal;
-export { WarningIcon };
+export default WarningModal
+export { WarningIcon }
