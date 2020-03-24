@@ -29,30 +29,50 @@ const RowBody = () => {
 
   const handleServices = item => {
     let newArr = [];
-    item["billable_rate"] && newArr.push("Billable Hours");
-    item["did_rate"] && newArr.push("DID");
-    item["performance_rate"] && newArr.push("Performance");
+    item.content["bill_rate"] && newArr.push("Billable Hours");
+    item.content["did_rate"] && newArr.push("DID");
+    item.content["performance_rate"] && newArr.push("Performance");
     return newArr.length > 0 ? newArr.join(", ") : "Field not set";
   };
 
   return (
     <React.Fragment>
-      {formState.length > 0 && (
-        <React.Fragment>
-          {formState.map((item, i) => {
-            return (
-              <CampaignRowDetails
-                item={item}
-                services={handleServices(item)}
-                key={i}
-                index={i}
-              />
-            );
-          })}
-        </React.Fragment>
-      )}
+      {
+        formState ?
+          <React.Fragment>
+            {
+              formState.map((item, i) => {
+                return (
+                  <CampaignRowDetails
+                    item={item}
+                    services={handleServices(item)}
+                    key={i}
+                    index={i}
+                  />
+                )
+              })
+            }
+          </React.Fragment>
+          : null
+      }
     </React.Fragment>
   );
 };
 
 export default CampaignRows;
+
+// {formState.rates.length > 0 && (
+//   <React.Fragment>
+//     <h1>sadsad</h1>
+//     {formState.rate.map((item, i) => {
+//       return (
+//         <CampaignRowDetails
+//           item={item}
+//           services={handleServices(item)}
+//           key={i}
+//           index={i}
+//         />
+//       );
+//     })}
+//   </React.Fragment>
+// )}

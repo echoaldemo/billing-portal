@@ -1,12 +1,14 @@
-import React from "react";
-import { Divider } from "@material-ui/core";
-import SEO from "utils/seo";
-import "./styles.scss";
-import QuickbooksConnect from "./QuickbooksConnect";
-export default function GeneralSettings() {
+import React from 'react'
+import { Divider } from '@material-ui/core'
+import SEO from 'utils/seo'
+import './styles.scss'
+import QuickbooksConnect from './QuickbooksConnect'
+import { StateProvider } from 'context/GeneralSettingsContext'
+
+const GeneralSetting = () => {
   return (
-    <div className="container">
-      <SEO title="General Settings" />
+    <div className='container general-setting-container'>
+      <SEO title='General Settings' />
       <QuickbooksConnect />
       <Divider />
       <br />
@@ -19,5 +21,15 @@ export default function GeneralSettings() {
         </Grid>
       </Grid> */}
     </div>
-  );
+  )
 }
+
+const GeneralSettings = () => {
+  return (
+    <StateProvider>
+      <GeneralSetting />
+    </StateProvider>
+  )
+}
+
+export default GeneralSettings
