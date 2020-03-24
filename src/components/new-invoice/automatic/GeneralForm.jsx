@@ -17,7 +17,8 @@ export default function GeneralForm() {
     setSelectedCampaign,
     handleBillingChange,
     handleCompanyChange,
-    getBalance
+    getBalance,
+    handleDomo
   } = useContext(AutomaticInvoiceContext);
   return (
     <div
@@ -122,6 +123,7 @@ export default function GeneralForm() {
                     ...formState,
                     billingPeriod: { ...formState.billingPeriod, start: date }
                   });
+                  if (formState.company) handleDomo("start", date);
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -143,6 +145,7 @@ export default function GeneralForm() {
                     ...formState,
                     billingPeriod: { ...formState.billingPeriod, end: date }
                   });
+                  if (formState.company) handleDomo("end", date);
                 }}
               />
             </MuiPickersUtilsProvider>

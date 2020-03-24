@@ -15,7 +15,7 @@ const BillingTable = () => {
   };
   useEffect(() => {
     getAllCampaignDetails();
-  }, [selectedCampaign]);
+  }, [selectedCampaign, state]);
   return (
     <div>
       {campaignDetails.length > 0 ? (

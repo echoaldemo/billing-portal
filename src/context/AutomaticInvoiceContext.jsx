@@ -1,8 +1,8 @@
 /* eslint-disable */
 import React, { useReducer, useEffect, useState, useContext } from "react";
-import { mockCampaigns, mockCompanies } from "../components/new-invoice/mock";
-import { post, get, getMock } from "utils/api";
+import { post, get, getMock, getAPI, getDomo } from "utils/api";
 import { postLog } from "utils/time";
+import { sql } from "utils/domo";
 import { StateContext } from "context/StateContext";
 
 const appendLeadingZeroes = n => {
@@ -11,12 +11,12 @@ const appendLeadingZeroes = n => {
   }
   return n;
 };
-const today = new Date();
-const start =
-  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-today.setMonth(today.getMonth() + 1);
-const end =
-  today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+
+const date = new Date(),
+  y = date.getFullYear(),
+  m = date.getMonth();
+const start = new Date(y, m, 1);
+const end = new Date(y, m + 1, 0);
 
 const initialState = {
   companies: [],
@@ -72,10 +72,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
     let dt = new Date(start);
     if (formState.billingType === "1") dt.setMonth(dt.getMonth() + 1);
     else dt.setDate(dt.getDate() + 7);
-
     const dueDate =
       dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
-
     setFormState({
       ...formState,
       billingPeriod: { ...formState.billingPeriod, end: dueDate }
@@ -85,35 +83,39 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const filteredCampaigns = state.campaigns.filter(c => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
   };
-  const getGeneralData = () => {
+  const getGeneralData = async () => {
     dispatch({ type: "set-loading", payload: { loading: true } });
-    const campaigns = mockCampaigns.map(item => ({
-      ...item,
-      content: {
-        billable_hours: " ",
-        bill_rate: " ",
-        performance: " ",
-        performance_rate: " ",
-        did: " ",
-        did_rate: " "
-      },
-      tax: {
-        billable_hours: true,
-        performance: true,
-        did: true
-      }
-    }));
-    setTimeout(() => {
+    try {
+      const { data: companies } = await getAPI("/identity/company/list");
       dispatch({
         type: "set-companies",
-        payload: { companies: mockCompanies }
+        payload: { companies }
       });
+      const { data: temp } = await getAPI("/identity/campaign/list");
+      const campaigns = temp.map(item => ({
+        ...item,
+        content: {
+          billable_hours: " ",
+          bill_rate: " ",
+          performance: " ",
+          performance_rate: " ",
+          did: " ",
+          did_rate: " "
+        },
+        tax: {
+          billable_hours: true,
+          performance: true,
+          did: true
+        }
+      }));
       dispatch({
         type: "set-campaigns",
-        payload: { campaigns: campaigns }
+        payload: { campaigns }
       });
       dispatch({ type: "set-loading", payload: { loading: false } });
-    }, 500);
+    } catch (err) {
+      console.log(err);
+    }
   };
   const createAnother = () => {
     setFormState(initialFormState);
@@ -121,23 +123,101 @@ const AutomaticInvoiceProvider = ({ children }) => {
     setSelectedCampaign([]);
     getGeneralData();
   };
-
   const filterCampaign = uuid => {
     const filteredCampaign = state.campaigns.filter(
       camp => camp.company === uuid
     );
-
-    setSelectedCampaign(filteredCampaign.map(item => item.uuid));
     return filteredCampaign;
   };
-
+  const formatDate = date => {
+    let dt = new Date(date);
+    return dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
+  };
+  const handleDomo = (type, value, rates) => {
+    let data, filteredCompany;
+    if (type === "company") {
+      filteredCompany = state.companies.filter(comp => comp.uuid === value)[0];
+      data = sql({
+        company: filteredCompany.slug,
+        start: formatDate(formState.billingPeriod.start),
+        end: formatDate(formState.billingPeriod.end)
+      });
+    } else if (type === "start") {
+      filteredCompany = state.companies.filter(
+        comp => comp.uuid === formState.company
+      )[0];
+      data = sql({
+        company: filteredCompany.slug,
+        start: formatDate(value),
+        end: formatDate(formState.billingPeriod.end)
+      });
+    } else if (type === "end") {
+      filteredCompany = state.companies.filter(
+        comp => comp.uuid === formState.company
+      )[0];
+      data = sql({
+        company: filteredCompany.slug,
+        start: formatDate(formState.billingPeriod.start),
+        end: formatDate(value)
+      });
+    }
+    getDomo(data).then(res => {
+      const temp = res.data.rows.map(item => {
+        return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
+      });
+      if (temp.length) {
+        setSelectedCampaign(temp);
+        let temp2 = state.campaigns;
+        let foo;
+        res.data.rows.forEach(item => {
+          temp2.forEach((camp, i) => {
+            if (rates) {
+              foo = rates.filter(elem => elem.uuid === camp.uuid)[0];
+            }
+            if (camp.slug === item[1]) {
+              if (foo) {
+                const { bill_rate, performance_rate, did_rate } = foo.content;
+                temp2[i] = {
+                  ...temp2[i],
+                  content: {
+                    ...temp2[i].content,
+                    bill_rate: bill_rate || " ",
+                    performance_rate: performance_rate || " ",
+                    did_rate: did_rate || " ",
+                    billable_hours: item[2] / 3600
+                  }
+                };
+              } else {
+                temp2[i] = {
+                  ...temp2[i],
+                  content: {
+                    ...temp2[i].content,
+                    billable_hours: item[2] / 3600
+                  }
+                };
+              }
+            }
+          });
+        });
+        dispatch({
+          type: "set-campaigns",
+          payload: { campaigns: temp2 }
+        });
+        if (type === "company") {
+          const camp = filterCampaign(value);
+          setFormState({
+            ...formState,
+            company: value,
+            campaign: camp
+          });
+        }
+      }
+    });
+  };
   const handleCompanyChange = e => {
-    setFormLoading(true)
-    const camp = filterCampaign(e.target.value);
     setFormState({
       ...formState,
-      company: e.target.value,
-      campaign: camp
+      company: e.target.value
     });
 
     const url = `/api/rate/${
@@ -146,49 +226,11 @@ const AutomaticInvoiceProvider = ({ children }) => {
       formState.billingType
       }`;
     get(url).then(res => {
-      getMock("/company1", {}).then(res2 => {
-        let data = res2.data[Math.floor(Math.random() * 10)];
-        let temp = camp;
-        if (res.data.length) {
-          let rates = res.data;
-          temp.forEach(item1 => {
-            const result = rates.find(item2 => {
-              return item2.campaign_uuid === item1.uuid;
-            });
-            const { billable_rate, performance_rate, did_rate } = result;
-            item1["content"] = {
-              ...item1["content"],
-              bill_rate: billable_rate,
-              performance_rate,
-              did_rate,
-              billable_hours: data.billable_hours,
-              did: data.did,
-              performance: data.performance
-            };
-          });
-          setFormState({
-            ...formState,
-            company: e.target.value,
-            campaign: temp
-          });
-        } else {
-          temp.forEach(item1 => {
-            item1["content"] = {
-              ...item1["content"],
-              billable_hours: data.billable_hours,
-              did: data.did,
-              performance: data.performance
-            };
-          });
-          setFormState({
-            ...formState,
-            company: e.target.value,
-            campaign: temp
-          });
-        }
-      });
-    }).then(() => {
-      setFormLoading(false)
+      handleDomo(
+        "company",
+        e.target.value,
+        res.data[0] ? res.data[0].rates : null
+      );
     });
   };
 
@@ -593,7 +635,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
         mockTaxation,
         getBalance,
         createInvoice,
-        createAnother
+        createAnother,
+        handleDomo
       }}
     >
       {children}
