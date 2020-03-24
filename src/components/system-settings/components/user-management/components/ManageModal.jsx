@@ -65,44 +65,36 @@ const ManageModal = () => {
 
   return (
     <>
-      <LoadingModal
-        open={editLoading}
-        text="Updating user..."
-        cancelFn={() => {}}
-      />
+      <LoadingModal open={editLoading} text='Updating user...' />
       <Dialog open={openManage}>
-        <div className="user-manage-modal-header">
+        <div className='user-manage-modal-header'>
           <span></span>
           <span>{selectedUser.name}</span>
           <Close onClick={() => dispatch({ type: 'CLOSE_MANAGE' })} />
         </div>
-        <div className="user-manage-modal-body">
+        <div className='user-manage-modal-body'>
           <InputField
-            label="Email"
+            label='Email'
             disabled
-            margin="normal"
+            margin='normal'
             value={selectedUser.email}
             fullWidth
             InputProps={{
               endAdornment: (
-                <InputAdornment position="end">
-                  {/* <FileCopyOutlined
-                    onClick={() => alert('test')}
-                    style={{ fontSize: 18, cursor: 'pointer' }}
-                  /> */}
+                <InputAdornment position='end'>
                   <CopyToClipboard
                     text={selectedUser.email}
                     onCopy={() => dispatch({ type: 'SET_COPY_ON' })}
                     onPointerLeave={() => dispatch({ type: 'SET_COPY_OFF' })}
                   >
                     {copy ? (
-                      <LightTooltip title="UUID Copied!" placement="top">
+                      <LightTooltip title='UUID Copied!' placement='top'>
                         <FileCopyOutlined
                           style={{ fontSize: 18, cursor: 'pointer' }}
                         />
                       </LightTooltip>
                     ) : (
-                      <LightTooltip title="Copy UUID" placement="top">
+                      <LightTooltip title='Copy UUID' placement='top'>
                         <FileCopyOutlined
                           style={{ fontSize: 18, cursor: 'pointer' }}
                         />
@@ -114,44 +106,44 @@ const ManageModal = () => {
             }}
           />
           <InputField
-            label="User type"
+            label='User type'
             fullWidth
             value={selectedUser.type}
-            margin="normal"
+            margin='normal'
             select
-            name="type"
+            name='type'
             onChange={handleChange}
           >
-            <MenuItem value="admin">admin</MenuItem>
-            <MenuItem value="user">user</MenuItem>
+            <MenuItem value='admin'>admin</MenuItem>
+            <MenuItem value='user'>user</MenuItem>
           </InputField>
           <InputField
-            label="Status"
+            label='Status'
             disabled
-            margin="normal"
+            margin='normal'
             value={selectedUser.status}
             fullWidth
             InputProps={{
               endAdornment: (
-                <InputAdornment position="end">
+                <InputAdornment position='end'>
                   <Switch
                     checked={selectedUser.status === 'active' ? true : false}
                     onChange={handleSwitch}
-                    color="primary"
+                    color='primary'
                   />
                 </InputAdornment>
               )
             }}
           />
 
-          <div className="modal-button-container">
+          <div className='modal-button-container'>
             <button
-              className="modal-button"
+              className='modal-button'
               onClick={() => dispatch({ type: 'CLOSE_MANAGE' })}
             >
               CANCEL
             </button>
-            <button className="modal-button button-save" onClick={handleSave}>
+            <button className='modal-button button-save' onClick={handleSave}>
               SAVE
             </button>
           </div>
