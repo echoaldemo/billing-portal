@@ -1,9 +1,10 @@
-import React from "react";
-import { Button, Divider } from "@material-ui/core";
-import { Modal, LoadingModal } from "common-components";
-import { StateContext } from "context/StateContext";
-import { patch } from "utils/api";
-import { postLog } from "utils/time";
+import React from 'react'
+import { Dialog } from '@material-ui/core'
+import { Error } from '@material-ui/icons'
+import { LoadingModal, WarningModal } from 'common-components'
+import { StateContext } from 'context/StateContext'
+import { patch, post } from 'utils/api'
+import { postLog } from 'utils/time'
 
 const ApproveModal = () => {
   const {
@@ -13,93 +14,89 @@ const ApproveModal = () => {
     getPendingInvoicesData,
     setSelectedItems,
     state
-  } = React.useContext(StateContext);
+  } = React.useContext(StateContext)
 
-  const [loading, setLoading] = React.useState(false);
-  const [approveCount, setApproveCount] = React.useState(0);
+  const [loading, setLoading] = React.useState(false)
+  const [approveCount, setApproveCount] = React.useState(0)
 
   const handleModalClose = () => {
-    setConfirmModal({ ...confirmModal, approve: false });
-  };
+    setConfirmModal({ ...confirmModal, approve: false })
+  }
+
+  const sendToQB = async item => {
+    const rest = JSON.parse(JSON.stringify(item))
+    rest.CustomerRef = { value: rest.company.qb_id }
+    rest.CustomerMemo = {
+      value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
+    }
+    ;[
+      'id',
+      'campaigns',
+      'company',
+      'startDate',
+      'dueDate',
+      'total',
+      'invoiceType',
+      'billingType',
+      'docNumber',
+      'status'
+    ].map(label => delete rest[label])
+    await post('/api/invoice', rest).catch(err => {
+      console.log(err)
+    })
+  }
 
   const approveSelectedItems = async () => {
-    setLoading(true);
-    handleModalClose();
+    setLoading(true)
+    handleModalClose()
     for (let i = 0; i < selectedItems.length; i++) {
       if (selectedItems[i].status !== 2) {
+        await sendToQB(selectedItems[i])
         await patch(`/api/pending/edit/${selectedItems[i].id}`, {
           status: 2
         }).then(() => {
-          setApproveCount(i + 1);
-        });
+          setApproveCount(i + 1)
+        })
       }
     }
-    let desc;
+    let desc
     if (selectedItems.length > 1)
-      desc = `${state.userProfile.name} approved ${selectedItems.length} invoices.`;
+      desc = `${state.userProfile.name} approved ${selectedItems.length} invoices.`
     else
-      desc = `${state.userProfile.name} approved invoice #${selectedItems[0].id}.`;
+      desc = `${state.userProfile.name} approved invoice #${selectedItems[0].id}.`
     postLog({
-      type: "approve-invoice",
+      type: 'approve-invoice',
       description: desc,
       invoiceId: null
-    });
-    setLoading(false);
-    getPendingInvoicesData();
-    setSelectedItems([]);
-  };
+    })
+    setLoading(false)
+    getPendingInvoicesData()
+    setSelectedItems([])
+  }
 
   return (
     <React.Fragment>
-      <Modal
-        title={<b>Confirmation</b>}
-        open={confirmModal.approve}
-        onClose={handleModalClose}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexDirection: "column",
-          alignItems: "center"
-        }}
-      >
-        <div>
-          <h4 style={{ textAlign: "center" }}>
-            Are you sure to approve this <b> {selectedItems.length} </b>
-            {selectedItems.length > 1 ? "Invoices" : "Invoice"}?
-          </h4>
-          <Divider />
-          <br />
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              className="custom-btn"
-              style={{ backgroundColor: "#2ca01d", color: "#FFF" }}
-              variant="contained"
-              onClick={approveSelectedItems}
-            >
-              <b>Approve</b>
-            </Button>
-            &emsp;
-            <Button
-              color="default"
-              variant="contained"
-              className="custom-btn"
-              onClick={handleModalClose}
-            >
-              <b>Cancel</b>
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
+      <Dialog open={confirmModal.approve}>
+        <WarningModal
+          text='CONFIRMATION'
+          icon={<Error style={{ fontSize: 36, color: '#A6C556' }} />}
+          content={`Are you sure to approve this ${selectedItems.length} ${
+            selectedItems.length > 1 ? 'Invoices' : 'Invoice'
+          }`}
+          closeFn={handleModalClose}
+          btnText='continue'
+          secondaryFn={approveSelectedItems}
+        />
+      </Dialog>
       <LoadingModal
         open={loading}
         text={`Approving ${approveCount} of ${selectedItems.length}`}
         cancelFn={() => {
-          setLoading(false);
+          setLoading(false)
         }}
       />
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default ApproveModal;
+export default ApproveModal
