@@ -8,14 +8,19 @@ import SEO from "utils/seo";
 import { StateContext } from "context/StateContext";
 import EditButton from "./EditButton";
 import SelectBillingTypeField from "./SelectBillingTypeField";
+import { IdentityContext } from "context/IdentityContext"
 const BillingProfile = () => {
   const {
     state: { applyPrevious },
     dispatch: stateDispatch
   } = useContext(StateContext);
 
+  const {
+    identityState
+  } = useContext(IdentityContext)
   return (
     <div className="billing-profile-container">
+      {console.log(identityState)}
       <SEO title="Billing Profile" />
       <Grid container className="billing-header-container">
         <Grid item xs={10}>
