@@ -1,8 +1,7 @@
 /* eslint-disable */
 import React, { useReducer, useEffect, useState, useContext } from "react";
-import { post, get, getMock, getAPI, getDomo } from "utils/api";
+import { post, get, getAPI } from "utils/api";
 import { postLog } from "utils/time";
-import { sql } from "utils/domo";
 import { StateContext } from "context/StateContext";
 
 const appendLeadingZeroes = n => {
@@ -47,7 +46,7 @@ const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { state: state2, getPendingInvoicesData } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
-  const [formLoading, setFormLoading] = useState(false)
+  const [formLoading, setFormLoading] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [addFee, setAddFee] = useState(initialAddFee);
   const [state, dispatch] = useReducer((state, action) => {
@@ -152,95 +151,95 @@ const AutomaticInvoiceProvider = ({ children }) => {
           ? state.companies.filter(comp => comp.uuid === value)[0]
           : state.companies.filter(comp => comp.uuid === formState.company)[0];
     if (type === "company") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: formatDate(formState.billingPeriod.end)
-      });
+      };
     } else if (type === "start") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(value),
         end: dateFunc(value)
-      });
+      };
     } else if (type === "end") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: formatDate(value)
-      });
+      };
     } else if (type === "billing") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: dateFunc(formState.billingPeriod.start, value)
-      });
+      };
     }
-    getDomo(data).then(res => {
-      const temp = res.data.rows.map(item => {
-        return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
-      });
-      if (temp.length) {
-        setSelectedCampaign(temp);
-        let temp2 = state.campaigns;
-        let foo;
-        res.data.rows.forEach(item => {
-          temp2.forEach((camp, i) => {
-            if (rates) {
-              foo = rates.filter(elem => elem.uuid === camp.uuid)[0];
-            }
-            if (camp.slug === item[1]) {
-              if (foo) {
-                const { bill_rate, performance_rate, did_rate } = foo.content;
-                temp2[i] = {
-                  ...temp2[i],
-                  content: {
-                    ...temp2[i].content,
-                    bill_rate: bill_rate || " ",
-                    performance_rate: performance_rate || " ",
-                    did_rate: did_rate || " ",
-                    billable_hours: item[2] / 3600
-                  }
-                };
-              } else {
-                temp2[i] = {
-                  ...temp2[i],
-                  content: {
-                    ...temp2[i].content,
-                    billable_hours: item[2] / 3600
-                  }
-                };
-              }
-            }
-          });
-        });
-        dispatch({
-          type: "set-campaigns",
-          payload: { campaigns: temp2 }
-        });
-        if (type === "company") {
-          const camp = filterCampaign(value);
-          setFormState({
-            ...formState,
-            company: value,
-            campaign: camp
-          });
-        }
-      } else {
-        if (type === "company") {
-          const camp = filterCampaign(value);
-          setFormState({
-            ...formState,
-            company: value,
-            campaign: camp
-          });
-          setSelectedCampaign(camp.map(item => item.uuid));
-        }
-      }
+    post(`/domo/billable`, data).then(res => {
+      // const temp = res.data.rows.map(item => {
+      //   return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
+      // });
+      // if (temp.length) {
+      //   setSelectedCampaign(temp);
+      //   let temp2 = state.campaigns;
+      //   let foo;
+      //   res.data.rows.forEach(item => {
+      //     temp2.forEach((camp, i) => {
+      //       if (rates) {
+      //         foo = rates.filter(elem => elem.uuid === camp.uuid)[0];
+      //       }
+      //       if (camp.slug === item[1]) {
+      //         if (foo) {
+      //           const { bill_rate, performance_rate, did_rate } = foo.content;
+      //           temp2[i] = {
+      //             ...temp2[i],
+      //             content: {
+      //               ...temp2[i].content,
+      //               bill_rate: bill_rate || " ",
+      //               performance_rate: performance_rate || " ",
+      //               did_rate: did_rate || " ",
+      //               billable_hours: item[2] / 3600
+      //             }
+      //           };
+      //         } else {
+      //           temp2[i] = {
+      //             ...temp2[i],
+      //             content: {
+      //               ...temp2[i].content,
+      //               billable_hours: item[2] / 3600
+      //             }
+      //           };
+      //         }
+      //       }
+      //     });
+      //   });
+      //   dispatch({
+      //     type: "set-campaigns",
+      //     payload: { campaigns: temp2 }
+      //   });
+      //   if (type === "company") {
+      //     const camp = filterCampaign(value);
+      //     setFormState({
+      //       ...formState,
+      //       company: value,
+      //       campaign: camp
+      //     });
+      //   }
+      // } else {
+      //   if (type === "company") {
+      //     const camp = filterCampaign(value);
+      //     setFormState({
+      //       ...formState,
+      //       company: value,
+      //       campaign: camp
+      //     });
+      //     setSelectedCampaign(camp.map(item => item.uuid));
+      //   }
+      // }
     });
   };
   const handleCompanyChange = e => {
-    setFormLoading(true)
+    setFormLoading(true);
     setFormState({
       ...formState,
       company: e.target.value
@@ -248,19 +247,20 @@ const AutomaticInvoiceProvider = ({ children }) => {
 
     const url = `/api/rate/${
       e.target.value
-      }?original_data=${!state2.applyPrevious}&billing_type=${
+    }?original_data=${!state2.applyPrevious}&billing_type=${
       formState.billingType
-      }`;
-    get(url).then(res => {
-      handleDomo(
-        "company",
-        e.target.value,
-        res.data[0] ? res.data[0].rates : null
-      );
-    }).then(() => {
-      setFormLoading(false)
-    })
-
+    }`;
+    get(url)
+      .then(res => {
+        handleDomo(
+          "company",
+          e.target.value,
+          res.data[0] ? res.data[0].rates : null
+        );
+      })
+      .then(() => {
+        setFormLoading(false);
+      });
   };
 
   const handleBillingChange = e => {
@@ -326,7 +326,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     );
     let total = 0;
     let mer =
-      Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
+        Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
       lit = litigator.qty * litigator.rate;
     if (merchant.tax && merchant.rate) total += mer;
     if (litigator.tax) total += lit;
@@ -359,8 +359,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const tax =
       formState.taxation !== " "
         ? Math.round(
-          (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
-        ) / 100
+            (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
+          ) / 100
         : 0;
     return tax;
   };
@@ -605,7 +605,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
   };
 
-  state.formLoading = formLoading
+  state.formLoading = formLoading;
   return (
     <AutomaticInvoiceContext.Provider
       value={{
