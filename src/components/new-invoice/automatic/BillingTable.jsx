@@ -4,7 +4,7 @@ import { AutomaticInvoiceContext } from "context/AutomaticInvoiceContext";
 import CampaignBilling from "./CampaignBilling";
 import { TableLoader } from "common-components";
 const BillingTable = () => {
-  const { selectedCampaign, state } = useContext(AutomaticInvoiceContext);
+  const { selectedCampaign, state, setFormLoading } = useContext(AutomaticInvoiceContext);
   const [campaignDetails, setCampaignDetails] = useState([]);
   const getAllCampaignDetails = () => {
     const campaignsDetails = selectedCampaign.map(uuid => {
@@ -18,6 +18,8 @@ const BillingTable = () => {
   }, [selectedCampaign, state]);
   return (
     <div>
+      {console.log(state.formLoading, "<===loading")}
+      {console.log(campaignDetails, "<===camppaign")}
       {
         state.formLoading ?
           <TableLoader />
