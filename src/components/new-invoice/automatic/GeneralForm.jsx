@@ -75,7 +75,7 @@ export default function GeneralForm() {
           onChange={e => {
             setSelectedCampaign(e.target.value);
           }}
-          disabled={!formState.company}
+          disabled={!formState.company || !selectedCampaign.length}
           fullWidth
         >
           {formState.campaign.map((name, i) => (

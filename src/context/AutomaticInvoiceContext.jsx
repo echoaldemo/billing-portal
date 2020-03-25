@@ -135,7 +135,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
   };
   const dateFunc = (date, type) => {
-    console.log(type);
     let value = type ? type : formState.billingType;
     let dt = new Date(date);
     if (value === "1") dt.setMonth(dt.getMonth() + 1);
@@ -145,6 +144,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return dueDate;
   };
   const handleDomo = (type, value, rates) => {
+    setFormLoading(true);
     let data,
       filteredCompany =
         type === "company"
@@ -175,109 +175,121 @@ const AutomaticInvoiceProvider = ({ children }) => {
         end: dateFunc(formState.billingPeriod.start, value)
       };
     }
-    post(`/domo/billable`, data).then(res => {
-      // const temp = res.data.rows.map(item => {
-      //   return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
-      // });
-      // if (temp.length) {
-      //   setSelectedCampaign(temp);
-      //   let temp2 = state.campaigns;
-      //   let foo;
-      //   res.data.rows.forEach(item => {
-      //     temp2.forEach((camp, i) => {
-      //       if (rates) {
-      //         foo = rates.filter(elem => elem.uuid === camp.uuid)[0];
-      //       }
-      //       if (camp.slug === item[1]) {
-      //         if (foo) {
-      //           const { bill_rate, performance_rate, did_rate } = foo.content;
-      //           temp2[i] = {
-      //             ...temp2[i],
-      //             content: {
-      //               ...temp2[i].content,
-      //               bill_rate: bill_rate || " ",
-      //               performance_rate: performance_rate || " ",
-      //               did_rate: did_rate || " ",
-      //               billable_hours: item[2] / 3600
-      //             }
-      //           };
-      //         } else {
-      //           temp2[i] = {
-      //             ...temp2[i],
-      //             content: {
-      //               ...temp2[i].content,
-      //               billable_hours: item[2] / 3600
-      //             }
-      //           };
-      //         }
-      //       }
-      //     });
-      //   });
-      //   dispatch({
-      //     type: "set-campaigns",
-      //     payload: { campaigns: temp2 }
-      //   });
-      //   if (type === "company") {
-      //     const camp = filterCampaign(value);
-      //     setFormState({
-      //       ...formState,
-      //       company: value,
-      //       campaign: camp
-      //     });
-      //   }
-      // } else {
-      //   if (type === "company") {
-      //     const camp = filterCampaign(value);
-      //     setFormState({
-      //       ...formState,
-      //       company: value,
-      //       campaign: camp
-      //     });
-      //     setSelectedCampaign(camp.map(item => item.uuid));
-      //   }
-      // }
+    post(`/api/domo/billable`, data).then(res => {
+      const temp = res.data.rows.map(item => {
+        return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
+      });
+      if (temp.length) {
+        setSelectedCampaign(temp);
+        let temp2 = state.campaigns;
+        let foo;
+        res.data.rows.forEach(item => {
+          temp2.forEach((camp, i) => {
+            if (rates) {
+              foo = rates.filter(elem => elem.uuid === camp.uuid)[0];
+            }
+            if (camp.slug === item[1]) {
+              if (foo) {
+                const { bill_rate, performance_rate, did_rate } = foo.content;
+                temp2[i] = {
+                  ...temp2[i],
+                  content: {
+                    ...temp2[i].content,
+                    bill_rate: bill_rate || " ",
+                    performance_rate: performance_rate || " ",
+                    did_rate: did_rate || " ",
+                    billable_hours: item[2] / 3600
+                  }
+                };
+              } else {
+                temp2[i] = {
+                  ...temp2[i],
+                  content: {
+                    ...temp2[i].content,
+                    billable_hours: item[2] / 3600
+                  }
+                };
+              }
+            }
+          });
+        });
+        dispatch({
+          type: "set-campaigns",
+          payload: { campaigns: temp2 }
+        });
+        if (type === "company") {
+          const camp = filterCampaign(value);
+          setFormState({
+            ...formState,
+            company: value,
+            campaign: camp
+          });
+        }
+      } else {
+        if (type === "company") {
+          const camp = filterCampaign(value);
+          setFormState({
+            ...formState,
+            company: value,
+            campaign: camp
+          });
+          setSelectedCampaign(camp.map(item => item.uuid));
+        }
+      }
+      setFormLoading(false);
     });
   };
   const handleCompanyChange = e => {
     setFormLoading(true);
-    setFormState({
-      ...formState,
-      company: e.target.value
-    });
-
+    if (formState.company !== e.target.value) {
+      setSelectedCampaign([]);
+      setFormState({
+        ...formState,
+        company: e.target.value,
+        campaign: []
+      });
+    } else {
+      setFormState({
+        ...formState,
+        company: e.target.value
+      });
+    }
     const url = `/api/rate/${
       e.target.value
     }?original_data=${!state2.applyPrevious}&billing_type=${
       formState.billingType
     }`;
-    get(url)
-      .then(res => {
-        handleDomo(
-          "company",
-          e.target.value,
-          res.data[0] ? res.data[0].rates : null
-        );
-      })
-      .then(() => {
-        setFormLoading(false);
-      });
-  };
-
-  const handleBillingChange = e => {
-    const url = `/api/rate/${
-      formState.company
-    }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
-    setFormState({
-      ...formState,
-      billingType: e.target.value
-    });
     get(url).then(res => {
       handleDomo(
-        "billing",
+        "company",
         e.target.value,
         res.data[0] ? res.data[0].rates : null
       );
     });
+  };
+
+  const handleBillingChange = e => {
+    if (formState.company) {
+      const url = `/api/rate/${
+        formState.company
+      }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
+      setFormState({
+        ...formState,
+        billingType: e.target.value
+      });
+      get(url).then(res => {
+        handleDomo(
+          "billing",
+          e.target.value,
+          res.data[0] ? res.data[0].rates : null
+        );
+      });
+    } else {
+      setFormState({
+        ...formState,
+        billingType: e.target.value
+      });
+    }
   };
   const handleAddFees = (e, label) => {
     const value = label === "tax" ? e.target.checked : e.target.value;
