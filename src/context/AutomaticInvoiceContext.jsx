@@ -265,7 +265,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
         e.target.value,
         res.data[0] ? res.data[0].rates : null
       );
-<<<<<<< HEAD
     });
   };
 
@@ -291,28 +290,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
         billingType: e.target.value
       });
     }
-=======
-      setFormLoading(false)
-    })
-
-  };
-
-  const handleBillingChange = e => {
-    const url = `/api/rate/${
-      formState.company
-      }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
-    setFormState({
-      ...formState,
-      billingType: e.target.value
-    });
-    get(url).then(res => {
-      handleDomo(
-        "billing",
-        e.target.value,
-        res.data[0] ? res.data[0].rates : null
-      );
-    });
->>>>>>> 374756fa60066294aa9a8b06b8323079e40c7675
   };
   const handleAddFees = (e, label) => {
     const value = label === "tax" ? e.target.checked : e.target.value;
