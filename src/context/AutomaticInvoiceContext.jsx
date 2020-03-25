@@ -257,7 +257,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
         e.target.value,
         res.data[0] ? res.data[0].rates : null
       );
-    }).then(() => {
       setFormLoading(false)
     })
 
@@ -266,7 +265,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
   const handleBillingChange = e => {
     const url = `/api/rate/${
       formState.company
-    }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
+      }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
     setFormState({
       ...formState,
       billingType: e.target.value
@@ -630,7 +629,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
         getBalance,
         createInvoice,
         createAnother,
-        handleDomo
+        handleDomo,
+        setFormLoading
       }}
     >
       {children}
