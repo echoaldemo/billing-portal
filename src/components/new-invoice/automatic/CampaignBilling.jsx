@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { RowHeader, Row } from "common-components";
+import { RowHeader, Row, TableLoader } from "common-components";
 import {
   Checkbox as TempCb,
   MenuItem,
@@ -26,6 +26,7 @@ const rowHeaderData = [
 ];
 const CampaignBilling = ({ campaignDetails }) => {
   const {
+    state,
     getTotal,
     getTaxableSubtotal,
     getTax,
@@ -346,17 +347,23 @@ const CampaignBilling = ({ campaignDetails }) => {
             overflow: "auto"
           }}
         >
-          {campaignDetails.map((el, i) => {
-            return (
-              <RowForm
-                campDetail={el}
-                rowCollapse={rowCollapse}
-                setRowCollapse={setRowCollapse}
-                key={i}
-                index={i}
-              />
-            );
-          })}
+          {state.formLoading ? (
+            <div>
+              <TableLoader style={{ height: 450 }} />
+            </div>
+          ) : (
+            campaignDetails.map((el, i) => {
+              return (
+                <RowForm
+                  campDetail={el}
+                  rowCollapse={rowCollapse}
+                  setRowCollapse={setRowCollapse}
+                  key={i}
+                  index={i}
+                />
+              );
+            })
+          )}
         </div>
       </div>
       <div

@@ -1,8 +1,7 @@
 /* eslint-disable */
 import React, { useReducer, useEffect, useState, useContext } from "react";
-import { post, get, getMock, getAPI, getDomo } from "utils/api";
+import { post, get, getAPI } from "utils/api";
 import { postLog } from "utils/time";
-import { sql } from "utils/domo";
 import { StateContext } from "context/StateContext";
 
 const appendLeadingZeroes = n => {
@@ -47,7 +46,7 @@ const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { state: state2, getPendingInvoicesData } = useContext(StateContext);
   const [formState, setFormState] = useState(initialFormState);
-  const [formLoading, setFormLoading] = useState(false)
+  const [formLoading, setFormLoading] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
   const [addFee, setAddFee] = useState(initialAddFee);
   const [state, dispatch] = useReducer((state, action) => {
@@ -136,7 +135,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-" + dt.getDate();
   };
   const dateFunc = (date, type) => {
-    console.log(type);
     let value = type ? type : formState.billingType;
     let dt = new Date(date);
     if (value === "1") dt.setMonth(dt.getMonth() + 1);
@@ -146,37 +144,38 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return dueDate;
   };
   const handleDomo = (type, value, rates) => {
+    setFormLoading(true);
     let data,
       filteredCompany =
         type === "company"
           ? state.companies.filter(comp => comp.uuid === value)[0]
           : state.companies.filter(comp => comp.uuid === formState.company)[0];
     if (type === "company") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: formatDate(formState.billingPeriod.end)
-      });
+      };
     } else if (type === "start") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(value),
         end: dateFunc(value)
-      });
+      };
     } else if (type === "end") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: formatDate(value)
-      });
+      };
     } else if (type === "billing") {
-      data = sql({
+      data = {
         company: filteredCompany.slug,
         start: formatDate(formState.billingPeriod.start),
         end: dateFunc(formState.billingPeriod.start, value)
-      });
+      };
     }
-    getDomo(data).then(res => {
+    post(`/api/domo/billable`, data).then(res => {
       const temp = res.data.rows.map(item => {
         return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
       });
@@ -237,46 +236,60 @@ const AutomaticInvoiceProvider = ({ children }) => {
           setSelectedCampaign(camp.map(item => item.uuid));
         }
       }
+      setFormLoading(false);
     });
   };
   const handleCompanyChange = e => {
-    setFormLoading(true)
-    setFormState({
-      ...formState,
-      company: e.target.value
-    });
-
+    setFormLoading(true);
+    if (formState.company !== e.target.value) {
+      setSelectedCampaign([]);
+      setFormState({
+        ...formState,
+        company: e.target.value,
+        campaign: []
+      });
+    } else {
+      setFormState({
+        ...formState,
+        company: e.target.value
+      });
+    }
     const url = `/api/rate/${
       e.target.value
-      }?original_data=${!state2.applyPrevious}&billing_type=${
+    }?original_data=${!state2.applyPrevious}&billing_type=${
       formState.billingType
-      }`;
+    }`;
     get(url).then(res => {
       handleDomo(
         "company",
         e.target.value,
         res.data[0] ? res.data[0].rates : null
       );
-      setFormLoading(false)
-    })
-
+    });
   };
 
   const handleBillingChange = e => {
-    const url = `/api/rate/${
-      formState.company
+    if (formState.company) {
+      const url = `/api/rate/${
+        formState.company
       }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
-    setFormState({
-      ...formState,
-      billingType: e.target.value
-    });
-    get(url).then(res => {
-      handleDomo(
-        "billing",
-        e.target.value,
-        res.data[0] ? res.data[0].rates : null
-      );
-    });
+      setFormState({
+        ...formState,
+        billingType: e.target.value
+      });
+      get(url).then(res => {
+        handleDomo(
+          "billing",
+          e.target.value,
+          res.data[0] ? res.data[0].rates : null
+        );
+      });
+    } else {
+      setFormState({
+        ...formState,
+        billingType: e.target.value
+      });
+    }
   };
   const handleAddFees = (e, label) => {
     const value = label === "tax" ? e.target.checked : e.target.value;
@@ -325,7 +338,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     );
     let total = 0;
     let mer =
-      Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
+        Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
       lit = litigator.qty * litigator.rate;
     if (merchant.tax && merchant.rate) total += mer;
     if (litigator.tax) total += lit;
@@ -358,8 +371,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const tax =
       formState.taxation !== " "
         ? Math.round(
-          (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
-        ) / 100
+            (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
+          ) / 100
         : 0;
     return tax;
   };
@@ -604,7 +617,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       });
   };
 
-  state.formLoading = formLoading
+  state.formLoading = formLoading;
   return (
     <AutomaticInvoiceContext.Provider
       value={{
