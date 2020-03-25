@@ -24,9 +24,18 @@ const get = (endpoint, data) => {
   checkToken();
   return axios.get(`${baseUrl}${endpoint}`, data);
 };
-const post = (endpoint, data) => axios.post(`${baseUrl}${endpoint}`, data);
-const patch = (endpoint, data) => axios.patch(`${baseUrl}${endpoint}`, data);
-const remove = (endpoint, data) => axios.delete(`${baseUrl}${endpoint}`, data);
+const post = (endpoint, data) => {
+  checkToken();
+  return axios.post(`${baseUrl}${endpoint}`, data);
+};
+const patch = (endpoint, data) => {
+  checkToken();
+  return axios.patch(`${baseUrl}${endpoint}`, data);
+};
+const remove = (endpoint, data) => {
+  checkToken();
+  return axios.delete(`${baseUrl}${endpoint}`, data);
+};
 
 const auth = (endpoint, data) => axios.post(`${baseUrl}${endpoint}`, { data });
 const getAPI = (endpoint, data) =>
