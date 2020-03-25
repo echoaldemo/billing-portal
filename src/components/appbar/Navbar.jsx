@@ -46,24 +46,25 @@ export default function MenuAppBar({ history }) {
     if (!googleId) {
       history.push('/')
     } else {
-      getUser()
+      if (!state.userProfile.googleId) {
+        getUser()
+      }
     }
     // eslint-disable-next-line
   }, [])
 
   const getUser = async () => {
-    const { data } = await get(`/api/users/${googleId}`)
-    if (data) {
-      dispatch({
-        type: 'set-user-profile',
-        payload: { userProfile: data }
-      })
-      if (data.status === 'active') {
-        dispatch({ type: 'set-auth', payload: { auth: true } })
-      } else {
-        localStorage.clear()
-        window.location.href = '/'
-      }
+    const { data } = await get(`/api/users/${googleId}`).catch(() => {
+      localStorage.clear()
+      window.location.href = '/'
+    })
+
+    dispatch({
+      type: 'set-user-profile',
+      payload: { userProfile: data }
+    })
+    if (data.status === 'active') {
+      dispatch({ type: 'set-auth', payload: { auth: true } })
     } else {
       localStorage.clear()
       window.location.href = '/'
@@ -72,18 +73,18 @@ export default function MenuAppBar({ history }) {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ backgroundColor: '#444851' }}>
+      <AppBar position='static' style={{ backgroundColor: '#444851' }}>
         <Toolbar>
           <IconButton
-            edge="start"
+            edge='start'
             className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
+            color='inherit'
+            aria-label='menu'
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            <img alt=" " src={logo} width={170} />
+          <Typography variant='h6' className={classes.title}>
+            <img alt=' ' src={logo} width={170} />
             <span style={{ paddingLeft: 15, paddingRight: 15 }}>|</span>
             <span>Billing Portal</span>
           </Typography>
@@ -92,7 +93,7 @@ export default function MenuAppBar({ history }) {
               <img
                 style={{ height: 36, borderRadius: '50%' }}
                 src={state.userProfile.imageUrl}
-                alt=" "
+                alt=' '
               />
             ) : (
               <AccountCircle />
@@ -100,16 +101,16 @@ export default function MenuAppBar({ history }) {
             &nbsp;
             {state.userProfile.name ? state.userProfile.name : ''}
             <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
+              aria-label='account of current user'
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
               onClick={handleMenu}
-              color="inherit"
+              color='inherit'
             >
               <ExpandMore />
             </IconButton>
             <Menu
-              id="menu-appbar"
+              id='menu-appbar'
               anchorEl={anchorEl}
               getContentAnchorEl={null}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}

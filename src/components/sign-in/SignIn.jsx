@@ -20,21 +20,26 @@ const SignIn = ({ history }) => {
     if (state.auth) {
       history.push('/overview')
     } else {
-      getUser(googleId)
+      if (googleId) {
+        getUser(googleId)
+      } else {
+        setLoad(false)
+      }
     }
   }, []) // eslint-disable-line
 
   const getUser = async googleId => {
-    const { data } = await get(`/api/users/${googleId}`)
-    if (!data) {
+    if (!googleId) {
       localStorage.clear()
       history.push('/')
     } else {
+      const { data } = await get(`/api/users/${googleId}`)
       dispatch({
         type: 'set-user-profile',
         payload: { userProfile: data }
       })
       localStorage.setItem('googleId', data.googleId)
+      localStorage.setItem('bpToken', data.token)
       if (data.status === 'active') {
         dispatch({ type: 'set-auth', payload: { auth: true } })
         history.push('/overview')
@@ -54,29 +59,35 @@ const SignIn = ({ history }) => {
       const {
         profileObj: { email }
       } = res
-      const find = await get(`/api/users/${res.googleId}`)
-      if (find.data) {
-        getUser(res.googleId)
-      } else {
-        res.profileObj.status = 'request'
-        res.profileObj.type = 'user'
-        if (email.match(/@boomsourcing/i) || email.match(/@boom.camp/i)) {
-          post('/api/users/create', res.profileObj).then(res => {
-            dispatch({
-              type: 'set-user-profile',
-              payload: { userProfile: res.data }
-            })
-            localStorage.setItem('googleId', res.data.googleId)
-            setRequest(true)
-          })
-        } else {
-          dispatch({
-            type: 'set-user-profile',
-            payload: { userProfile: res.profileObj }
-          })
-          setInvalid(true)
-        }
-      }
+      get(`/api/users/${res.googleId}`)
+        .then(result => {
+          if (result.data.googleId) {
+            getUser(res.googleId)
+          }
+        })
+        .catch(err => {
+          if (typeof err.response.data.msg !== 'undefined') {
+            res.profileObj.status = 'request'
+            res.profileObj.type = 'user'
+            if (email.match(/@boomsourcing/i) || email.match(/@boom.camp/i)) {
+              post('/api/users/create', res.profileObj).then(res => {
+                dispatch({
+                  type: 'set-user-profile',
+                  payload: { userProfile: res.data }
+                })
+                localStorage.setItem('googleId', res.data.googleId)
+                localStorage.setItem('bpToken', res.data.token)
+                setRequest(true)
+              })
+            } else {
+              dispatch({
+                type: 'set-user-profile',
+                payload: { userProfile: res.profileObj }
+              })
+              setInvalid(true)
+            }
+          }
+        })
     }
   }
 
