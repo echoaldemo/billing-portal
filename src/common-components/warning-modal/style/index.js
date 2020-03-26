@@ -84,6 +84,7 @@ const Text = styled.div`
 `
 const P = styled.p`
   color: #7c8a97;
+  text-align: center;
   margin: 10px 0 40px 0;
   max-width: 80%;
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;

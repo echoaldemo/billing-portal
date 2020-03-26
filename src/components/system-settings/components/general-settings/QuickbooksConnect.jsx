@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { authorizeUri } from 'utils/auth'
-import { CircularProgress } from '@material-ui/core'
-import { LoadingModal } from 'common-components'
+import { CircularProgress, Dialog } from '@material-ui/core'
+import { LoadingModal, WarningModal } from 'common-components'
 import logo from 'assets/qb_button.png'
 import { get } from 'utils/api'
 
@@ -9,14 +9,17 @@ export default function QuickbooksConnect() {
   const [refresh, setRefresh] = useState(false)
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(false)
+  const [companyName, setCompanyName] = useState('')
+  const [dis, setDis] = useState(false)
 
   useEffect(() => {
-    refreshToken()
+    checkQb()
   }, [])
 
-  const refreshToken = () => {
-    get('/refreshAccessToken')
-      .then(() => {
+  const checkQb = () => {
+    get('/api/qb/company')
+      .then(res => {
+        setCompanyName(res.data.CompanyInfo.CompanyName)
         setLoading(false)
         setRefresh(true)
         setModal(false)
@@ -28,10 +31,12 @@ export default function QuickbooksConnect() {
       })
   }
 
-  const handleRefresh = () => {
+  const handleDisconnect = () => {
     setModal(true)
-    setLoading(true)
-    refreshToken()
+    setDis(false)
+    get('/api/qb/disconnect').then(() => {
+      checkQb()
+    })
   }
 
   const handleCancel = () => {
@@ -46,6 +51,15 @@ export default function QuickbooksConnect() {
         text='Please wait...'
         cancelFn={handleCancel}
       />
+      <Dialog open={dis}>
+        <WarningModal
+          text='Confirmation'
+          content={`Are you sure you want to disconnect to ${companyName}`}
+          closeFn={() => setDis(false)}
+          secondaryFn={handleDisconnect}
+          btnText='Disconnect'
+        />
+      </Dialog>
       <h3 style={{ marginTop: 0 }}>Let's get you connected to Quickbooks!</h3>
       <p>
         Et occaecat proident amet et nulla veniam sit.Ipsum occaecat nulla nisi
@@ -59,9 +73,6 @@ export default function QuickbooksConnect() {
         labore.Consectetur mollit labore id qui adipisicing dolore.
         <br />
         <br />
-        Click the <b>Connect</b> button to get connected to{' '}
-        <b>Quickbooks Online</b>.
-        <br />
       </p>
       {loading ? (
         <div className='loading'>
@@ -70,13 +81,36 @@ export default function QuickbooksConnect() {
       ) : (
         <>
           {refresh ? (
-            <button className='refesh-button' onClick={handleRefresh}>
-              <span>Refresh Token</span>
-            </button>
+            <>
+              <span>
+                You are <b>Connected</b> to <b>{companyName}</b> <br />
+                <br />
+                Click the <b>Disconnect</b> button to logout <b>Quickbooks</b>.
+                <br />
+                <br />
+              </span>
+              <button className='refesh-button' onClick={() => setDis(true)}>
+                <span>Disconnect</span>
+              </button>
+            </>
           ) : (
-            <span className='connect-btn' onClick={authorizeUri}>
-              <img src={logo} alt='logo' />
-            </span>
+            <>
+              <span>
+                Click the <b>Connect</b> button to get connected to{' '}
+                <b>Quickbooks Online</b>.
+                <br />
+                <br />
+              </span>
+              <span
+                className='connect-btn'
+                onClick={() => {
+                  setLoading(true)
+                  authorizeUri()
+                }}
+              >
+                <img src={logo} alt='logo' />
+              </span>
+            </>
           )}
         </>
       )}
