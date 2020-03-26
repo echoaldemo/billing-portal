@@ -3,28 +3,26 @@ import { get, getAPI } from "utils/api";
 import BillingProfileReducer from "reducers/BillingProfileReducer";
 import { StateContext } from "./StateContext";
 import { IdentityContext } from "context/IdentityContext"
-const initialState = {
-  companies: [],
-  campaigns: [],
-  selectedCompany: "",
-  edit: false,
-  campaignRates: [],
-  selectedBillingType: "1"
-};
 
 const BillingContext = React.createContext(); // eslint-disable-line
 
-const BillingProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(BillingProfileReducer, initialState);
 
+const BillingProvider = ({ children }) => {
   const {
     state: { applyPrevious }
   } = useContext(StateContext);
-
   const { identityState: { companies, campaigns } } = useContext(IdentityContext)
 
+  const initialState = {
+    companies: [],
+    campaigns: [],
+    selectedCompany: false,
+    edit: false,
+    campaignRates: [],
+    selectedBillingType: "1"
+  };
 
-
+  const [state, dispatch] = useReducer(BillingProfileReducer, initialState);
   const [rowCollapse, setRowCollapse] = useState([0, 1]);
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
   const [formState, setFormState] = useState([]);
@@ -32,27 +30,28 @@ const BillingProvider = ({ children }) => {
   const [rateProfile, setRateProfile] = useState(null);
   const [companyDetails, setCompanyDetails] = useState(null);
   useEffect(() => {
-    apiCall();
-  }, []);
-  useEffect(() => {
-    if (state.selectedCompany && state.campaigns.length) {
-      fetchData();
+    if (!state.selectedCompany && companies.length > 0) {
+      dispatch({
+        type: "set-selected-company",
+        payload: { selectedCompany: companies[0].uuid }
+      });
     }
+    fetchData();
   }, [
-    state.campaigns,
     state.selectedCompany,
+    companies,
+    campaigns,
     applyPrevious,
     state.selectedBillingType
   ]);
   const apiCall = async () => {
-    // const { data: companies } = await getAPI("/identity/company/list");
     dispatch({
       type: "set-companies",
       payload: { companies: companies }
     });
     dispatch({
       type: "set-selected-company",
-      payload: { selectedCompany: companies[0] }
+      payload: { selectedCompany: companies[0].uuid }
     });
     dispatch({
       type: "set-campaigns",
@@ -93,13 +92,13 @@ const BillingProvider = ({ children }) => {
     return companyDetails;
   };
   const getCompanyCampaigns = company_uuid => {
-    const result = state.campaigns.filter(
+    const result = campaigns.filter(
       item => item.company === company_uuid
     );
     return result;
   };
   const getCompanyDetails = selectedCompany => {
-    const result = state.companies.find(comp => comp.uuid === selectedCompany);
+    const result = companies.find(comp => comp.uuid === selectedCompany);
     return result;
   };
   const handleFieldChange = (e, index, type) => {
