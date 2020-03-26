@@ -8,6 +8,7 @@ const authorizeUri = () => {
   jsonBody.redirectUri = process.env.REACT_APP_REDIRECT_URI
 
   auth('/authUri', { json: jsonBody }).then(authUri => {
+    //#1
     // Launch Popup using the JS window Object
     // var parameters = 'location=1,width=800,height=650'
     // parameters +=
@@ -27,10 +28,21 @@ const authorizeUri = () => {
     //     console.log(e)
     //   }
     // }, 100)
-    window.open(
-      authUri.data,
-      '_blank' // <- This is what makes it open in a new window.
-    )
+
+    //#2
+    // window.open(
+    //   authUri.data,
+    //   '_blank' // <- This is what makes it open in a new window.
+    // )
+
+    //#3
+    var parameters = 'location=1,width=800,height=650'
+    parameters +=
+      ',left=' +
+      (global.screen.width - 800) / 2 +
+      ',top=' +
+      (global.screen.height - 650) / 2
+    window.open(authUri.data, 'connectPopup', parameters)
   })
 }
 

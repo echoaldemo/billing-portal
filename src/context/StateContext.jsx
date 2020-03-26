@@ -26,7 +26,8 @@ const initialState = {
   updateLoading: false,
   auth: false,
   applyPrevious: true,
-  companies: []
+  companies: [],
+  campaigns: []
 }
 const confirmModalInitial = {
   approve: false,
@@ -100,6 +101,14 @@ const StateProvider = ({ children }) => {
   useEffect(() => {
     filter()
   }, [filterOpt, dateRange]) // eslint-disable-line
+
+  useEffect(() => {
+    //GET ALL CAMPAIGNS
+    getAPI('/identity/campaign/list').then(res =>
+      dispatch({ type: 'set-campaigns', payload: { campaigns: res.data } })
+    )
+  }, [])
+
   const setLoading = value => {
     dispatch({ type: 'set-loading', payload: { loading: value } })
   }
@@ -174,6 +183,8 @@ const StateProvider = ({ children }) => {
         return { ...state, applyPrevious: action.payload.applyPrevious }
       case 'set-companies':
         return { ...state, companies: action.payload.companies }
+      case 'set-campaigns':
+        return { ...state, campaigns: action.payload.campaigns }
       default:
         return null
     }

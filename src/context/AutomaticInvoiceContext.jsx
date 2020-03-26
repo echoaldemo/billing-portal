@@ -3,7 +3,7 @@ import React, { useReducer, useEffect, useState, useContext } from "react";
 import { post, get, getAPI } from "utils/api";
 import { postLog } from "utils/time";
 import { StateContext } from "context/StateContext";
-
+import { IdentityContext } from "./IdentityContext";
 const appendLeadingZeroes = n => {
   if (n <= 9) {
     return "0" + n;
@@ -45,6 +45,9 @@ const mockTaxation = [
 const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { state: state2, getPendingInvoicesData } = useContext(StateContext);
+  const {
+    identityState: { companies, campaigns }
+  } = useContext(IdentityContext);
   const [formState, setFormState] = useState(initialFormState);
   const [formLoading, setFormLoading] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
@@ -82,41 +85,37 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const filteredCampaigns = state.campaigns.filter(c => c.company === uuid);
     setFormState({ ...formState, campaign: filteredCampaigns });
   };
-  const getGeneralData = async () => {
+  const getGeneralData = () => {
     dispatch({ type: "set-loading", payload: { loading: true } });
+    dispatch({
+      type: "set-companies",
+      payload: {
+        companies: companies
+      }
+    });
 
-    try {
-      const { data: companies } = await getAPI("/identity/company/list");
-
-      dispatch({
-        type: "set-companies",
-        payload: { companies }
-      });
-      const { data: temp } = await getAPI("/identity/campaign/list");
-      const campaigns = temp.map(item => ({
-        ...item,
-        content: {
-          billable_hours: " ",
-          bill_rate: " ",
-          performance: " ",
-          performance_rate: " ",
-          did: " ",
-          did_rate: " "
-        },
-        tax: {
-          billable_hours: true,
-          performance: true,
-          did: true
-        }
-      }));
-      dispatch({
-        type: "set-campaigns",
-        payload: { campaigns }
-      });
-      dispatch({ type: "set-loading", payload: { loading: false } });
-    } catch (err) {
-      console.log(err);
-    }
+    const loadedCampaigns = campaigns.map(item => ({
+      ...item,
+      content: {
+        billable_hours: " ",
+        bill_rate: " ",
+        performance: " ",
+        performance_rate: " ",
+        did: " ",
+        did_rate: " "
+      },
+      tax: {
+        billable_hours: true,
+        performance: true,
+        did: true
+      }
+    }));
+    console.log(loadedCampaigns, "camp");
+    dispatch({
+      type: "set-campaigns",
+      payload: { campaigns: loadedCampaigns }
+    });
+    dispatch({ type: "set-loading", payload: { loading: false } });
   };
   const createAnother = () => {
     setFormState(initialFormState);
@@ -144,12 +143,11 @@ const AutomaticInvoiceProvider = ({ children }) => {
     return dueDate;
   };
   const handleDomo = (type, value, rates) => {
-    setFormLoading(true);
     let data,
       filteredCompany =
         type === "company"
-          ? state.companies.filter(comp => comp.uuid === value)[0]
-          : state.companies.filter(comp => comp.uuid === formState.company)[0];
+          ? companies.filter(comp => comp.uuid === value)[0]
+          : companies.filter(comp => comp.uuid === formState.company)[0];
     if (type === "company") {
       data = {
         company: filteredCompany.slug,
@@ -176,6 +174,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       };
     }
     post(`/api/domo/billable`, data).then(res => {
+      console.log("stateCamp", state);
       const temp = res.data.rows.map(item => {
         return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
       });
@@ -247,7 +246,6 @@ const AutomaticInvoiceProvider = ({ children }) => {
           });
         }
       }
-
       setFormLoading(false);
     });
   };

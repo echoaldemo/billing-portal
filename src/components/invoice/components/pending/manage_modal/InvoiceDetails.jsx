@@ -15,7 +15,7 @@ import DateFnsUtils from '@date-io/date-fns'
 import moment from 'moment'
 import ItemsTable from './components/ItemsTable'
 import { StateContext } from 'context/StateContext'
-import { mockCampaigns } from '../../../../new-invoice/mock'
+// import { mockCampaigns } from '../../../../new-invoice/mock'
 
 export default function InvoiceDetails() {
   const { state, setFormState, formState } = React.useContext(StateContext)
@@ -27,7 +27,7 @@ export default function InvoiceDetails() {
   useEffect(() => {
     // setCompanies(mockCompanies)
     setCampaigns(
-      mockCampaigns.filter(
+      state.campaigns.filter(
         camp => camp.company === state.selectedData.company.uuid
       )
     )
@@ -38,7 +38,7 @@ export default function InvoiceDetails() {
   }, [])
 
   useEffect(() => {
-    setCampaigns(mockCampaigns.filter(camp => camp.company === companyId))
+    setCampaigns(state.campaigns.filter(camp => camp.company === companyId))
     // eslint-disable-next-line
   }, [companyId])
 
