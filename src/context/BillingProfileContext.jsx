@@ -2,6 +2,7 @@ import React, { useReducer, useState, useEffect, useContext } from "react";
 import { get, getAPI } from "utils/api";
 import BillingProfileReducer from "reducers/BillingProfileReducer";
 import { StateContext } from "./StateContext";
+import { IdentityContext } from "context/IdentityContext"
 const initialState = {
   companies: [],
   campaigns: [],
@@ -19,6 +20,10 @@ const BillingProvider = ({ children }) => {
   const {
     state: { applyPrevious }
   } = useContext(StateContext);
+
+  const { identityState: { companies, campaigns } } = useContext(IdentityContext)
+
+
 
   const [rowCollapse, setRowCollapse] = useState([0, 1]);
   const [companyCampaigns, setCompanyCampaigns] = useState([]);
@@ -40,21 +45,20 @@ const BillingProvider = ({ children }) => {
     state.selectedBillingType
   ]);
   const apiCall = async () => {
-    setLoading(true);
-    const { data: companies } = await getAPI("/identity/company/list");
+    // const { data: companies } = await getAPI("/identity/company/list");
     dispatch({
       type: "set-companies",
-      payload: { companies }
+      payload: { companies: companies }
     });
     dispatch({
       type: "set-selected-company",
-      payload: { selectedCompany: companies[0].uuid }
+      payload: { selectedCompany: companies[0] }
     });
-    const { data: campaigns } = await getAPI("/identity/campaign/list");
     dispatch({
       type: "set-campaigns",
-      payload: { campaigns }
+      payload: { campaigns: campaigns }
     });
+
   };
   const fetchData = () => {
     setLoading(true);
@@ -62,9 +66,9 @@ const BillingProvider = ({ children }) => {
     setCompanyCampaigns(getCompanyCampaigns(state.selectedCompany));
     let url = `/api/rate/${
       state.selectedCompany
-    }?original_data=${JSON.stringify(!applyPrevious)}&billing_type=${
+      }?original_data=${JSON.stringify(!applyPrevious)}&billing_type=${
       state.selectedBillingType
-    }`;
+      }`;
     get(url).then(result => {
       if (result.data[0]) {
         let profile_id = result.data[0].profile_id;

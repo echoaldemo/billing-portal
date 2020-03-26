@@ -206,15 +206,15 @@ const ManualInvoiceProvider = ({ children }) => {
   const getGeneralData = async () => {
     dispatch({ type: 'set-loading', payload: { loading: true } })
     try {
-      const { data: companies } = await getAPI('/identity/company/list')
+      // const { data: companies } = await getAPI('/identity/company/list')
       dispatch({
         type: 'set-companies',
-        payload: { companies }
+        payload: { companies: [] }
       })
-      const { data: campaigns } = await getAPI('/identity/campaign/list')
+      // const { data: campaigns } = await getAPI('/identity/campaign/list')
       dispatch({
         type: 'set-campaigns',
-        payload: { campaigns }
+        payload: { campaigns: [] }
       })
       dispatch({ type: 'set-loading', payload: { loading: false } })
     } catch (err) {
