@@ -234,8 +234,20 @@ const AutomaticInvoiceProvider = ({ children }) => {
             campaign: camp
           });
           setSelectedCampaign(camp.map(item => item.uuid));
+          if (camp.length) {
+            dispatch({
+              type: "set-modal-type",
+              payload: { modalType: "no-result" }
+            });
+          }
+        } else {
+          dispatch({
+            type: "set-modal-type",
+            payload: { modalType: "no-result" }
+          });
         }
       }
+
       setFormLoading(false);
     });
   };
@@ -269,7 +281,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
   };
 
   const handleBillingChange = e => {
-    if (formState.company) {
+    if (formState.company && selectedCampaign.length) {
       const url = `/api/rate/${
         formState.company
       }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
