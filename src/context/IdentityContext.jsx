@@ -12,10 +12,8 @@ const IdentityProvider = ({ children }) => {
   const [identityState, identityDispatch] = useReducer(IdentityReducer, initialState);
   const [loading, setLoading] = useState(false)
   const getIdentityData = async () => {
-    setLoading(true)
     const { data: companies } = await getAPI("/identity/company/list");
     const { data: temp } = await getAPI("/identity/campaign/list");
-
     identityDispatch({
       type: "set-data",
       payload: {

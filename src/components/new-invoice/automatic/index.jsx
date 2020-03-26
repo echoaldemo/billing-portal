@@ -76,6 +76,7 @@ const NewInvoice = ({ handleClose }) => {
         selectedCompany={formState.company}
       />
       {!state.companies.length > 0 ? <TableLoader /> : <FormContent />}
+
       <Dialog
         open={state.modalType !== ''}
         disableBackdropClick
