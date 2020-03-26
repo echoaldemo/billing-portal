@@ -1,11 +1,7 @@
 /* eslint-disable */
 import React, { useReducer, useEffect, useState, useContext } from 'react'
 import { StateContext } from 'context/StateContext'
-import {
-  mockCampaigns,
-  mockCompanies,
-  company
-} from '../components/new-invoice/mock'
+
 import {
   computeInt,
   services,
@@ -14,6 +10,7 @@ import {
 } from 'utils/func'
 import { post, getAPI } from 'utils/api'
 import { postLog } from 'utils/time'
+import { IdentityContext } from './IdentityContext'
 const today = new Date()
 const date =
   today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
@@ -60,6 +57,7 @@ const ManualInvoiceContext = React.createContext()
 const ManualInvoiceProvider = ({ children }) => {
   const { state: state2 } = useContext(StateContext)
   const [formState, setFormState] = useState(initialFormState)
+  const { identityState } = useContext(IdentityContext)
   const [createLoading, setCreateLoading] = useState(false)
   const [selectedCampaign, setSelectedCampaign] = useState([])
   const [billingFormState, setBillingFormState] = useState([])
@@ -206,31 +204,19 @@ const ManualInvoiceProvider = ({ children }) => {
   const getGeneralData = async () => {
     dispatch({ type: 'set-loading', payload: { loading: true } })
     try {
-      // const { data: companies } = await getAPI('/identity/company/list')
       dispatch({
         type: 'set-companies',
-        payload: { companies: [] }
+        payload: { companies: identityState.companies }
       })
-      // const { data: campaigns } = await getAPI('/identity/campaign/list')
       dispatch({
         type: 'set-campaigns',
-        payload: { campaigns: [] }
+        payload: { campaigns: identityState.campaigns }
       })
       dispatch({ type: 'set-loading', payload: { loading: false } })
     } catch (err) {
       console.log(err)
     }
-    // setTimeout(() => {
-    //   dispatch({
-    //     type: "set-companies",
-    //     payload: { companies: mockCompanies }
-    //   });
-    //   dispatch({
-    //     type: "set-campaigns",
-    //     payload: { campaigns: mockCampaigns }
-    //   });
-    //   dispatch({ type: "set-loading", payload: { loading: false } });
-    // }, 500);
+
   }
 
   const generateLine = () => {
@@ -306,7 +292,7 @@ const ManualInvoiceProvider = ({ children }) => {
     let newData = {
       ...data,
       invoiceType: 'Manual',
-      company: company(formState.company),
+      company: findCompany(formState.company),
       campaigns: campaignDetails,
       startDate: formatDate(new Date(formState.billingPeriod.start)),
       dueDate: formatDate(new Date(formState.billingPeriod.end)),
@@ -339,7 +325,13 @@ const ManualInvoiceProvider = ({ children }) => {
         console.log(err)
       })
   }
+
+  const findCompany = (uuid) => {
+    const result = identityState.companies.find(item => item.uuid === uuid)
+    return result
+  }
   const createManualInvoice = (type, handleClose) => {
+    console.log("formState", formState.company)
     const taxDetail = mockTaxation.find(item => item.percentage === tax)
     let taxDetails = null
     if (taxChecked) {
@@ -364,9 +356,11 @@ const ManualInvoiceProvider = ({ children }) => {
         ]
       }
     }
+
+
     let data = {
       CustomerRef: {
-        value: company(formState.company).qb_id
+        value: findCompany(formState.company).qb_id
       },
       TxnDate: formatDate(new Date(date)),
       DueDate: formatDate(new Date(formState.billingPeriod.end)),
