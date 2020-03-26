@@ -45,7 +45,9 @@ const mockTaxation = [
 const AutomaticInvoiceContext = React.createContext();
 const AutomaticInvoiceProvider = ({ children }) => {
   const { state: state2, getPendingInvoicesData } = useContext(StateContext);
-  const { identityState: { companies, campaigns } } = useContext(IdentityContext)
+  const {
+    identityState: { companies, campaigns }
+  } = useContext(IdentityContext);
   const [formState, setFormState] = useState(initialFormState);
   const [formLoading, setFormLoading] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState([]);
@@ -90,7 +92,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       payload: {
         companies: companies
       }
-    })
+    });
 
     const loadedCampaigns = campaigns.map(item => ({
       ...item,
@@ -108,13 +110,12 @@ const AutomaticInvoiceProvider = ({ children }) => {
         did: true
       }
     }));
-    console.log(loadedCampaigns, 'camp')
+    console.log(loadedCampaigns, "camp");
     dispatch({
       type: "set-campaigns",
       payload: { campaigns: loadedCampaigns }
     });
     dispatch({ type: "set-loading", payload: { loading: false } });
-
   };
   const createAnother = () => {
     setFormState(initialFormState);
@@ -173,7 +174,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
       };
     }
     post(`/api/domo/billable`, data).then(res => {
-      console.log("stateCamp", state)
+      console.log("stateCamp", state);
       const temp = res.data.rows.map(item => {
         return state.campaigns.filter(camp => camp.slug === item[1])[0].uuid;
       });
@@ -232,12 +233,21 @@ const AutomaticInvoiceProvider = ({ children }) => {
             campaign: camp
           });
           setSelectedCampaign(camp.map(item => item.uuid));
+          if (camp.length) {
+            dispatch({
+              type: "set-modal-type",
+              payload: { modalType: "no-result" }
+            });
+          }
+        } else {
+          dispatch({
+            type: "set-modal-type",
+            payload: { modalType: "no-result" }
+          });
         }
       }
-
-      setFormLoading(false)
-    })
-
+      setFormLoading(false);
+    });
   };
   const handleCompanyChange = e => {
     setFormLoading(true);
@@ -256,23 +266,23 @@ const AutomaticInvoiceProvider = ({ children }) => {
     }
     const url = `/api/rate/${
       e.target.value
-      }?original_data=${!state2.applyPrevious}&billing_type=${
+    }?original_data=${!state2.applyPrevious}&billing_type=${
       formState.billingType
-      }`;
+    }`;
     get(url).then(res => {
       handleDomo(
         "company",
         e.target.value,
         res.data[0] ? res.data[0].rates : null
       );
-    })
+    });
   };
 
   const handleBillingChange = e => {
-    if (formState.company) {
+    if (formState.company && selectedCampaign.length) {
       const url = `/api/rate/${
         formState.company
-        }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
+      }?original_data=${!state2.applyPrevious}&billing_type=${e.target.value}`;
       setFormState({
         ...formState,
         billingType: e.target.value
@@ -338,7 +348,7 @@ const AutomaticInvoiceProvider = ({ children }) => {
     );
     let total = 0;
     let mer =
-      Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
+        Math.round((parseFloat(merchant.rate) / 100) * getTotal() * 100) / 100,
       lit = litigator.qty * litigator.rate;
     if (merchant.tax && merchant.rate) total += mer;
     if (litigator.tax) total += lit;
@@ -371,8 +381,8 @@ const AutomaticInvoiceProvider = ({ children }) => {
     const tax =
       formState.taxation !== " "
         ? Math.round(
-          (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
-        ) / 100
+            (parseFloat(formState.taxation) / 100) * getTaxableSubtotal() * 100
+          ) / 100
         : 0;
     return tax;
   };

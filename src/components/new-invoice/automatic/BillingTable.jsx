@@ -20,12 +20,7 @@ const BillingTable = () => {
   }, [selectedCampaign, state]);
   return (
     <div>
-      {
-        state.formLoading ?
-          <TableLoader />
-          :
-          <CampaignBilling campaignDetails={campaignDetails} />
-      }
+      <CampaignBilling campaignDetails={campaignDetails} />
     </div>
   );
 };
