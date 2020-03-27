@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { InputField } from 'common-components'
 import {
   Grid,
@@ -15,10 +15,12 @@ import DateFnsUtils from '@date-io/date-fns'
 import moment from 'moment'
 import ItemsTable from './components/ItemsTable'
 import { StateContext } from 'context/StateContext'
+import { IdentityContext } from 'context/IdentityContext'
 // import { mockCampaigns } from '../../../../new-invoice/mock'
 
 export default function InvoiceDetails() {
-  const { state, setFormState, formState } = React.useContext(StateContext)
+  const { state, setFormState, formState } = useContext(StateContext)
+  const { identityState } = useContext(IdentityContext)
   const [companyId, setCompanyId] = useState('')
   // const [companies, setCompanies] = useState([])
   const [campaigns, setCampaigns] = useState([])
@@ -27,7 +29,7 @@ export default function InvoiceDetails() {
   useEffect(() => {
     // setCompanies(mockCompanies)
     setCampaigns(
-      state.campaigns.filter(
+      identityState.campaigns.filter(
         camp => camp.company === state.selectedData.company.uuid
       )
     )
@@ -38,7 +40,9 @@ export default function InvoiceDetails() {
   }, [])
 
   useEffect(() => {
-    setCampaigns(state.campaigns.filter(camp => camp.company === companyId))
+    setCampaigns(
+      identityState.campaigns.filter(camp => camp.company === companyId)
+    )
     // eslint-disable-next-line
   }, [companyId])
 
