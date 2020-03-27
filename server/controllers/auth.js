@@ -42,13 +42,13 @@ module.exports = {
               }
             })
             add.save()
-            console.log(JSON.stringify(authResponse.getJson(), null, 2))
+            //console.log(JSON.stringify(authResponse.getJson(), null, 2))
+            res.send('Please close this window')
           })
           .catch(function(e) {
             console.error(e)
           })
       })
-    res.send('')
   },
   refresh: async (req, res, next) => {
     const result = await billing_settings
