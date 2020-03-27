@@ -3,7 +3,6 @@ import { postLog } from 'utils/time'
 import { get, patch } from 'utils/api'
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
-import { getAPI } from 'utils/api'
 
 const moment = extendMoment(Moment)
 const initialState = {
@@ -25,9 +24,7 @@ const initialState = {
   editManageData: false,
   updateLoading: false,
   auth: false,
-  applyPrevious: true,
-  companies: [],
-  campaigns: []
+  applyPrevious: true
 }
 const confirmModalInitial = {
   approve: false,
@@ -102,13 +99,6 @@ const StateProvider = ({ children }) => {
     filter()
   }, [filterOpt, dateRange]) // eslint-disable-line
 
-  useEffect(() => {
-    //GET ALL CAMPAIGNS
-    getAPI('/identity/campaign/list').then(res =>
-      dispatch({ type: 'set-campaigns', payload: { campaigns: res.data } })
-    )
-  }, [])
-
   const setLoading = value => {
     dispatch({ type: 'set-loading', payload: { loading: value } })
   }
@@ -181,10 +171,6 @@ const StateProvider = ({ children }) => {
         return { ...state, userProfile: action.payload.userProfile }
       case 'set-apply-prev':
         return { ...state, applyPrevious: action.payload.applyPrevious }
-      case 'set-companies':
-        return { ...state, companies: action.payload.companies }
-      case 'set-campaigns':
-        return { ...state, campaigns: action.payload.campaigns }
       default:
         return null
     }
