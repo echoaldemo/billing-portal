@@ -77,7 +77,6 @@ const NewInvoice = ({ handleClose, duplicate }) => {
         selectedCompany={formState.company}
         merchantInvalid={additionalFee.merchantInvalid}
       />
-      {console.log(errorList)}
       <ShowValidations
         in={additionalFee.merchantInvalid}
         errorList={errorList}
@@ -85,8 +84,8 @@ const NewInvoice = ({ handleClose, duplicate }) => {
       {!state.companies.length > 0 ? (
         <TableLoader />
       ) : (
-        <FormContent duplicate={duplicate} />
-      )}
+          <FormContent duplicate={duplicate} />
+        )}
       <LoadingModal
         open={createLoading}
         text={`Creating new manual invoice`}

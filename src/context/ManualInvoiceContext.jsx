@@ -8,7 +8,7 @@ import {
   formatDate,
   additionalFeeDetails
 } from 'utils/func'
-import { post, getAPI } from 'utils/api'
+import { post, getAPI, get } from 'utils/api'
 import { postLog } from 'utils/time'
 import { IdentityContext } from './IdentityContext'
 const today = new Date()
@@ -314,6 +314,7 @@ const ManualInvoiceProvider = ({ children }) => {
       }
     }
     setCreateLoading(true)
+    console.log(newData)
     post('/api/create_pending', newData)
       .then(res => {
         logData.invoiceId = res.data.id
@@ -325,13 +326,42 @@ const ManualInvoiceProvider = ({ children }) => {
         console.log(err)
       })
   }
+  const createQB_id = async (company) => {
+    const response = await get(`/api/customer/view/${company.slug}`)
+      .then(result => {
+        return result.data
+      })
+      .catch(err => {
+        return err.response
+      })
+    try {
+      if (response.data.msg) {
+        let data = await post("/api/customer/create", {
+          DisplayName: company.name,
+          PrintOnCheckName: company.slug
+        }).then(res => {
+          return res.data
+        })
+        return data.Customer
+      }
+    } catch{
+      return response
+    }
 
+
+  }
   const findCompany = (uuid) => {
     const result = identityState.companies.find(item => item.uuid === uuid)
     return result
   }
-  const createManualInvoice = (type, handleClose) => {
-    console.log("formState", formState.company)
+  const createManualInvoice = async (type, handleClose) => {
+    const companyDetails = findCompany(formState.company)
+
+
+    const { Id: QB_ID } = await createQB_id(companyDetails)
+
+    console.log(QB_ID, "<=== qb")
+
     const taxDetail = mockTaxation.find(item => item.percentage === tax)
     let taxDetails = null
     if (taxChecked) {
@@ -357,10 +387,9 @@ const ManualInvoiceProvider = ({ children }) => {
       }
     }
 
-
     let data = {
       CustomerRef: {
-        value: findCompany(formState.company).qb_id
+        value: QB_ID
       },
       TxnDate: formatDate(new Date(date)),
       DueDate: formatDate(new Date(formState.billingPeriod.end)),
@@ -370,6 +399,8 @@ const ManualInvoiceProvider = ({ children }) => {
         value: `Wire/ACH Instructions:\nRouting 124301025\nAccount: 4134870\nBIC: AMFOUS51\nPeople's Intermountain Bank\n712 E Main St\nLehi, UT, 84043\nIf paying by wire, please include your\ncompany name in the memo.\n\nIf you have any questions or concerns about current or past invoices,\ncontact Tanner Purser directly at 801-805-4602`
       }
     }
+
+    console.log(data, "data")
     switch (type) {
       case 'approve':
         sendToQuickbooks(data, handleClose)
