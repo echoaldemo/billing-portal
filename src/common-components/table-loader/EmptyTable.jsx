@@ -26,7 +26,7 @@ const EmptyTable = ({ style }) => {
       </Styled.MsgCont>
       <Styled.SubMsgCont>
         <span>
-          Please select another campaign
+          Please select another company
           <br />
           and try again.
         </span>
