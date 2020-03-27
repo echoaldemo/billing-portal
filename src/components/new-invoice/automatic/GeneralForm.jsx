@@ -20,6 +20,13 @@ export default function GeneralForm() {
     getBalance,
     handleDomo
   } = useContext(AutomaticInvoiceContext);
+  const handleRange = (type, value) => {
+    setFormState({
+      ...formState,
+      billingPeriod: { ...formState.billingPeriod, [type]: value }
+    });
+    if (formState.company && selectedCampaign.length) handleDomo(type, value);
+  };
   return (
     <div
       style={{
@@ -118,13 +125,7 @@ export default function GeneralForm() {
                 variant="inline"
                 format="MM/dd/yyyy"
                 value={formState.billingPeriod.start}
-                onChange={date => {
-                  setFormState({
-                    ...formState,
-                    billingPeriod: { ...formState.billingPeriod, start: date }
-                  });
-                  if (formState.company) handleDomo("start", date);
-                }}
+                onChange={date => handleRange("start", date)}
               />
             </MuiPickersUtilsProvider>
           </div>
@@ -140,13 +141,7 @@ export default function GeneralForm() {
                 variant="inline"
                 format="MM/dd/yyyy"
                 value={formState.billingPeriod.end}
-                onChange={date => {
-                  setFormState({
-                    ...formState,
-                    billingPeriod: { ...formState.billingPeriod, end: date }
-                  });
-                  if (formState.company) handleDomo("end", date);
-                }}
+                onChange={date => handleRange("end", date)}
               />
             </MuiPickersUtilsProvider>
           </div>

@@ -17,7 +17,8 @@ export default function NewInvoiceAppbar({
   balance,
   selectedCompany,
   openWarning,
-  merchantInvalid
+  merchantInvalid,
+  campaigns
 }) {
   const classes = useStyles();
 
@@ -57,7 +58,9 @@ export default function NewInvoiceAppbar({
             createFn("draft");
           }}
           color="inherit"
-          disabled={!selectedCompany || merchantInvalid === true}
+          disabled={
+            !selectedCompany || merchantInvalid === true || campaigns === 0
+          }
         >
           Save
         </Button>
@@ -88,7 +91,7 @@ export default function NewInvoiceAppbar({
                 createFn("approve");
               }
             }}
-            disabled={balance === 0 || merchantInvalid}
+            disabled={balance === 0 || merchantInvalid || campaigns === 0}
           >
             Save and approve
           </MenuItem>

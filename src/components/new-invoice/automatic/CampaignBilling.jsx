@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { RowHeader, Row, TableLoader } from "common-components";
+import { RowHeader, Row, TableLoader, EmptyTable } from "common-components";
 import {
   Checkbox as TempCb,
   MenuItem,
@@ -37,7 +37,8 @@ const CampaignBilling = ({ campaignDetails }) => {
     addFee,
     handleAddFees,
     mockTaxation,
-    getBalance
+    getBalance,
+    selectedCampaign
   } = useContext(AutomaticInvoiceContext);
   const [rowCollapse, setRowCollapse] = useState([0]);
   const [additionalCollapse, setAdditionalCollapse] = useState(false);
@@ -145,6 +146,7 @@ const CampaignBilling = ({ campaignDetails }) => {
     {
       label: (
         <ExpandButton
+          disabled={!selectedCampaign.length ? true : false}
           collapse={additionalCollapse}
           setCollapse={setAdditionalCollapse}
         />
@@ -328,7 +330,6 @@ const CampaignBilling = ({ campaignDetails }) => {
       size: 2
     }
   ];
-
   return (
     <>
       <div
@@ -348,9 +349,9 @@ const CampaignBilling = ({ campaignDetails }) => {
           }}
         >
           {state.formLoading ? (
-            <div>
-              <TableLoader style={{ height: 450 }} />
-            </div>
+            <TableLoader style={{ height: 450 }} />
+          ) : !campaignDetails.length ? (
+            <EmptyTable style={{ height: 450 }} />
           ) : (
             campaignDetails.map((el, i) => {
               return (
@@ -377,7 +378,7 @@ const CampaignBilling = ({ campaignDetails }) => {
         }
         style={{ border: "solid 1px #F1F1F1" }}
       />
-      <Collapse in={additionalCollapse}>
+      <Collapse in={additionalCollapse || selectedCampaign.length}>
         <Row
           rowData={additionalFeesRow2}
           style={{ border: "solid 1px #F1F1F1", borderTop: 0 }}

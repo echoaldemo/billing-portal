@@ -20,13 +20,7 @@ const BillingTable = () => {
   }, [selectedCampaign, state]);
   return (
     <div>
-      <React.Fragment>
-        <React.Fragment>
-          <div style={{ paddingTop: 0 }}>
-            <CampaignBilling campaignDetails={campaignDetails} />
-          </div>
-        </React.Fragment>
-      </React.Fragment>
+      <CampaignBilling campaignDetails={campaignDetails} />
     </div>
   );
 };
